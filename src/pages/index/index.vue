@@ -53,12 +53,13 @@ export default {
 
   methods: {
     bindViewTap () {
-      const url = '../logs/main'
-      if (mpvuePlatform === 'wx') {
-        mpvue.switchTab({ url })
-      } else {
-        mpvue.navigateTo({ url })
-      }
+      this.$router.push({ path: '/pages/logs/main', isTab: true })
+      // const url = '../logs/main'
+      // if (mpvuePlatform === 'wx') {
+      //   mpvue.switchTab({ url })
+      // } else {
+      //   mpvue.navigateTo({ url })
+      // }
     },
     clickHandle (ev) {
       console.log('clickHandle:', ev)
