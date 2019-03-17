@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "活动咨询",
+  "usingComponents": {
+    "van-button": "/static/vant/button/index"
+  }
+}

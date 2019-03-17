@@ -23,6 +23,10 @@ export default {
       logs.unshift(Date.now())
       mpvue.setStorageSync('logs', logs)
     }
+
+    if (mpvuePlatform === 'my') {
+      console.log('wx')
+    }
   },
   log () {
     console.log(`log at:${Date.now()}`)
