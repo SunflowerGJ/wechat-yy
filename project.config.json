@@ -9,7 +9,7 @@
 	},
 	"miniprogramRoot": "dist/wx/",
 	"compileType": "miniprogram",
-	"appid": "touristappid",
+	"appid": "wx389b61b4be61cf31",
 	"projectname": "wechat-yy",
 	"condition": {
 		"search": {
