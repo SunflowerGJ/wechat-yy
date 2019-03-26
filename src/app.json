@@ -6,13 +6,13 @@
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "首页",
+    "navigationBarBackgroundColor": "#f2f2f2",
+    "navigationBarTitleText": "置业远洋",
     "navigationBarTextStyle": "black"
   },
   "tabBar": {
     "color": "#999",
-    "backgroundColor": "#fafafa",
+    "backgroundColor": "#fff",
     "selectedColor": "#333",
     "borderStyle": "white",
 
@@ -20,20 +20,20 @@
       {
       "text": "首页",
       "pagePath": "pages/index/main",
-      "iconPath": "static/tabs/home.png",
-      "selectedIconPath": "static/tabs/home-active.png"
+      "iconPath": "static/tabs/tabbar-index.png",
+      "selectedIconPath": "static/tabs/tabbar-index-active.png"
     }, 
     {
-      "text": "活动咨询",
+      "text": "活动资讯",
       "pagePath": "pages/activity/main",
-      "iconPath": "static/tabs/orders.png",
-      "selectedIconPath": "static/tabs/orders-active.png"
+      "iconPath": "static/tabs/tabbar-actvity.png",
+      "selectedIconPath": "static/tabs/tabbar-actvity-active.png"
     }, 
     {
       "text": "我的",
       "pagePath": "pages/activity/main",
-      "iconPath": "static/tabs/orders.png",
-      "selectedIconPath": "static/tabs/orders-active.png"
+      "iconPath": "static/tabs/tabbar-my.png",
+      "selectedIconPath": "static/tabs/tabbar-my-active.png"
     }
   ],
     "position": "bottom"
