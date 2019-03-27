@@ -26,8 +26,8 @@
     {
       "text": "活动资讯",
       "pagePath": "pages/activity/main",
-      "iconPath": "static/tabs/tabbar-actvity.png",
-      "selectedIconPath": "static/tabs/tabbar-actvity-active.png"
+      "iconPath": "static/tabs/tabbar-activity.png",
+      "selectedIconPath": "static/tabs/tabbar-activity-active.png"
     }, 
     {
       "text": "我的",
