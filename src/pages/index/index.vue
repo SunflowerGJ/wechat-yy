@@ -1,6 +1,12 @@
 <template>
   <div class="container"> 
-    <!-- <div class="header"></div> -->
+    <div class="header">
+      <div class="adr">
+        <span class="adr-selected">北京</span>
+        <span class="adr-select">选择地址></span>
+      </div>
+      <div class="search"><i></i><input placeholder="搜索意向楼盘"/></div>
+    </div>
     <div class="swipe-banner">
       <swiper
         @click="handleUtils()" 
@@ -24,7 +30,26 @@
     </div>
     <div class="main">
       <div class="main_item">
-
+        <div class="item-header">
+          <h3>远洋五里春秋二期</h3>
+          <span class="price-wrap">
+            <i class="price">95000</i>元/m²
+          </span>
+        </div>
+        <div class="item-addr">
+          地址：北京市石景山八大处公园西南800米超出隐藏吗超出隐藏吗
+        </div>
+        <div class="item-main">
+          <img class="item-mian__banner" src="//m.360buyimg.com/mobilecms/jfs/t1/7311/27/1094/92889/5bcd4d95E4e29d1b8/08a137eddb69130e.jpg!cr_1125x549_0_72" alt="">
+        </div>
+        <div class="item-tags">
+          <span class="item-tags__item"> 紧邻八大处公园地铁站</span>
+          <span class="item-tags__item">紧邻八大</span>
+          <span class="item-tags__item">紧邻八大搜索</span>
+          <span class="item-tags__item">紧邻八大</span>
+          <span class="item-tags__item">紧邻八大</span>
+          <span class="item-tags__item">紧邻八大搜索</span>
+        </div>
       </div>
     </div>
   </div>
@@ -42,12 +67,12 @@ export default {
       ],
       navList: [
         {
-          icon: '//m.360buyimg.com/mobilecms/jfs/t1/7311/27/1094/92889/5bcd4d95E4e29d1b8/08a137eddb69130e.jpg!cr_1125x549_0_72',
+          icon: '/static/images/index-nav-map.png',
           text: '地图找房',
           path: 'pages/activity/main'
         },
         {
-          icon: '//m.360buyimg.com/mobilecms/jfs/t1/7311/27/1094/92889/5bcd4d95E4e29d1b8/08a137eddb69130e.jpg!cr_1125x549_0_72',
+          icon: '/static/images/index-nav-search.png',
           text: '条件筛选',
           path: '/pages/activity/main'
         }
@@ -91,8 +116,33 @@ export default {
 
 .container
   .header
+    padding 16px 24px
     height 60px
-    background-color red
+    display flex
+    justify-content: space-around;
+    box-sizing border-box
+    .adr
+      width 100px
+      .adr-selected
+        font-family: PingFangSC-Regular;
+        font-size: 20px;
+        color: #000;
+      .adr-select
+        font-size: 12px;
+        color: #636363;  
+  .search
+    background-color #fff   
+    width 218px
+    height 28px
+    border-radius 14px
+    overflow hidden 
+    font-size 12px; 
+    display flex  
+    i 
+      width 24px
+      height 24px
+      margin 0 10px 0 24px   
+
   .swipe-banner
     height 160px
     .swipe-banner__wrap
@@ -103,25 +153,82 @@ export default {
   .nav
     padding 12px 20px
     display flex
-    justify-content: space-between;
+    justify-content: space-between
     .nav__item
       width 160px
       height 90px
       background-color #fff
-      text-align: center;
+      text-align: center
       .nav_img 
-        width: 60px;
-        height: 60px;
-        display: block;
-        margin: auto;
+        width: 60px
+        height: 60px
+        display: block
+        margin: auto
       .nav_text 
-        font-size: 14px;
-        color: #121111;
+        font-size: 14px
+        color: #121111
   .main
     background-color #fff
     .main_item
       margin-bottom 5px  
-      height 280px    
+      box-sizing border-box
+      padding 15px 20px  
+      .item-header
+        height 25px
+        line-height 25px 
+        display flex
+        justify-content: space-between
+        h3 
+          font-family: PingFangSC-Semibold
+          font-size: 18px
+          color: #3F3B3A
+        .price-wrap
+          display flex
+          align-items center
+          justify-content center
+        .price
+          color #E60113 
+      .item-addr
+        font-family: PingFangSC-Regular
+        font-size: 12px
+        line-height 16px
+        color: #9FA0A0 
+        no-wrap()
+      .item-main
+        margin 3px 0
+        width 335px
+        height 160px
+        border-radius 3px
+        overflow hidden
+        .item-mian__banner
+          display block
+          width 100%
+          height 100%
+      .item-tags
+        display flex
+        flex-wrap: wrap
+        justify-content: flex-start
+        .item-tags__item
+          margin-top 5px
+          margin-right 4px
+          border 1rpx solid #E60113
+          border-radius 2px
+          font-size 10px
+          color #E60113
+          display flex
+          align-items center
+          justify-content center
+          min-width 80px
+          box-sizing border-box
+          padding 2px 3px 2px 12px
+
+
+
+          
+           
+        
+
+           
 
 
             

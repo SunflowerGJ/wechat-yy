@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "首页",
+  "navigationBarTitleText": "置业远洋",
   "usingComponents": {
     "van-button": "/static/vant/button/index",
     "van-search": "/static/vant/search/index"
