@@ -1,8 +1,9 @@
 <template>
   <div class="container"> 
-    <div class="header"></div>
+    <!-- <div class="header"></div> -->
     <div class="swipe-banner">
-      <swiper 
+      <swiper
+        @click="handleUtils()" 
         class="swipe-banner__wrap"
         indicator-dots="true"
         autoplay="true"
@@ -57,6 +58,11 @@ export default {
   methods: {
     bindViewTap (path) {
       this.$router.push({ path: path, isTab: true })
+    },
+    handleUtils () {
+      const path = '/pages/calculator/main'
+      console.log('path', path)
+      this.$router.push({ path: path })
     },
     clickHandle (ev) {
       console.log('clickHandle:', ev)
