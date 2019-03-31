@@ -25,14 +25,14 @@
       "selectedIconPath": "static/tabs/tabbar-index-active.png"
     }, 
     {
-      "text": "活动资讯",
+      "text": "资讯",
       "pagePath": "pages/activity/main",
       "iconPath": "static/tabs/tabbar-activity.png",
       "selectedIconPath": "static/tabs/tabbar-activity-active.png"
     }, 
     {
       "text": "我的",
-      "pagePath": "pages/activity/main",
+      "pagePath": "pages/personal/main",
       "iconPath": "static/tabs/tabbar-my.png",
       "selectedIconPath": "static/tabs/tabbar-my-active.png"
     }

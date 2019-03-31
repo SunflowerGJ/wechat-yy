@@ -111,7 +111,7 @@ export default {
 }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus" scoped rel="stylesheet/stylus">
 @import "../../stylus/mixin.styl"
 
 .container
