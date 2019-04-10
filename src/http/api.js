@@ -1,8 +1,8 @@
 import fly from './config'
-import qs from 'qs'
+// import qs from 'qs'
 
 // 配置API接口地址
-let root = '接口域名'
+let root = 'http://yuanyang.thongfu.com/'
 
 /**
  * 接口模版====post
@@ -20,5 +20,7 @@ let root = '接口域名'
  *
  * test(params).then(res=>{ console.log(res) })
  */
-
-export const test = params => { return fly.post(`${root}/xx/xx`, qs.stringify(params)) }
+// 登录
+export const login = params => { return fly.post(`${root}/index.php?s=/api/member/login`, params) }
+// 首页接口
+export const postIndex = params => { return fly.post(`${root}/index.php?s=/api/page/index`, params) }

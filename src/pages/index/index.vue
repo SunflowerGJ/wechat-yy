@@ -9,15 +9,14 @@
     </div>
     <div class="swipe-banner">
       <swiper
-        @click="handleUtils()" 
         class="swipe-banner__wrap"
         indicator-dots="true"
         autoplay="true"
         interval="5000"
         duration="1000">
-        <block v-for="image in bannerList" :index="image" :key="image">
-            <swiper-item>
-                <image :src="image" class="swipe-banner__item" mode="aspectFill"/>
+        <block v-for="(item,index) in bannerList" :index="index" :key="index">
+            <swiper-item @click="bindViewTapDetail(item.url)" >
+                <image :src="item.photo" class="swipe-banner__item" mode="aspectFill"/>
             </swiper-item>
         </block>
       </swiper>
@@ -29,26 +28,21 @@
       </div>
     </div>
     <div class="main">
-      <div class="main_item">
+      <div class="main_item" v-for="(item,index) in houses" :key="index">
         <div class="item-header">
-          <h3>远洋五里春秋二期</h3>
+          <h3>{{item.name}}</h3>
           <span class="price-wrap">
-            <i class="price">95000</i>元/m²
+            <i class="price">{{item.price}}</i>元/m²
           </span>
         </div>
         <div class="item-addr">
-          地址：北京市石景山八大处公园西南800米超出隐藏吗超出隐藏吗
+          地址：{{item.address}}
         </div>
         <div class="item-main">
-          <img class="item-mian__banner" src="//m.360buyimg.com/mobilecms/jfs/t1/7311/27/1094/92889/5bcd4d95E4e29d1b8/08a137eddb69130e.jpg!cr_1125x549_0_72" alt="">
+          <img class="item-mian__banner" :src="item.photo" alt="">
         </div>
         <div class="item-tags">
-          <span class="item-tags__item"> 紧邻八大处公园地铁站</span>
-          <span class="item-tags__item">紧邻八大</span>
-          <span class="item-tags__item">紧邻八大搜索</span>
-          <span class="item-tags__item">紧邻八大</span>
-          <span class="item-tags__item">紧邻八大</span>
-          <span class="item-tags__item">紧邻八大搜索</span>
+          <span class="item-tags__item" v-for="(tag,tIndex) in item.tags" :key="tIndex"> {{tag}}</span>
         </div>
       </div>
     </div>
@@ -56,15 +50,13 @@
 </template>
 
 <script>
-
+import {postIndex} from '../../http/api.js'
 export default {
   data () {
     return {
       serValue: '',
-      bannerList: [
-        '//m.360buyimg.com/mobilecms/jfs/t1/7311/27/1094/92889/5bcd4d95E4e29d1b8/08a137eddb69130e.jpg!cr_1125x549_0_72',
-        '//m.360buyimg.com/mobilecms/s1125x690_jfs/t1/6096/40/2438/107321/5bd12167E279de2f0/84f8485900f114df.jpg!cr_1125x549_0_72!q70.jpg.dpg'
-      ],
+      bannerList: [],
+      houses: [],
       navList: [
         {
           icon: '/static/images/index-nav-map.png',
@@ -81,6 +73,10 @@ export default {
   },
 
   methods: {
+    // 广告跳转
+    bindViewTapDetail (path) {
+      this.$router.push({ path: path })
+    },
     bindViewTap (path) {
       this.$router.push({ path: path, isTab: true })
     },
@@ -95,12 +91,12 @@ export default {
   },
 
   async created () {
-    // console.log(wx)
-    // const res = await this.$wx.showModal({
-    //   title: '提示',
-    //   content: '这是一个模态弹窗'
-    // })
-    // console.log(res)
+    const {data: {data, code}} = await postIndex({city: '北京'})
+    if (code === 10000) {
+      console.log(data)
+      this.bannerList = data.ads
+      this.houses = data.houses.map(item => ({...item, tags: item.tags.split('|')}))
+    }
   },
   /**
    * 页面上拉触底事件的处理函数
