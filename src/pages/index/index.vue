@@ -81,7 +81,7 @@ export default {
       this.$router.push({ path: path, isTab: true })
     },
     handleUtils () {
-      const path = '/pages/calculator/main'
+      const path = '/pages/calculator-result/main'
       console.log('path', path)
       this.$router.push({ path: path })
     },

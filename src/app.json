@@ -3,7 +3,8 @@
     "pages/index/main",
     "pages/activity/main",
     "pages/personal/main",
-    "pages/calculator/main"
+    "pages/calculator/main",
+    "pages/calculator-result/main"
   ],
   "window": {
     "backgroundTextStyle": "light",
