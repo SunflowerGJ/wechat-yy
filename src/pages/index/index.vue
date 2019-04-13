@@ -2,27 +2,27 @@
   <div class="container"> 
     <div class="header">
       <div class="adr">
-        <span class="adr-selected">北京</span>
-        <span class="adr-select">选择地址></span>
+        <span class="adr-selected">{{address}}</span>
+        <span class="adr-select" @click='goCityList'>选择地址></span>
       </div>
-      <div class="search"><i></i><input placeholder="搜索意向楼盘"/></div>
+      <div class="search" @click="goHousesSearch"><i></i><input disabled placeholder="搜索意向楼盘"/></div>
     </div>
     <div class="swipe-banner">
       <swiper
         class="swipe-banner__wrap"
         indicator-dots="true"
         autoplay="true"
-        interval="5000"
+        interval="3000"
         duration="1000">
         <block v-for="(item,index) in bannerList" :index="index" :key="index">
-            <swiper-item @click="bindViewTapDetail(item.url)" >
+            <swiper-item @click="goBanner(item.url)" >
                 <image :src="item.photo" class="swipe-banner__item" mode="aspectFill"/>
             </swiper-item>
         </block>
       </swiper>
     </div>
     <div class="nav">
-      <div class="nav__item" @click="bindViewTap(item.path)" v-for="item in navList" :index="item" :key="item">
+      <div class="nav__item" @click="goNav(item.path)" v-for="item in navList" :index="item" :key="item">
         <image :src="item.icon" class="nav_img"/>
         <p class="nav_text">{{item.text}}</p>
       </div>
@@ -56,6 +56,8 @@
 
 <script>
 import {postIndex} from '../../http/api.js'
+var amapFile = require('../../../static/libs/amap-wx.js')
+var config = require('../../../static/libs/config.js')
 export default {
   data () {
     return {
@@ -73,30 +75,54 @@ export default {
           text: '条件筛选',
           path: '/pages/activity/main'
         }
-      ]
+      ],
+      address: '北京'
     }
   },
 
   methods: {
+    // 头部定位
+    _getUserAddress () {
+      var key = config.Config.key
+      var myAmapFun = new amapFile.AMapWX({ key: key })
+      return new Promise((resolve, reject) => {
+        myAmapFun.getRegeo({
+          success: function (data) {
+          // 成功回调
+            let addressComponent = data[0].regeocodeData.addressComponent
+            let location = addressComponent.city.length === 0
+              ? addressComponent.province
+              : addressComponent.city[0]
+            resolve(location)
+          },
+          fail: function (info) {
+          // 失败回调
+            reject('北京') // eslint-disable-line
+          }
+        })
+      })
+    },
     // 广告跳转
-    bindViewTapDetail (path) {
+    goBanner (path) {
       this.$router.push({ path: path })
     },
-    bindViewTap (path) {
+    // nav栏跳转
+    goNav (path) {
       this.$router.push({ path: path, isTab: true })
     },
-    handleUtils () {
-      const path = '/pages/calculator-result/main'
-      console.log('path', path)
-      this.$router.push({ path: path })
+    // 城市列表跳转
+    goCityList () {
+      this.$router.push({path: '/pages/city-list/main'})
     },
-    clickHandle (ev) {
-      console.log('clickHandle:', ev)
+    // 楼盘列表跳转
+    goHousesSearch () {
+      this.$router.push({path: '/pages/houses-search/main'})
     }
   },
-
   async created () {
-    const {data: {data, code}} = await postIndex({city: '北京'})
+    const city = await this._getUserAddress()
+    this.address = city
+    const {data: {data, code}} = await postIndex({city})
     if (code === 10000) {
       console.log(data)
       this.bannerList = data.ads
@@ -114,7 +140,6 @@ export default {
 
 <style lang="stylus" scoped rel="stylesheet/stylus">
 @import "../../stylus/mixin.styl"
-
 .container
   .header
     padding 16px 24px
