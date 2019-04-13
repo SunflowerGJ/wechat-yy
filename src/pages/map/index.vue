@@ -1,75 +1,78 @@
 <template>
-  <div class="map">
-    <map
-      id="map"
+  <div class="map" v-bind:style="{ width: mapStyle.width, height: mapStyle.height }">
+    <map id="myMap"
+      :markers="markers"
+      style="width: 100%; height: 100%"
       longitude="113.324520"
-      latitude="23.099994"
-      scale="14"
-      controls="{{controls}}"
-      @controltap="controltap"
-      markers="{{markers}}"
-      @markertap="markertap"
-      polyline="{{polyline}}"
-      @regionchange="regionchange"
-      show-location
-      style="width: 100%; height: 300px;"
-    ></map>
+      latitude="23.099994" scale='15'>
+    </map>
   </div>
 </template>
 
 <script>
-
+var QQMapWX = require('qqmap-wx-jssdk')
 export default {
 
   data () {
     return {
-      markers: [{
-        iconPath: '/resources/others.png',
-        id: 0,
-        latitude: 23.099994,
-        longitude: 113.324520,
-        width: 50,
-        height: 50
-      }],
-      polyline: [{
-        points: [{
-          longitude: 113.3245211,
-          latitude: 23.10229
-        }, {
-          longitude: 113.324520,
-          latitude: 23.21229
-        }],
-        color: '#FF0000DD',
-        width: 2,
-        dottedLine: true
-      }],
-      controls: [{
-        id: 1,
-        iconPath: '/resources/location.png',
-        position: {
-          left: 0,
-          top: 300 - 50,
-          width: 50,
-          height: 50
-        },
-        clickable: true
-      }]
+      qqmapsdk: null,
+      mapStyle: {
+        width: '100%',
+        height: '400px'
+      },
+      markers: []
     }
   },
   methods: {
-    regionchange (e) {
-      console.log(e.type)
+    _initMap () {
+      // 实例化API核心类
+      this.qqmapsdk = new QQMapWX({
+        key: 'NBMBZ-7E6C4-ERMUP-XGJTV-WFLDQ-S3FDK'
+      })
     },
-    markertap (e) {
-      console.log(e.markerId)
+    async getInnerHeight () {
+      const res = await this.$wx.getSystemInfo()
+      this.mapStyle = { ...this.mapStyle, height: `${res.windowHeight}px` }
     },
-    controltap (e) {
-      console.log(e.controlId)
+    getMarker () {
+      this.markers = [{
+        id: 0,
+        latitude: 23.099994,
+        longitude: 113.354520,
+        width: 50,
+        height: 50
+      }, {
+        id: 1,
+        latitude: 23.069894,
+        longitude: 113.324520,
+        width: 50,
+        height: 50
+      }, {
+        id: 2,
+        latitude: 23.079794,
+        longitude: 113.324520,
+        width: 50,
+        height: 50
+      }, {
+        id: 3,
+        latitude: 23.089694,
+        longitude: 113.324520,
+        width: 50,
+        height: 50
+      }]
     }
+  },
+  mounted () {
+    this._initMap()
+    this.getInnerHeight()
+    this.getMarker()
   }
 
 }
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
+.map {
+  width 100%;
+}
 </style>
