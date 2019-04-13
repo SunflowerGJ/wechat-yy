@@ -2,8 +2,9 @@
 import { login } from './http/api.js'
 export default {
   async created () {
-    // const {code} = await this.$wx.login()
-    // this.onLogin(code)
+    const {code} = await this.$wx.login()
+    console.log('code', code)
+    this.onLogin(code)
   },
   methods: {
     // 登陆

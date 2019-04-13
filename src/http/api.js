@@ -1,4 +1,4 @@
-import fly from './config'
+import fly from './request'
 // import qs from 'qs'
 
 // 配置API接口地址
@@ -23,4 +23,11 @@ let root = 'http://yuanyang.thongfu.com/'
 // 登录
 export const login = params => { return fly.post(`${root}/index.php?s=/api/member/login`, params) }
 // 首页接口
-export const postIndex = params => { return fly.post(`${root}/index.php?s=/api/page/index`, params) }
+export const postIndex = params => {
+  return fly({
+    method: 'get',
+    url: `index.php?s=/api/page/index`,
+    params
+  })
+  // return fly.post(`${root}/index.php?s=/api/page/index`, params)
+}

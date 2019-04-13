@@ -10,6 +10,7 @@
 </template>
 
 <script>
+import {postIndex} from '@/http/api.js'
 var QQMapWX = require('qqmap-wx-jssdk')
 export default {
 
@@ -62,10 +63,12 @@ export default {
       }]
     }
   },
-  mounted () {
+  async mounted () {
     this._initMap()
     this.getInnerHeight()
     this.getMarker()
+    const res = await postIndex({city: '北京'})
+    console.log(111, res)
   }
 
 }
