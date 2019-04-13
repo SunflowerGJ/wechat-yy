@@ -6,7 +6,8 @@
     "pages/calculator/main",
     "pages/calculator-result/main",
     "pages/city-list/main",
-    "pages/houses-search/main"
+    "pages/houses-search/main",
+    "pages/map/main"
   ],
   "window": {
     "backgroundTextStyle": "light",
