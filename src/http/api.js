@@ -1,33 +1,27 @@
 import fly from './request'
-// import qs from 'qs'
-
-// 配置API接口地址
-let root = 'http://yuanyang.thongfu.com/'
-
-/**
- * 接口模版====post
- *
- * export const test = params => {return fly.post(`${root}/xx/xx`, qs.stringify(params))};
- *
- * 接口模版====get
- *
- * export const test1 = function(){return fly.get(`${root}/api/getNewsList`)}
- *
- *
- * 用法：
- * 在 页面用引入  test
- * import {test} from '../../http/api.js'
- *
- * test(params).then(res=>{ console.log(res) })
- */
 // 登录
-export const login = params => { return fly.post(`${root}/index.php?s=/api/member/login`, params) }
+export const login = params => {
+  return fly({
+    method: 'post',
+    url: `/api/member/login`,
+    params: params
+  })
+}
+
 // 首页接口
 export const postIndex = params => {
   return fly({
     method: 'get',
-    url: `index.php?s=/api/page/index`,
-    params
+    url: `/api/page/index`,
+    params: params
   })
-  // return fly.post(`${root}/index.php?s=/api/page/index`, params)
+}
+
+// 城市搜索接口
+export const postHousesList = params => {
+  return fly({
+    method: 'post',
+    url: `/api/houses/index`,
+    params: params
+  })
 }

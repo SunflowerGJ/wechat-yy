@@ -7,7 +7,9 @@
     "pages/calculator-result/main",
     "pages/city-list/main",
     "pages/houses-search/main",
-    "pages/map/main"
+    "pages/map/main",
+    "pages/home-page/main",
+    "pages/houses-filter/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

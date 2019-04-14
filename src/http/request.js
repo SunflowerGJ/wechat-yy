@@ -4,7 +4,7 @@ var fly = new Fly()
 
 // 配置请求基地址
 // //定义公共headers
-// fly.config.headers={xx:5,bb:6,dd:7}
+// fly.config.headers = {}
 // //设置超时
 // fly.config.timeout=10000;
 // //设置请求基地址
@@ -13,7 +13,7 @@ var fly = new Fly()
 // 添加拦截器
 fly.interceptors.request.use((config, promise) => {
   // 给所有请求添加自定义header
-  config.headers['X-Tag'] = 'flyio'
+  config.headers['content-type'] = 'application/x-www-form-urlencoded'
   return config
 })
 
@@ -22,11 +22,11 @@ var request = (options, showLoading = true, loadingConfig = {title: '加载中..
   var method = options.method || 'get'
   var timeout = options.timeout || '5000'
   var url = `${ROOT_API}${options.url}`
-  var parmas = options.parmas
+  var params = options.params
   showLoading && wx.showLoading(loadingConfig)
 
   return new Promise((resolve, reject) => {
-    fly.request(url, parmas, {
+    fly.request(url, params, {
       method: method,
       timeout: timeout // 超时设置为5s
     }).then(res => {
@@ -39,7 +39,7 @@ var request = (options, showLoading = true, loadingConfig = {title: '加载中..
           // todo 根据状态码统一业务处理
           // icon只支持success. loading
           wx.showToast({
-            title: res.msg,
+            title: data.msg,
             icon: 'success',
             duration: 2000
           })

@@ -1,5 +1,9 @@
 <template>
   <div class="container">
+    <div class="header">
+      <img class="header-bg" src="/static/images/personal-bg.png" alt="">
+      <div class="avatar"><open-data type="userAvatarUrl"/></div>
+    </div>
     <div class="info-section">
       <div class="info-section__title">
         <h3>我收藏的楼盘</h3>
@@ -107,6 +111,31 @@ export default {
 @import "../../stylus/mixin.styl"
   .container
     background #f2f2f2
+    .header
+      width 100%
+      height 218px
+      position relative
+      background #fff
+      .header-bg
+        width 100%
+        height 100%
+        position absolute
+        z-index 1
+      .avatar  
+        width 74px
+        height 74px
+        border-radius 50%
+        border 1px solid #ffffff
+        overflow hidden
+        position absolute
+        z-index 2
+        top 70%
+        left 50%
+        transform translate(-50%, -50%);
+        img 
+          display block
+          width 100%
+          height 100%
     .info-section
       margin-bottom 10px
       // height 230px
