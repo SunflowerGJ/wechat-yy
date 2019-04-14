@@ -18,7 +18,7 @@
         interval="3000"
         duration="1000">
         <block v-for="(item,index) in bannerList" :index="index" :key="index">
-            <swiper-item @click="goBanner(item.url)" >
+            <swiper-item @click="goBanner(item)" >
                 <image :src="item.photo" class="swipe-banner__item" mode="aspectFill"/>
             </swiper-item>
         </block>
@@ -77,7 +77,8 @@ export default {
       return new Promise((resolve, reject) => {
         myAmapFun.getRegeo({
           success: function (data) {
-          // 成功回调
+            console.log(data)
+            // 成功回调
             let addressComponent = data[0].regeocodeData.addressComponent
             let location = addressComponent.city.length === 0
               ? addressComponent.province
@@ -92,8 +93,13 @@ export default {
       })
     },
     // 广告跳转
-    goBanner (path) {
-      this.$router.push({ path: path })
+    goBanner (item) {
+      // 广告类型 1外链公众号 2楼盘 3资讯
+      if (item.type === 2) {
+        this.$router.push({ path: '/pages/home-page/main', query: {id: item.url} })
+      } else {
+        this.$router.push({ path: '/pages/web-view/main', query: {src: item.url} })
+      }
     },
     // nav栏跳转
     goNav (path) {
@@ -109,6 +115,7 @@ export default {
     },
     async  fetchIndexData (city) {
       const data = await postIndex({city})
+      console.log(data)
       this.bannerList = data.ads
       this.houses = data.houses.map(item => ({...item, tags: item.tags.split('|')}))
     }

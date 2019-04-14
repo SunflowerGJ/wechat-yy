@@ -9,7 +9,8 @@
     "pages/houses-search/main",
     "pages/map/main",
     "pages/home-page/main",
-    "pages/houses-filter/main"
+    "pages/houses-filter/main",
+    "pages/web-view/main"
   ],
   "window": {
     "backgroundTextStyle": "light",
