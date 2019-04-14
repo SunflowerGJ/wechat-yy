@@ -107,7 +107,7 @@ export default {
     },
     // 城市列表跳转
     goCityList () {
-      this.$router.push({path: '/pages/city-list/main'})
+      this.$router.push({path: '/pages/city-list/main', query: {city: this.address}})
     },
     // 楼盘列表跳转
     goHousesSearch () {

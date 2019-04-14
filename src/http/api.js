@@ -17,11 +17,27 @@ export const postIndex = params => {
   })
 }
 
-// 城市搜索接口
+// 楼盘列表接口
 export const postHousesList = params => {
   return fly({
     method: 'post',
     url: `/api/houses/index`,
+    params: params
+  })
+}
+// 城市列表接口
+export const postCities = params => {
+  return fly({
+    method: 'post',
+    url: `/api/city/index`,
+    params: params
+  })
+}
+// 城市搜索接口
+export const postCitySearch = params => {
+  return fly({
+    method: 'post',
+    url: `/api/city/search`,
     params: params
   })
 }
