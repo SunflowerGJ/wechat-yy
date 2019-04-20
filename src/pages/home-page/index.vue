@@ -1,65 +1,46 @@
 <template>
-  <div class="container">
+  <div class="container" v-if="detail">
     <div class="panl_swiper">
-      <swiper
-        :indicator-dots="indicatorDots"
-        :autoplay="autoplay"
-        :interval="interval"
-        class="swiper"
-      >
-        <div v-for="(item,index) in imgUrls" :key="index">
-          <swiper-item>
-            <image mode="aspectFit" :src="item" class="slide-image"/>
-          </swiper-item>
-        </div>
-      </swiper>
+        <img :src="detail.photo" alt="">
     </div>
     <div class="delta_panl">
       <div class="label_panl">
-        <div class="label_name">
+        <div class="label_name" v-for="(tag,index) in detail.tags" :key="index">
           <img src="/static/images/icon-tag.png">
-          <span>紧邻八大处公园地铁站</span>
-        </div>
-        <div class="label_name">
-          <img src="/static/images/icon-tag.png">
-          <span>八大处公园</span>
-        </div>
-        <div class="label_name">
-          <img src="/static/images/icon-tag.png">
-          <span>地铁规划中</span>
+          <span>{{tag}}</span>
         </div>
       </div>
       <div class="adder_panl">
         <img src="/static/images/icon-lou.png">
-        <span>项目地址：北京市石景山八大处公园西南800米</span>
+        <span>项目地址：{{detail.address}}</span>
       </div>
       <div class="sales_panl">
-        <span>售楼处地址：北京市石景山五里坨黑石头路前行1500米</span><img src="/static/images/icon-addr.png">
+        <span>售楼处地址：{{detail.office_address}}</span><img src="/static/images/icon-addr.png">
       </div>
     </div>
     <div class="price_panl">
       <div class="price_name">
-        <p>约<span>700万元</span>/套</p>
+        <p>约<span>{{detail.total_price}}万元</span>/套</p>
         <p>参考总价</p>
       </div>
       <div class="price_name">
-        <p>95000元/m²</p>
+        <p>{{detail.average_price}}元/m²</p>
         <p>参考均价</p>
       </div>
       <div class="price_name">
-        <p>住宅</p>
+        <p>{{detail.property_type}}</p>
         <p>物业类型</p>
       </div>
 
     </div>
     <div class="onlookers_panl">
-        <div class="looks_panl">
+        <div class="looks_panl" v-if="detail.is_publish === '1'">
           <div class="left_panl">
-              <p class="num">5014</p>
+              <p class="num">{{detail.browse_count}}</p>
               <p class="title">围观人数</p>
           </div>
           <div class="right_panl">
-              <div class="imgall" v-for="(item,index)  in imgUrls" :key="index" :style="{zIndex:index, 
+              <div class="imgall" v-for="(item,index)  in detail.browse_users.list" :key="index" :style="{zIndex:index, 
           left:(index*30)+'px'}">
                 <img :src="item">
               </div>
@@ -387,11 +368,12 @@
 </template>
 
 <script>
-
+import {postHousesDetail} from '../../http/api.js'
 export default {
 
   data () {
     return {
+      detail: null,
       indicatorDots: true,
       autoplay: true,
       interval: 3000,
@@ -405,14 +387,21 @@ export default {
       ]
     }
   },
-  mounted () {
-    console.log(this.$route.query.id)
+  async  mounted () {
+    const data = await postHousesDetail({
+      house_id: this.$route.query.id,
+      token: '4bf13ae8a501207406ff138707773b1e'
+    })
+    this.detail = data
+    console.log(this.detail)
+    this.detail.tags = data.tags.split('|')
+
+    this.$wx.setNavigationBarTitle({
+      title: data.alias
+    })
   },
   methods: {
-    scrolltolower (e) {
-      console.log(e)
-      console.log('加载数据')
-    }
+
   }
 }
 </script>
@@ -425,12 +414,10 @@ export default {
   .panl_swiper
     width 100%
     height 200px
-    .swiper
+    img
+      display block
       width 100%
-      height 100%
-      .slide-image
-        width 100%
-        height 100%
+      height 100%    
   .delta_panl
     background-color #ffffff
     overflow hidden

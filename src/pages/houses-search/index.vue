@@ -8,11 +8,11 @@
          placeholder="搜索"/></div>
     </div>
     <div v-if="houses.length===0" class="no-result">没有符合条件的搜索结果</div>
-    <template v-for="(item,index) in houses">
+    <block v-for="(item,index) in houses" :index="index" :key="index">
       <house-card
         :key="index"
         :hData='item'></house-card>  
-    </template>
+    </block>
   </div>
 </template>
 

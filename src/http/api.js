@@ -50,3 +50,12 @@ export const postArticleList = params => {
     params: params
   })
 }
+
+// 楼盘详情接口
+export const postHousesDetail = params => {
+  return fly({
+    method: 'post',
+    url: `/api/houses/detail `,
+    params: params
+  })
+}

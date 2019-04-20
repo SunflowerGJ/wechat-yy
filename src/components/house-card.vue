@@ -29,7 +29,6 @@ export default {
 
   methods: {
     goHomePage (id) {
-      console.log(id)
       this.$router.push({
         path: '/pages/home-page/main',
         query: {id}

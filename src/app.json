@@ -1,10 +1,5 @@
 {
   "pages": [
-    "pages/home-page/main",
-    "pages/door-details/main",
-    "pages/watch-list/main",
-    "pages/door-list/main",
-    "pages/estate-photo/main",
     "pages/index/main",
     "pages/activity/main",
     "pages/personal/main",
@@ -15,7 +10,12 @@
     "pages/houses-search/main",
     "pages/map/main",
     "pages/houses-filter/main",
-    "pages/web-view/main"
+    "pages/web-view/main",
+    "pages/home-page/main",
+    "pages/door-details/main",
+    "pages/watch-list/main",
+    "pages/door-list/main",
+    "pages/estate-photo/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

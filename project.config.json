@@ -32,7 +32,7 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": 6,
+			"current": 7,
 			"list": [
 				{
 					"id": -1,
@@ -76,6 +76,14 @@
 					"id": -1,
 					"name": "zixun",
 					"pathName": "pages/activity/main",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 7,
+					"name": "楼盘主页",
+					"pathName": "pages/home-page/main",
+					"query": "id=6",
 					"scene": null
 				}
 			]

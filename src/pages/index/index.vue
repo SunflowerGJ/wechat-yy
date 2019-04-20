@@ -31,11 +31,11 @@
       </div>
     </div>
     <div class="main">
-      <template v-for="(item,index) in houses">
+      <block v-for="(item,index) in houses"  :index="index" :key="index">
         <house-card
           :key="index"
           :hData='item'></house-card>  
-      </template>
+      </block>
     </div>
   </div>
 </template>
@@ -43,8 +43,7 @@
 <script>
 import {postIndex} from '../../http/api.js'
 import HouseCard from '../../components/house-card'
-var amapFile = require('../../../static/libs/amap-wx.js')
-var config = require('../../../static/libs/config.js')
+import {_getUserAddress} from '../../lib/getAddr.js'
 export default {
   components: {
     HouseCard
@@ -71,27 +70,6 @@ export default {
   },
   methods: {
     // 头部定位
-    _getUserAddress () {
-      var key = config.Config.key
-      var myAmapFun = new amapFile.AMapWX({ key: key })
-      return new Promise((resolve, reject) => {
-        myAmapFun.getRegeo({
-          success: function (data) {
-            console.log(data)
-            // 成功回调
-            let addressComponent = data[0].regeocodeData.addressComponent
-            let location = addressComponent.city.length === 0
-              ? addressComponent.province
-              : addressComponent.city[0]
-            resolve(location)
-          },
-          fail: function (info) {
-            // 失败回调
-            resolve('北京市') // eslint-disable-line
-          }
-        })
-      })
-    },
     // 广告跳转
     goBanner (item) {
       // 广告类型 1外链公众号 2楼盘 3资讯
@@ -125,16 +103,16 @@ export default {
       this.fetchIndexData(this.address)
     }
   },
-  async created () {
-    const city = await this._getUserAddress()
-    this.address = city
-    this.globalData.address = city
-  },
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {
-    console.log(6567)
+  async mounted () { // 地址筛选待调整
+    const adr = this.$route.query.addr
+    if (!adr) {
+      const city = await _getUserAddress()
+      this.address = city
+      this.globalData.address = city
+    } else {
+      this.address = adr
+      this.globalData.address = adr
+    }
   }
 }
 </script>
