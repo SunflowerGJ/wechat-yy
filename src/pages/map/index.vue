@@ -41,7 +41,8 @@ export default {
         latitude: 23.099994,
         longitude: 113.354520,
         width: 50,
-        height: 50
+        height: 50,
+        callout: {content: '深圳市久荣物流有限公司', color: '#0099ff', width: 100, fontSize: 12, borderRadius: 10, bgColor: '#FFFFFF', padding: 10, display: 'ALWAYS'}
       }, {
         id: 1,
         latitude: 23.069894,
