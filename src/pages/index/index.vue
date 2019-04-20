@@ -1,5 +1,5 @@
 <template>
-  <div class="container"> 
+  <div class="container .test"> 
     <div class="header">
       <div class="adr">
         <span class="adr-selected">{{address}}</span>
@@ -122,7 +122,7 @@ export default {
   },
   watch: {
     address (val) {
-      this.fetchIndexData()
+      this.fetchIndexData(this.address)
     }
   },
   async created () {

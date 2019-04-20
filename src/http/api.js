@@ -41,3 +41,12 @@ export const postCitySearch = params => {
     params: params
   })
 }
+
+// 获取资讯列表
+export const postArticleList = params => {
+  return fly({
+    method: 'post',
+    url: `/api/article/searchArticleList`,
+    params: params
+  })
+}

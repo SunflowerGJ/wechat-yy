@@ -1,0 +1,506 @@
+<template>
+  <div class="container">
+    <div class="panl_swiper">
+      <swiper
+        :indicator-dots="indicatorDots"
+        :autoplay="autoplay"
+        :interval="interval"
+        class="swiper"
+      >
+        <div v-for="(item,index) in imgUrls" :key="index">
+          <swiper-item>
+            <image mode="aspectFit" :src="item" class="slide-image"/>
+          </swiper-item>
+        </div>
+      </swiper>
+      <div class="tranTrian">
+          <span class="tranTitle">在售</span>
+      </div>
+    </div>
+    <div class="door_panl">
+      <div class="dor_box">
+        <img src="/static/images/storey.png">
+        <label>4室2厅3卫</label>
+        <span>建面130m²</span>
+      </div>
+    </div>
+    <div class="price_panl">
+      <div class="price_name">
+        <p>约<span>700万元</span>/套</p>
+        <p>参考总价</p>
+      </div>
+      <div class="price_name">
+        <p>95000元/m²</p>
+        <p>参考均价</p>
+      </div>
+      <div class="price_name">
+        <p>南北</p>
+        <p>户型朝向</p>
+      </div>
+
+    </div>
+    <div class="onlookers_panl">
+        <div class="looks_panl">
+          <span>视野开阔</span>
+          <span>穿堂风</span>
+          <span>三口之家</span>
+          <span>三口</span>
+          <span>三口之家</span>
+        </div>
+        <div class="copent_panl">
+            <img src="/static/images/cpument.png">
+            <span>房贷计算器</span>
+        </div>
+    </div>
+    <div class="estate_news_panl">
+        <div class="estate_title">
+          <span>户型优势</span>
+        </div>
+        <ul class="advanTage">
+          <li>
+            <img src="/static/images/icon-tag.png">
+            <span>客厅和餐厅贯穿南北</span>
+          </li>
+           <li>
+            <img src="/static/images/icon-tag.png">
+            <span>室内视野更加开阔</span>
+          </li>
+           <li>
+            <img src="/static/images/icon-tag.png">
+            <span>开窗时可在房屋中间形成穿堂风</span>
+          </li>
+           <li>
+            <img src="/static/images/icon-tag.png">
+            <span>冬暖夏凉</span>
+          </li>
+        </ul>
+    </div>
+     
+     
+    <div class="match_panl">
+      <div class="title_marig">
+        <div class="titles_panl">
+          <span>楼座分布</span>
+        </div>
+      </div>
+      <div class="door_about">
+        <p>30# 31# 29# 20# 25# 26# 13#</p>
+      </div>
+      <div class="map_img">
+        <img src="/static/images/mapImg.png">
+      </div>
+    </div>
+    <div class="footer_fixed">
+        <div class="fixed_left">
+            <a>
+              <img src="/static/images/forward.png">
+              <span>转发分享</span>
+            </a>
+            <a>
+              <img src="/static/images/fileback.png">
+              <span>生成海报</span>
+            </a>
+            <a>
+              <img class="collection" src="/static/images/collection.png">
+              <span>收藏</span>
+            </a>
+        </div>
+        <div class="fixed_right">
+            <img src="/static/images/phone.png">
+            <span>VIP热线</span>
+        </div>
+    </div>
+  </div>
+</template>
+
+<script>
+
+export default {
+
+  data () {
+    return {
+      indicatorDots: true,
+      autoplay: true,
+      interval: 3000,
+      imgUrls: [
+        'https://images.unsplash.com/photo-1551334787-21e6bd3ab135?w=640',
+        'https://images.unsplash.com/photo-1551214012-84f95e060dee?w=640',
+        'https://images.unsplash.com/photo-1551446591-142875a901a1?w=640',
+        'https://images.unsplash.com/photo-1551334787-21e6bd3ab135?w=640',
+        'https://images.unsplash.com/photo-1551214012-84f95e060dee?w=640',
+        'https://images.unsplash.com/photo-1551446591-142875a901a1?w=640'
+      ]
+    }
+  },
+  mounted () {
+    console.log(this.$route.query.id)
+  },
+  methods: {
+    scrolltolower (e) {
+      console.log(e)
+      console.log('加载数据')
+    }
+  }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus" scoped>
+@import "../../stylus/mixin.styl"
+  .container
+    background #f2f2f2
+    margin-bottom 50px
+  .panl_swiper
+    width 100%
+    height 220px
+    position relative
+    .swiper
+      width 100%
+      height 100%
+      .slide-image
+        width 100%
+        height 100%
+    .tranTrian
+      flex-direction column
+      position absolute
+      left 20px
+      top 0
+      z-index 2
+      display flex
+      .tranTitle
+        width 36px
+        height 14px
+        color #ffffff
+        display inline-block
+        background-color #E60113
+        font-size 12px
+        text-align center
+        padding 4px 8px
+        border-bottom-left-radius 6px 
+        border-bottom-right-radius 6px 
+      .trian
+        float left
+        width 0
+        height 0
+        border-width 18px
+        border-style solid
+        border-color #E60113 transparent transparent transparent
+  .door_panl
+    padding 20px
+    background-color #ffffff
+    img
+      width 18px
+      height 18px
+    label
+      font-size 18px
+      margin 0 10px 0 6px
+    span
+      font-size 14px
+      color #9FA0A0
+  .price_panl
+    background-color #ffffff
+    border-bottom 1px solid #D8D8D8
+    border-top 1px solid #D8D8D8
+    padding 10px 0
+    display flex
+    .price_name
+      width 33.3%
+      border-right 1px solid #d8d8d8
+      p
+        text-align center
+        font-size 14px
+        color #000000
+        span 
+          color #E60113
+      p:last-child
+        margin-top 6px   
+    .price_name:last-child
+      border-right 0 
+  .onlookers_panl
+    padding 0 20px
+    background-color #ffffff
+    overflow hidden
+    .looks_panl
+      span
+        display inline-block
+        font-size 10px
+        color #898989
+        text-align center
+        border-radius 6px
+        background-color #F0F0F0
+        margin-right 15px
+        margin-top 10px
+        padding 4px 15px
+        box-sizing border-box
+    .copent_panl
+      display flex
+      justify-content center
+      align-items center
+      background-color #F0F0F0
+      width 100%
+      line-height 38px
+      border-radius 6px
+      margin-bottom 20px
+      margin-top 20px
+      img 
+        width 17px
+        height 22px
+        margin-right 14px
+      span
+        font-size 14px
+        color #686564
+  .estate_news_panl
+    background-color #ffffff
+    margin 10px 0
+    overflow hidden
+    padding 10px 0 14px 20px
+    .estate_title
+      border-left 2px solid #FF2B2B
+      padding-left 10px
+      span 
+        font-size 18px
+        color #3F3B3A
+    .advanTage
+      width 100%
+      display flex
+      flex-flow:wrap
+      margin-top 20px
+      li
+        width 50%
+        margin-bottom 6px
+        display flex
+        align-items center
+        img
+          width 10px
+          height 10px
+          margin-right 6px
+        span
+          no-wrap()
+          font-size 14px
+          color #9A9A9A
+          flex 1
+
+  .apartment_panl
+    background-color #ffffff
+    padding 15px 20px
+    .apar_title
+      display flex
+      justify-content space-between
+      color #3F3B3A
+      margin-bottom 12px
+      span 
+        font-size 18px
+      a
+        font-size 14px
+        color #3F3B3A
+    .apar_panl
+      padding 20px 0 30px 0
+      display flex
+      justify-content space-between
+      .apar_left
+        width 168px
+        height 127px
+        margin-right 15px
+        img 
+          width 100%
+          height 100%
+      .apar_right
+        flex 1
+        .titel
+          font-size 16px
+          color #595757
+          img
+            width 17px
+            height 17px
+            margin-right 8px
+        .apar_details
+          margin-top 17px
+          li
+            font-size 12px
+            color #999999
+            margin-bottom 8px
+            label
+              font-size 12px
+              color #595757
+            span 
+              color #E60113
+  .estateDetails_panl
+    margin-top 10px
+    padding 14px 20px 0 20px
+    background-color #ffffff
+    .floor_details
+      margin-top 12px
+      li
+        font-size 14px
+        color #000000
+        line-height 20px
+        label 
+          color #9FA0A0
+    .getMore
+      color #9FA0A0 
+      font-size 14px
+      text-align center
+      margin 10px 0 6px 0
+  .titles_panl
+    overflow hidden
+    span
+      border-left 2px solid #FF2B2B
+      color #3F3B3A
+      font-size 18px
+      padding-left 10px
+  .designImg_panl
+    margin-top 10px
+    padding 14px 20px 14px 20px
+    background-color #ffffff
+    .imgBox
+      margin 14px 0 10px 0
+      width 100%
+      display  flex
+      justify-content space-between
+      a
+        width 160px
+        height 120px
+        display inline-block
+        img
+          width 100%
+          height 100%
+  .brighDot_panl
+    background-color #ffffff
+    margin-top 10px
+    .brigDotBox
+      padding 12px 20px 12px 20px
+      .about_panl
+        margin-top 10px
+        p
+          font-size 12px
+          color #5C5A5A
+          line-height 17px
+    .flootAbout
+      ul
+        width 100%
+        display flex
+        flex-wrap wrap
+        li
+          display inline-block
+          width 50%
+          padding-left 20px
+          box-sizing border-box
+          margin-bottom 15px
+          .titel_p
+            display flex
+            img
+              width 18px
+              height 18px
+              margin-right 12px
+            span
+              font-size 18px
+          .about_p
+            font-size 12px
+            color #545150
+            margin-top 10px
+  .match_panl
+    background-color #ffffff
+    margin-top 10px
+    padding 20px
+    .door_about
+      font-size 12px
+      color #9A9A9A
+      margin 10px 0
+    .map_img
+      width 100%
+      height 160px
+      img
+        width 100%
+        height 100%
+    .matchBox
+      display flex
+      padding 10px 20px
+      .macund
+        display flex
+        flex-direction column
+        width 17%
+        text-align center
+        align-items center
+        justify-content center
+        img 
+          width 26px
+          height 26px
+        div
+          margin-top 8px
+          font-size 12px
+          color #5C5A5A
+          line-height 18px
+    .distancBox
+      padding 20px 20px 0 20px
+      ul
+        li
+          display flex
+          margin-bottom 7px
+          p.addr
+            width 270px
+            line-height 20px
+            font-size 14px
+            color #5C5A5A
+            no-wrap()
+          p.add_but
+            display flex
+            flex 1
+            font-size 14px
+            color #5C5A5A
+            img
+              width 14px
+              height 16px 
+              margin-right 6px
+    .affirm_panl
+      padding 14px 20px
+      p
+        font-size 12px
+        color #5C5A5A
+        line-height 18px
+      p:first-child
+        margin-bottom 20px
+  .footer_fixed
+    box-sizing border-box
+    width 100%
+    position fixed
+    z-index 10
+    left 0
+    bottom 0
+    background-color #ffffff
+    padding 7px 12px
+    display flex
+    justify-content space-between
+    .fixed_left
+      width 200px
+      display flex
+      justify-content space-between
+      a
+        display flex
+        flex-direction column
+        text-align center
+        justify-content center
+        align-items center
+        width 33%
+        img
+          width 13px
+          height 15px
+        img.collection
+          width 17px
+          height 15px
+        span
+          font-size 14px
+          color #9FA0A0
+          margin-top 2px
+  .fixed_right
+    flex 1
+    font-size 14px
+    line-height 30px
+    background #E60113
+    border-radius 6px
+    text-align center
+    color #ffffff
+    img
+      width 15px
+      height 15px
+      margin-right 10px
+      margin-bottom -3px
+</style>

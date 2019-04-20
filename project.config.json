@@ -32,7 +32,7 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": 5,
+			"current": 6,
 			"list": [
 				{
 					"id": -1,
@@ -69,6 +69,13 @@
 					"id": -1,
 					"name": "尘世列表",
 					"pathName": "pages/city-list/main",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "zixun",
+					"pathName": "pages/activity/main",
 					"scene": null
 				}
 			]

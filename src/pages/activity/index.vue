@@ -9,15 +9,14 @@
         <scroll-view
           :scroll-x='true'
           style="white-space: nowrap; display: flex;"
-          @scrolltolower="scrolltolower">
-          <view class="info-section__item" v-for="(item,index) in list" :key="index">
-            <img class="info-section__item-img" :src="item.url" alt="">
+          @scrolltolower="onSscrolltolowerGroup">
+          <view class="info-section__item" v-for="(item,index) in  groupList" :key="index">
+            <img class="info-section__item-img" :src="item.photo" alt="">
             <span class="info-section__item-title">{{item.title}}</span>
           </view>
         </scroll-view>
       </div>
     </div>
-
     <div class="info-section">
       <div class="info-section__title">
         <h3>城市资讯</h3>
@@ -26,15 +25,14 @@
         <scroll-view
           :scroll-x='true'
           style="white-space: nowrap; display: flex;"
-          @scrolltolower="scrolltolower">
-          <view class="info-section__item" v-for="(item,index) in list" :key="index">
+          @scrolltolower="onScrolltolowerCity">
+          <view class="info-section__item" v-for="(item,index) in cityList" :key="index">
             <img class="info-section__item-img" :src="item.url" alt="">
             <span class="info-section__item-title">{{item.title}}</span>
           </view>
         </scroll-view>
       </div>
     </div>
-
      <div class="info-section">
       <div class="info-section__title">
         <h3>项目资讯</h3>
@@ -43,8 +41,8 @@
         <scroll-view
           :scroll-x='true'
           style="white-space: nowrap; display: flex;"
-          @scrolltolower="scrolltolower">
-          <view class="info-section__item" v-for="(item,index) in list" :key="index">
+          @scrolltolower="onScrolltolowerProject">
+          <view class="info-section__item" v-for="(item,index) in projectList" :key="index">
             <img class="info-section__item-img" :src="item.url" alt="">
             <span class="info-section__item-title">{{item.title}}</span>
           </view>
@@ -55,7 +53,7 @@
 </template>
 
 <script>
-
+import {postArticleList} from '../../http/api.js'
 export default {
 
   data () {
@@ -73,14 +71,87 @@ export default {
           url: '//m.360buyimg.com/mobilecms/jfs/t1/7311/27/1094/92889/5bcd4d95E4e29d1b8/08a137eddb69130e.jpg!cr_1125x549_0_72',
           title: '远洋2019公益跑北京站'
         }
-      ]
+      ],
+
+      params: {
+        group: {
+          type: 2,
+          page: 1,
+          pagesize: 10,
+          total_page: 0,
+          current_page: 0,
+          next_page: 0,
+          list: []
+        },
+        city: {
+          type: 3,
+          page: 2,
+          pagesize: 10,
+          total_page: 0,
+          current_page: 0,
+          next_page: 0,
+          list: []
+        },
+        project: {
+          type: 4,
+          page: 2,
+          pagesize: 10,
+          total_page: 0,
+          current_page: 0,
+          next_page: 0,
+          list: []
+        }
+
+      },
+      groupList: [],
+      cityList: [],
+      projectList: []
+
     }
   },
+  watch: {
 
+  },
+  mounted () {
+    const {group, city, project} = this.params
+    this.fetchArticleList(group, 'group')
+    this.fetchArticleList(city, 'city')
+    this.fetchArticleList(project, 'project')
+  },
   methods: {
-    scrolltolower (e) {
-      console.log(e)
-      console.log('加载数据')
+    async fetchArticleList (params, typeDesc) {
+      const {type, page, pagesize} = params
+      const data = await postArticleList({type, page, pagesize})
+      if (params.type === 2) {
+        this.groupList = data.list
+      }
+      if (params.type === 3) {
+        this.cityList = data.list
+      }
+      if (params.type === 4) {
+        this.projectList = data.list
+      }
+      this.params[typeDesc].total_page = data.total_page
+      this.params[typeDesc].current_page = data.current_page
+      this.params[typeDesc].next_page = data.next_page
+    },
+    onSscrolltolowerGroup (e) {
+      if (this.params.group.next_page) {
+        this.params.group.page = this.params.group.next_page
+        this.fetchArticleList(this.params.group, 'group')
+      }
+    },
+    onScrolltolowerCity (e) {
+      if (this.params.city.next_page) {
+        this.params.city.page = this.params.city.next_page
+        this.fetchArticleList(this.params.city, 'city')
+      }
+    },
+    onScrolltolowerProject (e) {
+      if (this.params.project.next_page) {
+        this.params.project.page = this.params.project.next_page
+        this.fetchArticleList(this.params.project, 'project')
+      }
     }
   }
 }

@@ -5,19 +5,23 @@
 </template>
 
 <script>
-
+import {postIndex} from '../../http/api.js'
 export default {
 
   data () {
     return {
-
+      cityinfo: null
     }
   },
-
+  async mounted () {
+    console.log(this.globalData.address)
+    this.fetchIndexData(this.globalData.address)
+  },
   methods: {
-    scrolltolower (e) {
-      console.log(e)
-      console.log('加载数据')
+    async  fetchIndexData (city) {
+      const data = await postIndex({city})
+      console.log(data)
+      this.cityinfo = data.cityinfo
     }
   }
 }
