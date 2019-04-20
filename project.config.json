@@ -32,7 +32,7 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": 6,
+			"current": 7,
 			"list": [
 				{
 					"id": -1,
@@ -76,7 +76,14 @@
 					"id": -1,
 					"name": "zixun",
 					"pathName": "pages/activity/main",
+					"query": "",
 					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "around-map",
+					"pathName": "pages/around-map/main",
+					"query": ""
 				}
 			]
 		}

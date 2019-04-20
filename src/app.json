@@ -15,7 +15,8 @@
     "pages/houses-search/main",
     "pages/map/main",
     "pages/houses-filter/main",
-    "pages/web-view/main"
+    "pages/web-view/main",
+    "pages/around-map/main"
   ],
   "window": {
     "backgroundTextStyle": "light",
