@@ -15,7 +15,8 @@
     "pages/door-details/main",
     "pages/watch-list/main",
     "pages/door-list/main",
-    "pages/estate-photo/main"
+    "pages/estate-photo/main",
+    "pages/around-map/main"
   ],
   "window": {
     "backgroundTextStyle": "light",
