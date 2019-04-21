@@ -5,12 +5,12 @@
       @markertap='handleMarkerTap'
       @callouttap='handleMarkerTap'
       style="width: 100%; height: 50%"
-      longitude="113.324520"
-      latitude="23.099994" scale='15'>
+      :longitude="detail.longitude"
+      :latitude="detail.latitude" scale='15'>
     </map>
     <div class="banner" id="banner">
-      <div class="title">天通苑</div>
-      <div class="des">*aadfasdfdasfa</div>
+      <div class="title">{{detail.name}}</div>
+      <div class="des">{{detail.address}}</div>
       <div class="tabs">
         <div class="tab"><span :class="[{'checked': tabCheck === '交通'}]" @click="handleChangeTab('交通')">交通(10)</span></div>
         <div class="tab"><span :class="[{'checked': tabCheck === '教育'}]" @click="handleChangeTab('教育')">教育(10)</span></div>
@@ -43,26 +43,25 @@ export default {
         width: '100%',
         height: '400px'
       },
-      location: {
-        lat: '23.099994',
-        lng: '113.324520'
-      },
       markers: [],
       scrollH: 0,
-      checkMarkerId: 0
+      checkMarkerId: 0,
+      detail: {}
     }
   },
   methods: {
-    _initMap () {
+    _init () {
       // 实例化API核心类
       this.qqmapsdk = new QQMapWX({
         key: 'NBMBZ-7E6C4-ERMUP-XGJTV-WFLDQ-S3FDK'
       })
+      // 获取跳转过来的详情
+      this.detail = this.$route.query
     },
     handleSearch () {
       this.qqmapsdk.search({
         keyword: this.tabCheck, // 搜索关键词
-        location: `${this.location.lat},${this.location.lng}`, // 设置周边搜索中心点
+        location: `${this.detail.latitude},${this.detail.longitude}`, // 设置周边搜索中心点
         success: (res) => { // 搜索成功后的回调
           var mks = []
           for (var i = 0; i < res.data.length; i++) {
@@ -103,7 +102,7 @@ export default {
     }
   },
   async mounted () {
-    this._initMap()
+    this._init()
     this.getInnerHeight()
     this.getScrollContainer()
     this.handleSearch()
