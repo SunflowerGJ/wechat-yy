@@ -59,3 +59,21 @@ export const postHousesDetail = params => {
     params: params
   })
 }
+
+// 单向房贷计算
+export const mortgageShow = params => {
+  return fly({
+    method: 'post',
+    url: `api/Apis/mortgageShow`,
+    params: params
+  })
+}
+
+// 双向房贷计算
+export const mortgageShowTwo = params => {
+  return fly({
+    method: 'post',
+    url: `api/Apis/mortgageShowTwo`,
+    params: params
+  })
+}

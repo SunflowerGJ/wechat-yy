@@ -46,7 +46,7 @@
               </div>
           </div>
         </div>
-        <div class="copent_panl">
+        <div class="copent_panl" @click="handleGo">
             <img src="/static/images/cpument.png">
             <span>房贷计算器</span>
         </div>
@@ -401,7 +401,9 @@ export default {
     })
   },
   methods: {
-
+    handleGo () {
+      this.$router.push({path: '/pages/calculator/main'})
+    }
   }
 }
 </script>

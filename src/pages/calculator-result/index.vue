@@ -1,10 +1,10 @@
 <template>
   <div class="container">
     <div class="nav">
-      <div class="tab border">
+      <div :class="['tab', {'border': tabType === 1}]" @click="handleTabChange(1)">
         等额本息
       </div>
-      <div class="tab">
+      <div :class="['tab', {'border': tabType === 2}]" @click="handleTabChange(2)">
         等额本金
       </div>
     </div>
@@ -18,55 +18,44 @@
       <div class="info-item">
         <div class="item">
           <div class="title">贷款金额(元)</div>
-          <div class="num">6000</div>
+          <div class="num">{{results.dkTotal}}</div>
         </div>
         <div class="item">
           <div class="title">总利息(元)</div>
-          <div class="num">300</div>
+          <div class="num">{{results.lxTotal}}</div>
         </div>
       </div>
       <div class="info-item border-bottom">
         <div class="item">
           <div class="title">总还款(元)</div>
-          <div class="num">98980</div>
+          <div class="num">{{results.payTotal}}</div>
         </div>
         <div class="item">
           <div class="title">每月还款(元)</div>
-          <div class="num">39000</div>
+          <div class="num">{{results.payMonthTotal}}</div>
         </div>
       </div>
     </div>
     <div class="list">
       <div class="list-tilte border-bottom">还款数据明细</div>
     </div>
-    <div class="table">
-      <div class="th">
-        <div class="td">期数</div>
-        <div class="td">月供</div>
-        <div class="td">月供本金</div>
-        <div class="td">月供利息</div>
-        <div class="td">剩余本金</div>
-      </div>
-      <div class="tr">
-        <div class="td">1</div>
-        <div class="td">3999.3</div>
-        <div class="td">147.123</div>
-        <div class="td">245</div>
-        <div class="td">1299</div>
-      </div>
-      <div class="tr">
-        <div class="td">1</div>
-        <div class="td">3999.3</div>
-        <div class="td">147.123</div>
-        <div class="td">245</div>
-        <div class="td">1299</div>
-      </div>
-      <div class="tr">
-        <div class="td">1</div>
-        <div class="td">3999.3</div>
-        <div class="td">147.123</div>
-        <div class="td">245</div>
-        <div class="td">1299</div>
+    <div :key="key" v-for="(items, key) in results.detail">
+      <div class="year">第{{key + 1}}年</div>
+      <div class="table">
+        <div class="th">
+          <div class="td">期数</div>
+          <div class="td">月供</div>
+          <div class="td">月供本金</div>
+          <div class="td">月供利息</div>
+          <div class="td">剩余本金</div>
+        </div>
+        <div class="tr" :key="item" v-for="(item, index) in items">
+          <div class="td">{{key * 12 + index + 1}}</div>
+          <div class="td">{{item.show_total}}</div>
+          <div class="td">{{item.show_em}}</div>
+          <div class="td">{{item.show_lx}}</div>
+          <div class="td">{{item.show_undk}}</div>
+        </div>
       </div>
     </div>
   </div>
@@ -74,11 +63,14 @@
 
 <script>
 import WxCharts from '@/lib/wxcharts'
+import { mortgageShow, mortgageShowTwo } from '../../http/api.js'
 export default {
 
   data () {
     return {
-      charts: null
+      charts: null,
+      tabType: 1,
+      results: {}
     }
   },
   methods: {
@@ -87,17 +79,11 @@ export default {
         canvasId: 'areaCanvas',
         type: 'ring',
         series: [{
-          name: '成交量1',
-          data: 15
+          name: '贷款金额',
+          data: parseInt(this.results.dkTotal.replace(/,/g, ''))
         }, {
-          name: '成交量2',
-          data: 35
-        }, {
-          name: '成交量3',
-          data: 78
-        }, {
-          name: '成交量4',
-          data: 63
+          name: '利息',
+          data: parseInt(this.results.lxTotal.replace(/,/g, ''))
         }],
         width: 320,
         height: 200,
@@ -106,11 +92,32 @@ export default {
     },
     handleTouch (e) {
       this.charts.showToolTip(e)
+    },
+    handleTabChange (tab) {
+      this.tabType = tab
+      this._query({type: tab})
+    },
+    async _query (par = {}) {
+      const { tabType } = this.$route.query
+      let parmas = {}
+      let res = null
+      if (tabType === '商业贷款') {
+        parmas = {...this.$route.query, ...par}
+        res = await mortgageShow(parmas)
+      } else if (tabType === '公积金贷款') {
+        parmas = {...this.$route.query, ...par}
+        res = await mortgageShow(parmas)
+      } else if (tabType === '组合贷款') {
+        parmas = {...this.$route.query, ...par}
+        res = await mortgageShowTwo(parmas)
+      }
+      this.results = res
+      this._initCharts()
     }
   },
 
   mounted () {
-    this._initCharts()
+    this._query()
   }
 
 }
@@ -169,4 +176,9 @@ export default {
     flex  1
     text-align center
     padding-bottom 10px
+  .year
+    padding 10px 20px
+    background-color rgba(0,0,0,0.1)
+    font-size 13px
+    color #959595
 </style>

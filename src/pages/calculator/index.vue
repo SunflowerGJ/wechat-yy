@@ -1,54 +1,173 @@
 <template>
   <div class="container">
     <div class="nav">
-      <div class="tab border">
+      <div :class="['tab', {'border': tabType === '商业贷款'}]" @click="tabType='商业贷款'">
         商业贷款
       </div>
-      <div class="tab">
+      <div :class="['tab', {'border': tabType === '公积金贷款'}]" @click="tabType='公积金贷款'">
         公积金贷款
       </div>
-      <div class="tab">
+      <div :class="['tab', {'border': tabType === '组合贷款'}]" @click="tabType='组合贷款'">
         组合贷款
       </div>
     </div>
-    <div class="form">
-      <div class="form-item">
-        <span>按贷款金额计算</span>
-        <span>按还款金额计算</span>
-      </div>
-      <div class="form-item">
-        <span>借款金额(万)</span>
-        <input class="ipt" placeholder="请输入" type="text">
-      </div>
-      <div class="form-item">
-        <span>贷款期限</span>
-        <span>20年(240期)</span>
-      </div>
-      <div class="form-item">
-        <span>贷款年利率</span>
-        <span>基准利率(4.9%)</span>
-      </div>
-      <div class="form-item btn-container">
-        <div class="btn-left btn">
-          清空重填
+    <div class="form" v-if="tabType === '商业贷款' || tabType === '组合贷款'">
+      <picker :value="query.type" :range="types" @change="bindPickerChange('type', $event, 'query')">
+        <div class="form-item">
+          <span>商贷按贷款金额计算</span>
+          <span>{{types[query.type]}}</span>
         </div>
-        <div class="btn-right btn">
-          开始计算
+      </picker>
+      <div class="form-item">
+        <span>商贷借款金额(万)</span>
+        <input v-model="query.dkTotal" class="ipt" placeholder="请输入" type="text">
+      </div>
+      <picker :value="query.dkm" :range="dates" @change="bindPickerChange('dkm', $event, 'query')">
+        <div class="form-item">
+          <span>商贷贷款期限</span>
+          <span> {{dates[query.dkm]}}</span>
         </div>
+      </picker>
+      <picker :value="query.dknl" :range="rates" @change="bindPickerChange('dknl', $event, 'query')">
+        <div class="form-item">
+          <span>
+            商贷基准利率
+          </span>
+          <span>
+            {{rates[query.dknl]}}
+          </span>
+        </div>
+      </picker>
+    </div>
+    <div :class="['form', {'gjzContainer': tabType === '组合贷款'}]" v-if="tabType === '公积金贷款' || tabType === '组合贷款'">
+      <picker :value="gjzQuery.type2" :range="types" @change="bindPickerChange('type2', $event, 'gjzQuery')">
+        <div class="form-item">
+          <span>公积金按贷款金额计算</span>
+          <span>{{types[gjzQuery.type2]}}</span>
+        </div>
+      </picker>
+      <div class="form-item">
+        <span>公积金借款金额(万)</span>
+        <input v-model="gjzQuery.dkTotal2" class="ipt" placeholder="请输入" type="text">
       </div>
-      <div class="tip">
-        计算结果仅供参考
+      <picker :value="gjzQuery.dkm2" :range="dates" @change="bindPickerChange('dkm2', $event, 'gjzQuery')">
+        <div class="form-item">
+          <span>公积金贷款期限</span>
+          <span> {{dates[gjzQuery.dkm2]}}</span>
+        </div>
+      </picker>
+      <picker :value="gjzQuery.dknl2" :range="gjzRates" @change="bindPickerChange('dknl2', $event, 'gjzQuery')">
+        <div class="form-item">
+          <span>
+            公积金基准利率
+          </span>
+          <span>
+            {{gjzRates[gjzQuery.dknl2]}}
+          </span>
+        </div>
+      </picker>
+    </div>
+    <div class="form-item btn-container">
+      <div class="btn-left btn" @click="handleRest">
+        清空重填
       </div>
+      <div class="btn-right btn" @click="handleOk">
+        开始计算
+      </div>
+    </div>
+    <div class="tip">
+      计算结果仅供参考
     </div>
   </div>
 </template>
 
 <script>
-
+import { mortgageShow, mortgageShowTwo } from '../../http/api.js'
 export default {
 
   data () {
     return {
+      tabType: '商业贷款',
+      rates: ['基准利率9折(4.41%)', '基准利率95折(4.655%)', '基准利率(4.9%)',
+        '基准利率上浮5%(5.145%)', '基准利率上浮10%(5.39%)', '基准利率上浮15%(5.635%)',
+        '基准利率上浮20%(5.88%)', '基准利率上浮25%(6.125%)', '基准利率上浮30%(6.37%)',
+        '基准利率上浮35%(6.615%)', '基准利率上浮40%(6.86%)' ],
+      gjzRates: ['基准利率(3.25%)', '基准利率上浮10%(3.575%)'],
+      dates: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30].map(item => `${item}年(${item * 12}期)`),
+      types: ['等额本息', '等额本金'],
+      query: {
+        type: 0,
+        dkm: 29,
+        dknl: 2,
+        dkTotal: ''
+      },
+      gjzQuery: {
+        type2: 0,
+        dkm2: 29,
+        dknl2: 0,
+        dkTotal2: ''
+      }
+    }
+  },
+  methods: {
+    bindPickerChange (type, e, queryType) {
+      let copyQuery = JSON.parse(JSON.stringify(this[queryType]))
+      copyQuery[type] = e.mp.detail.value
+      this[queryType] = copyQuery
+    },
+    handleRest () {
+      this.query = {
+        type: 0,
+        dkm: 29,
+        dknl: 2,
+        dkTotal: ''
+      }
+      this.gjzQuery = {
+        type2: 0,
+        dkm2: 29,
+        dknl2: 0,
+        dkTotal2: ''
+      }
+    },
+    _resolveQuery () {
+      let copyQuery = JSON.parse(JSON.stringify(this.query))
+      const dknl = this.rates[copyQuery.dknl]
+      copyQuery.type = +copyQuery.type + 1
+      copyQuery.dkm = (+copyQuery.dkm + 1) * 12
+      copyQuery.dknl = (dknl.slice(dknl.indexOf('(') + 1, dknl.lastIndexOf('%'))) / 100
+      copyQuery.dkTotal = +copyQuery.dkTotal * 10000
+
+      let copyGjzQuery = JSON.parse(JSON.stringify(this.gjzQuery))
+      const gjzDknl = this.gjzRates[copyGjzQuery.dknl2]
+      copyGjzQuery.type2 = +copyGjzQuery.type2 + 1
+      copyGjzQuery.dkm2 = (+copyGjzQuery.dkm2 + 1) * 12
+      copyGjzQuery.dknl2 = (gjzDknl.slice(dknl.indexOf('(') + 1, gjzDknl.lastIndexOf('%'))) / 100
+      copyGjzQuery.dkTotal2 = +copyGjzQuery.dkTotal2 * 10000
+
+      return {
+        copyQuery,
+        copyGjzQuery
+      }
+    },
+    async handleOk () {
+      const { tabType } = this
+      const copyData = this._resolveQuery()
+      let parmas = {}
+      let res = null
+      if (tabType === '商业贷款') {
+        parmas = copyData.copyQuery
+        res = await mortgageShow(parmas)
+      } else if (tabType === '公积金贷款') {
+        parmas = copyData.copyGjzQuery
+        res = await mortgageShow(parmas)
+      } else if (tabType === '组合贷款') {
+        parmas = {...copyData.copyQuery, ...copyData.copyGjzQuery}
+        res = await mortgageShowTwo(parmas)
+      }
+      parmas.tabType = tabType
+      if (res) {
+        this.$router.push({path: '/pages/calculator-result/main', query: parmas})
+      }
     }
   }
 
@@ -56,18 +175,19 @@ export default {
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-  .container
-    background-color #fff
   .nav
     display flex
     justify-content space-between
     padding 0 35px
     border-bottom 1px solid #D8D8D8
+    background-color #fff
   .tab
     height 42px
     display flex
     align-items center
     font-size 14px
+  .form
+    background-color #fff
   .form-item
     display flex
     height 50px
@@ -102,4 +222,14 @@ export default {
   .btn-container
     padding-top 70px
     border-bottom 0
+    background-color #fff
+  .tip
+    background-color #fff    
+  .picker
+    width 100%
+    display flex
+    justify-content space-between
+  .gjzContainer
+    border-top 1px solid #D8D8D8
+    margin-top 30px
 </style>
