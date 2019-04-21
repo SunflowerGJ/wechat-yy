@@ -98,6 +98,13 @@
 					"pathName": "pages/door-details/main",
 					"query": "id=9",
 					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "map",
+					"pathName": "pages/map/main",
+					"query": "",
+					"scene": null
 				}
 			]
 		}
