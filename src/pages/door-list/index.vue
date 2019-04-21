@@ -1,71 +1,44 @@
 <template>
   <div class="container">
     <div class="apartment_panl">
-      <div class="apar_panl">
-            <div class="apar_left">
-              <img mode="aspectFit" src="/static/images/storey.png"/>
-            </div>
-            <div class="apar_right">
-                <p class="titel">
-                  <img src="/static/images/storey.png" />
-                  <span>4室2厅3卫</span>
-                </p>
-                <ul class="apar_details">
-                  <li><label>【 建    面 】</label>90m²</li>
-                  <li><label>【 朝    向 】</label>南北</li>
-                  <li><label>【 总    价 】</label>约<span>300万元</span>/套</li>
-                  <li><label>【 单    价 】</label>95000元/m²</li>
-                </ul>
-            </div>
+      <div class="apar_panl" v-for="(item,index) in list" :key="index">
+        <div class="apar_left">
+          <img mode="aspectFit" :src="item.photo"/>
+        </div>
+        <div class="apar_right">
+            <p class="titel">
+              <img src="/static/images/storey.png" />
+              <span>{{item.name}}</span>
+            </p>
+            <ul class="apar_details">
+              <li><label>【 建    面 】</label>{{item.inside_space}}m²</li>
+              <li><label>【 朝    向 】</label>{{item.orientation}}</li>
+              <li><label>【 总    价 】</label>约<span>{{item.total_price}}万元</span>/套</li>
+              <li><label>【 单    价 】</label>{{item.unit_price}}元/m²</li>
+            </ul>
+        </div>
       </div>
-       <div class="apar_panl">
-            <div class="apar_left">
-              <img mode="aspectFit" src="/static/images/storey.png"/>
-            </div>
-            <div class="apar_right">
-                <p class="titel">
-                  <img src="/static/images/storey.png" />
-                  <span>4室2厅3卫</span>
-                </p>
-                <ul class="apar_details">
-                  <li><label>【 建    面 】</label>90m²</li>
-                  <li><label>【 朝    向 】</label>南北</li>
-                  <li><label>【 总    价 】</label>约<span>300万元</span>/套</li>
-                  <li><label>【 单    价 】</label>95000元/m²</li>
-                </ul>
-            </div>
-      </div>
-      <div class="apar_panl">
-            <div class="apar_left">
-              <img mode="aspectFit" src="/static/images/storey.png"/>
-            </div>
-            <div class="apar_right">
-                <p class="titel">
-                  <img src="/static/images/storey.png" />
-                  <span>4室2厅3卫</span>
-                </p>
-                <ul class="apar_details">
-                  <li><label>【 建    面 】</label>90m²</li>
-                  <li><label>【 朝    向 】</label>南北</li>
-                  <li><label>【 总    价 】</label>约<span>300万元</span>/套</li>
-                  <li><label>【 单    价 】</label>95000元/m²</li>
-                </ul>
-            </div>
-      </div>
+
     </div>
   </div>
 </template>
 
 <script>
-
+import {postHouseType} from '../../http/api.js'
 export default {
 
   data () {
     return {
+      list: []
     }
   },
-  mounted () {
-    console.log(this.$route.query.id)
+  async mounted () {
+    const data = await postHouseType({
+      house_id: this.$route.query.id,
+      token: this.globalData.token
+    })
+    this.list = data
+    console.log(data)
   },
   methods: {
     scrolltolower (e) {

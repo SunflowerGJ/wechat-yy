@@ -3,6 +3,7 @@ import { login } from './http/api.js'
 export default {
   async created () {
     const {code} = await this.$wx.login()
+    console.log(code)
     this.onLogin(code)
   },
   methods: {
@@ -10,6 +11,8 @@ export default {
     async onLogin (code) {
       const data = await login({code: code})
       console.log(data)
+      this.globalData.token = data.token
+      this.globalData.userInfo = data.userInfo
     }
   }
 }

@@ -1,18 +1,7 @@
 <template>
-  <div class="container">
+  <div class="container" v-if="detail">
     <div class="panl_swiper">
-      <swiper
-        :indicator-dots="indicatorDots"
-        :autoplay="autoplay"
-        :interval="interval"
-        class="swiper"
-      >
-        <div v-for="(item,index) in imgUrls" :key="index">
-          <swiper-item>
-            <image mode="aspectFit" :src="item" class="slide-image"/>
-          </swiper-item>
-        </div>
-      </swiper>
+      <img :src="detail.photo"/>
       <div class="tranTrian">
           <span class="tranTitle">在售</span>
       </div>
@@ -20,36 +9,32 @@
     <div class="door_panl">
       <div class="dor_box">
         <img src="/static/images/storey.png">
-        <label>4室2厅3卫</label>
-        <span>建面130m²</span>
+        <label>{{detail.name}}</label>
+        <span>建面{{detail.floor_space}}m²</span>
       </div>
     </div>
     <div class="price_panl">
       <div class="price_name">
-        <p>约<span>700万元</span>/套</p>
+        <p>约<span>{{detail.total_price}}万元</span>/套</p>
         <p>参考总价</p>
       </div>
       <div class="price_name">
-        <p>95000元/m²</p>
+        <p>{{detail.unit_price}}元/m²</p>
         <p>参考均价</p>
       </div>
       <div class="price_name">
-        <p>南北</p>
+        <p>{{detail.orientation}}</p>
         <p>户型朝向</p>
       </div>
 
     </div>
     <div class="onlookers_panl">
         <div class="looks_panl">
-          <span>视野开阔</span>
-          <span>穿堂风</span>
-          <span>三口之家</span>
-          <span>三口</span>
-          <span>三口之家</span>
+          <span v-for="(item,index) in detail.tags" :key="index">{{item}}</span>
         </div>
         <div class="copent_panl">
             <img src="/static/images/cpument.png">
-            <span>房贷计算器</span>
+            <span @click="goCalculator">房贷计算器</span>
         </div>
     </div>
     <div class="estate_news_panl">
@@ -84,25 +69,25 @@
         </div>
       </div>
       <div class="door_about">
-        <p>30# 31# 29# 20# 25# 26# 13#</p>
+        <p>{{detail.house_branch}}</p>
       </div>
       <div class="map_img">
-        <img src="/static/images/mapImg.png">
+        <img :src="detail.house_branch_photo">
       </div>
     </div>
     <div class="footer_fixed">
         <div class="fixed_left">
             <a>
               <img src="/static/images/forward.png">
-              <span>转发分享</span>
+              <button open-type='share'>转发分享</button>
             </a>
             <a>
               <img src="/static/images/fileback.png">
-              <span>生成海报</span>
+              <span @click="handlePlaybill(detail.poster_url)">生成海报</span>
             </a>
             <a>
               <img class="collection" src="/static/images/collection.png">
-              <span>收藏</span>
+              <span @click="onAddCollection(detail.id,2)">收藏</span>
             </a>
         </div>
         <div class="fixed_right">
@@ -114,31 +99,58 @@
 </template>
 
 <script>
+import {postHouseTypeDetail, postAddCollection, postRemoveCollection} from '../../http/api.js'
 
 export default {
 
   data () {
     return {
-      indicatorDots: true,
-      autoplay: true,
-      interval: 3000,
-      imgUrls: [
-        'https://images.unsplash.com/photo-1551334787-21e6bd3ab135?w=640',
-        'https://images.unsplash.com/photo-1551214012-84f95e060dee?w=640',
-        'https://images.unsplash.com/photo-1551446591-142875a901a1?w=640',
-        'https://images.unsplash.com/photo-1551334787-21e6bd3ab135?w=640',
-        'https://images.unsplash.com/photo-1551214012-84f95e060dee?w=640',
-        'https://images.unsplash.com/photo-1551446591-142875a901a1?w=640'
-      ]
+      detail: null
     }
   },
-  mounted () {
-    console.log(this.$route.query.id)
+  onLoad: function (options) {
+    // 获取分享转发页面时携带的参数
+    console.log('onLoad参数')
+    console.log(options)
+  },
+  async mounted () {
+    const data = await postHouseTypeDetail({
+      housetype_id: 6,
+      token: this.globalData.token
+    })
+    console.log(data)
+    this.detail = data
+    this.detail.tags = data.tags.split('|')
+    this.detail.intro = data.intro.split('|')
+    this.$wx.setNavigationBarTitle({
+      title: data.house_id
+    })
+  },
+  /**
+   * 用户点击右上角分享
+   */
+  onShareAppMessage: function (res) {
+    return {
+      title: this.detail.house_id,
+      path: 'pages/door-details/main?id=' + this.$route.query.id
+    }
   },
   methods: {
-    scrolltolower (e) {
-      console.log(e)
-      console.log('加载数据')
+    handlePlaybill (posterUrl) {
+      // 海报
+      console.log(posterUrl)
+    },
+    // 收藏/取消收藏
+    async onAddCollection (detail) {
+      if (detail.isCollection) {
+        postAddCollection({id: detail.id, type: detail.type, token: this.globalData.token})
+      } else {
+        postRemoveCollection({id: detail.id, type: detail.type, token: this.globalData.token})
+      }
+    },
+    // 跳转计算器
+    goCalculator () {
+      this.$router.push({path: '/pages/calculator/main'})
     }
   }
 }
@@ -153,6 +165,10 @@ export default {
     width 100%
     height 220px
     position relative
+    img 
+      display block
+      width 100%
+      height 100%   
     .swiper
       width 100%
       height 100%
@@ -486,6 +502,14 @@ export default {
         img.collection
           width 17px
           height 15px
+        button
+          font-size 14px
+          color #9FA0A0
+          margin-top 2px
+          padding 0 
+          line-height 1
+          &::after 
+            border: none
         span
           font-size 14px
           color #9FA0A0

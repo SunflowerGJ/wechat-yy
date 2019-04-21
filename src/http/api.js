@@ -41,7 +41,6 @@ export const postCitySearch = params => {
     params: params
   })
 }
-
 // 获取资讯列表
 export const postArticleList = params => {
   return fly({
@@ -50,12 +49,27 @@ export const postArticleList = params => {
     params
   })
 }
-
 // 楼盘详情接口
 export const postHousesDetail = params => {
   return fly({
     method: 'post',
-    url: `/api/houses/detail `,
+    url: `/api/houses/detail`,
+    params: params
+  })
+}
+// 楼盘户型列表接口
+export const postHouseType = params => {
+  return fly({
+    method: 'post',
+    url: `/api/housetype/index`,
+    params: params
+  })
+}
+// 楼盘户型详情接口
+export const postHouseTypeDetail = params => {
+  return fly({
+    method: 'post',
+    url: `/api/housetype/detail`,
     params: params
   })
 }
@@ -64,7 +78,7 @@ export const postHousesDetail = params => {
 export const mortgageShow = params => {
   return fly({
     method: 'post',
-    url: `api/Apis/mortgageShow`,
+    url: `/api/Apis/mortgageShow`,
     params: params
   })
 }
@@ -73,7 +87,23 @@ export const mortgageShow = params => {
 export const mortgageShowTwo = params => {
   return fly({
     method: 'post',
-    url: `api/Apis/mortgageShowTwo`,
+    url: `/api/Apis/mortgageShowTwo`,
+    params: params
+  })
+}
+// 楼盘/户型收藏接口
+export const postAddCollection = params => {
+  return fly({
+    method: 'post',
+    url: `/api/member/addCollection`,
+    params: params
+  })
+}
+// 取消用户收藏接口
+export const postRemoveCollection = params => {
+  return fly({
+    method: 'post',
+    url: `/api/member/removeCollection`,
     params: params
   })
 }

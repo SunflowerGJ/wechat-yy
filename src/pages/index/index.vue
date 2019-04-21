@@ -81,7 +81,7 @@ export default {
     },
     // nav栏跳转
     goNav (path) {
-      this.$router.push({ path: path })
+      this.$router.push({path: path, query: {city: this.address}})
     },
     // 城市列表跳转
     goCityList () {
@@ -105,8 +105,10 @@ export default {
   },
   async mounted () { // 地址筛选待调整
     const adr = this.$route.query.addr
+
     if (!adr) {
       const city = await _getUserAddress()
+
       this.address = city
       this.globalData.address = city
     } else {

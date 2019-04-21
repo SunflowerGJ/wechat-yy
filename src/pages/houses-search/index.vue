@@ -38,6 +38,7 @@ export default {
     },
     async fetchHousesList (k = '') {
       const data = await postHousesList({k, city: this.globalData.address})
+      console.log(data)
       this.houses = data.map(item => ({...item, tags: item.tags.split('|')}))
     }
   }

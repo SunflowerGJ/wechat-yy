@@ -32,7 +32,7 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": 8,
+			"current": 9,
 			"list": [
 				{
 					"id": -1,
@@ -87,9 +87,16 @@
 				},
 				{
 					"id": -1,
-					"name": "calculator-result",
-					"pathName": "pages/calculator-result/main",
-					"query": "",
+					"name": "楼盘主页",
+					"pathName": "pages/home-page/main",
+					"query": "id=6",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "户型详情",
+					"pathName": "pages/door-details/main",
+					"query": "id=9",
 					"scene": null
 				}
 			]
