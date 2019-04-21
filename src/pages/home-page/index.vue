@@ -253,74 +253,53 @@
           <img src="/static/images/route.png">
           <div class="cen_text">
             <p>公交路线</p>
-            <p>约10处</p>
+            <p>约{{searchMap['公交路线']}}处</p>
           </div>
         </div>
         <div class="macund">
           <img src="/static/images/education.png">
           <div class="cen_text">
             <p>教育机构</p>
-            <p>约10处</p>
+            <p>约{{searchMap['教育机构']}}处</p>
           </div>
         </div>
         <div class="macund">
           <img src="/static/images/hospital.png">
           <div class="cen_text">
             <p>医院设施</p>
-            <p>约10处</p>
+            <p>约{{searchMap['医院设施']}}处</p>
           </div>
         </div>
         <div class="macund">
           <img src="/static/images/bank.png">
           <div class="cen_text">
             <p>银行网点</p>
-            <p>约10处</p>
+            <p>约{{searchMap['银行网点']}}处</p>
           </div>
         </div>
         <div class="macund">
           <img src="/static/images/foot.png">
           <div class="cen_text">
             <p>餐饮商户</p>
-            <p>约10处</p>
+            <p>约{{searchMap['餐饮商户']}}处</p>
           </div>
         </div>
         <div class="macund">
           <img src="/static/images/bus.png">
           <div class="cen_text">
             <p>公交</p>
-            <p>约10处</p>
+            <p>约{{searchMap['公交']}}处</p>
           </div>
         </div>
       </div>
 
       <div class="distancBox">
         <ul>
-          <li>
-            <p class="addr">石景山区五里坨医院石景山区五里坨医院石景山区五里坨医院石景山区五里坨医院石景山区五里坨医院石景山区五里坨医院</p>
+          <li :key="key" v-for="(mk, key) in mks">
+            <p class="addr">{{mk.title}}</p>
             <p class="add_but">
               <img src="/static/images/icon-addr.png">
-              <span>619m</span>
-            </p>
-          </li>
-          <li>
-            <p class="addr">石景山区五里坨医院………………………….</p>
-            <p class="add_but">
-              <img src="/static/images/icon-addr.png">
-              <span>619m</span>
-            </p>
-          </li>
-          <li>
-            <p class="addr">石景山区五里坨医院………………………….</p>
-            <p class="add_but">
-              <img src="/static/images/icon-addr.png">
-              <span>619m</span>
-            </p>
-          </li>
-          <li>
-            <p class="addr">石景山区五里坨医院………………………….</p>
-            <p class="add_but">
-              <img src="/static/images/icon-addr.png">
-              <span>619m</span>
+              <span>{{mk._distance}}m</span>
             </p>
           </li>
         </ul>
@@ -355,11 +334,21 @@
 
 <script>
 import { postHousesDetail } from '../../http/api.js'
+var QQMapWX = require('qqmap-wx-jssdk')
 export default {
   data () {
     return {
       detail: null,
-      getMore: false
+      getMore: false,
+      mks: [],
+      searchMap: {
+        '公交路线': 0,
+        '教育机构': 0,
+        '医院设施': 0,
+        '银行网点': 0,
+        '餐饮商户': 0,
+        '公交': 0
+      }
     }
   },
   async mounted () {
@@ -370,13 +359,46 @@ export default {
     this.detail = data
     this.detail.albums = Object.keys(data.albums).map(key => data.albums[key])
     this.detail.strong_point = JSON.parse(data.strong_point)
-    console.log(this.detail)
     this.detail.tags = data.tags.split('|')
     this.$wx.setNavigationBarTitle({
       title: data.name
     })
+    this.handleSearch()
   },
   methods: {
+    handleSearch () {
+      // 实例化API核心类
+      const qqmapsdk = new QQMapWX({
+        key: 'NBMBZ-7E6C4-ERMUP-XGJTV-WFLDQ-S3FDK'
+      })
+      let copyMap = JSON.parse(JSON.stringify(this.searchMap))
+      Object.keys(this.searchMap).map((keyword, index) => {
+        qqmapsdk.search({
+          keyword, // 搜索关键词
+          location: `${this.detail.latitude},${this.detail.longitude}`, // 设置周边搜索中心点
+          success: (res) => { // 搜索成功后的回调
+            copyMap[keyword] = res.count
+            var mks = []
+            for (var i = 0; i < res.data.length; i++) {
+              mks.push({ // 获取返回结果，放到mks数组中
+                title: res.data[i].title,
+                id: res.data[i].id,
+                latitude: res.data[i].location.lat,
+                longitude: res.data[i].location.lng,
+                iconPath: '/static/images/icon-c.png', // 图标路径
+                width: 20,
+                height: 20,
+                _distance: res.data[i]._distance
+              })
+            }
+            if (index === 0) {
+              this.mks = mks
+            }
+          }
+        })
+      })
+      this.searchMap = copyMap
+    },
     handleGo () {
       this.$router.push({path: '/pages/calculator/main'})
     },
@@ -950,7 +972,7 @@ export default {
   left: 0;
   bottom: 0;
   background-color: #ffffff;
-  padding: 7px 12px;
+  padding: 15px 12px;
   display: flex;
   justify-content: space-between;
 
