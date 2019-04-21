@@ -12,7 +12,7 @@
         <scroll-view
           :scroll-x='true'
           style="white-space: nowrap; display: flex;"
-          @scrolltolower="scrolltolower">
+          @scrolltolower="onSscrolltolowerHouse">
           <view class="info-section__item" v-for="(item,index) in list" :key="index">
             <img class="info-section__item-img" :src="item.url" alt="">
             <div class="info-section__item-info">
@@ -35,7 +35,7 @@
         <scroll-view
           :scroll-x='true'
           style="white-space: nowrap; display: flex;"
-          @scrolltolower="scrolltolower">
+          @scrolltolower="onScrolltolowerDoor">
           <view class="info-section__item" v-for="(item,index) in list" :key="index">
             <img class="info-section__item-img" :src="item.url" alt="">
             <div class="info-section__item-info">
@@ -58,7 +58,7 @@
         <scroll-view
           :scroll-x='true'
           style="white-space: nowrap; display: flex;"
-          @scrolltolower="scrolltolower">
+          @scrolltolower="onScrolltolowerHouseHis">
           <view class="info-section__item" v-for="(item,index) in list" :key="index">
             <img class="info-section__item-img" :src="item.url" alt="">
             <div class="info-section__item-info">
@@ -76,7 +76,7 @@
 </template>
 
 <script>
-
+import {postSearchCollection, postShowHousesAccess} from '../../http/api.js'
 export default {
 
   data () {
@@ -94,14 +94,71 @@ export default {
           url: '//m.360buyimg.com/mobilecms/jfs/t1/7311/27/1094/92889/5bcd4d95E4e29d1b8/08a137eddb69130e.jpg!cr_1125x549_0_72',
           title: '远洋201'
         }
-      ]
+      ],
+      house: { // 楼盘
+        type: 1,
+        page: 1,
+        pagesize: 5,
+        total_page: 0,
+        current_page: 0,
+        next_page: 0
+      },
+      door: { // 户型
+        type: 1,
+        page: 1,
+        pagesize: 5,
+        total_page: 0,
+        current_page: 0,
+        next_page: 0
+      },
+      houseHis: { // 户型
+        type: 1,
+        page: 1,
+        pagesize: 5,
+        total_page: 0,
+        current_page: 0,
+        next_page: 0
+      },
+      houseList: [],
+      houseHisList: [],
+      doorList: []
     }
   },
-
+  mounted () {
+    this.fetchCollection(this.house)
+    this.fetchCollection(this.door)
+    this.fetchHousesAccess(this.houseHis)
+  },
   methods: {
-    scrolltolower (e) {
-      console.log(e)
-      console.log('加载数据')
+    // 查询用户收藏
+    async fetchCollection (options) {
+      const params = Object.assign(options, { token: this.globalData.token })
+      const data = await postSearchCollection(params)
+      console.log(data)
+    },
+    // 获取楼盘访问记录
+    async fetchHousesAccess (options) {
+      const params = Object.assign(options, { token: this.globalData.token })
+      const data = await postShowHousesAccess(params)
+      console.log(data)
+    },
+    onSscrolltolowerHouse (e) {
+      if (this.house.next_page) {
+        this.house.page = this.house.next_page
+        this.fetchCollection(this.house)
+      }
+    },
+    onScrolltolowerDoor (e) {
+      if (this.door.next_page) {
+        this.door.page = this.door.next_page
+        this.fetchCollection(this.door)
+      }
+    },
+    onScrolltolowerHouseHis (e) {
+      if (this.houseHis.next_page) {
+        this.houseHis.page = this.houseHis.next_page
+        this.fetchHousesAccess(this.houseHis)
+      }
     }
   }
 }
