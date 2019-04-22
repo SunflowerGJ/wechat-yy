@@ -1,8 +1,8 @@
 <template>
   <div class="container" v-if="detail">
     <div class="panl_swiper">
-      <img :src="detail.photo"/>
-      <div class="tranTrian">
+      <img :src="detail.photo" @click="handleGoPhoto('样板间')"/>
+      <div class="tranTrian" v-if="detail.id_sale==='1'">
           <span class="tranTitle">在售</span>
       </div>
     </div>
@@ -80,7 +80,7 @@
 </template>
 
 <script>
-import {postHouseTypeDetail, postAddCollection, postRemoveCollection} from '../../http/api.js'
+import {postHouseTypeDetail} from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
 export default {
   components: {
@@ -93,12 +93,12 @@ export default {
   },
   onLoad: function (options) {
     // 获取分享转发页面时携带的参数
-    console.log('onLoad参数')
-    console.log(options)
+    // console.log('onLoad参数')
+    // console.log(options)
   },
   async mounted () {
     const data = await postHouseTypeDetail({
-      housetype_id: 6,
+      housetype_id: this.$route.query.id,
       token: this.globalData.token
     })
     console.log(data)
@@ -119,17 +119,8 @@ export default {
     }
   },
   methods: {
-    handlePlaybill (posterUrl) {
-      // 海报
-      console.log(posterUrl)
-    },
-    // 收藏/取消收藏
-    async onAddCollection (detail) {
-      if (detail.isCollection) {
-        postAddCollection({id: detail.id, type: detail.type, token: this.globalData.token})
-      } else {
-        postRemoveCollection({id: detail.id, type: detail.type, token: this.globalData.token})
-      }
+    handleGoPhoto (name) {
+      this.$router.push({path: '/pages/estate-photo/main', query: {...this.detail, tabName: name}})
     },
     // 跳转计算器
     goCalculator () {

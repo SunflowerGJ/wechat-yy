@@ -1,58 +1,62 @@
 <template>
-  <div class="container">
-    <div class="watch_panl">
+  <div class="container" v-if="list">
+    <scroll-view
+    scroll-y
+    style="height: 100vh;"
+    @scrolltolower="scrolltolower">
+    <div class="watch_panl" v-for="(item,index) in list" :key="index">
       <div class="letf_panl">
-        <img :src="itemimg">
-        <span>掠视</span>
+        <img v-if="!item.headimgurl" src="/static/images/default-avatar.png" alt="">
+        <img v-else :src="item.headimgurl"/>
+        <span>{{item.nickname}}</span>
       </div>
       <div class="rigth_panl">
-          <span>刚刚</span>
+          <span>{{item.lang}}</span>
       </div>
     </div>
-     <div class="watch_panl">
-      <div class="letf_panl">
-        <img :src="itemimg">
-        <span>掠视</span>
-      </div>
-      <div class="rigth_panl">
-          <span>45分钟前</span>
-      </div>
-    </div>
-     <div class="watch_panl">
-      <div class="letf_panl">
-        <img :src="itemimg">
-        <span>掠视</span>
-      </div>
-      <div class="rigth_panl">
-          <span>今日 13:17</span>
-      </div>
-    </div>
-     <div class="watch_panl">
-      <div class="letf_panl">
-        <img :src="itemimg">
-        <span>掠视</span>
-      </div>
-      <div class="rigth_panl">
-          <span>今日 11:17</span>
-      </div>
-    </div>
+  </scroll-view>
   </div>
 </template>
 
 <script>
-
+import {postShowHousesAccess} from '../../http/api.js'
 export default {
 
   data () {
     return {
-      itemimg: 'https://images.unsplash.com/photo-1551334787-21e6bd3ab135?w=640'
+      list: [],
+      page: 1,
+      pagesize: 1,
+      total_page: 0,
+      falg: true
+
     }
   },
-
+  async mounted () {
+    const data = await postShowHousesAccess({
+      house_id: this.$route.query.id,
+      page: this.page,
+      pagesize: this.pagesize
+    })
+    this.list = data.list
+    this.total_page = data.total_page
+  },
   methods: {
-    scrolltolower (e) {
-      console.log(e)
-      console.log('加载数据')
+    async scrolltolower (e) {
+      if (this.falg) {
+        this.falg = false
+        this.page++
+        if (this.total_page >= this.page) {
+          const data = await postShowHousesAccess({
+            house_id: this.$route.query.id,
+            page: this.page,
+            pagesize: this.pagesize
+          })
+          this.list = [...this.list, ...data.list]
+          this.total_page = data.total_page
+          this.falg = true
+        }
+      }
     }
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="container" v-if="detail">
     <div class="panl_swiper">
-      <img :src="detail.photo" />
+      <img :src="detail.photo" @click="handleGoPhoto('样板间')"/>
     </div>
     <div class="delta_panl">
       <div class="label_panl">
@@ -37,9 +37,9 @@
       </div>
     </div>
     <div class="onlookers_panl">
-      <div class="looks_panl" v-if="detail.is_publish === '1'">
+      <div class="looks_panl" @click="goWatchList(detail.id)" v-if="detail.is_publish === '1'">
         <div class="left_panl">
-          <p class="num">{{detail.browse_count}}</p>
+          <p class="num">{{detail.browse_users.count}}</p>
           <p class="title">围观人数</p>
         </div>
         <div class="right_panl">
@@ -47,10 +47,9 @@
             class="imgall"
             v-for="(item,index)  in detail.browse_users.list"
             :key="index"
-            :style="{zIndex:index, 
-          left:(index*30)+'px'}"
+            :style="{zIndex:index,left:(index*30)+'px'}"
           >
-            <img :src="item">
+            <img v-if="item.headimgurl" :src="item.headimgurl">
           </div>
         </div>
       </div>
@@ -65,7 +64,7 @@
       </div>
       <div class="estate_panl">
         <scroll-view class="scroll-view_H" scroll-x="true" style="width: 100%">
-          <div class="swiper-item scroll_item" @click="goHousesDetail(item.id)" v-for="(item,index) in detail.article" :key="index">
+          <div class="swiper-item scroll_item" @click="goActivityDetail(item.id)" v-for="(item,index) in detail.article" :key="index">
             <div class="item-main_tag" v-if="item.is_top === '1'">
               <i></i>
               <div class="lawyerType-bgImg"></div>
@@ -82,7 +81,7 @@
         <span>户型介绍</span>
         <a @click="goDoorList(detail.id)">更多户型 ></a>
       </div>
-      <div class="apar_panl" v-for="(item,index) in detail.housetypes" :key="index">
+      <div class="apar_panl"  @click="goHousesDetail(item.id)" v-for="(item,index) in detail.housetypes" :key="index">
         <div class="apar_left">
           <img mode="aspectFit" :src="item.photo">
         </div>
@@ -212,7 +211,7 @@
           <span>{{item.name}}({{item.photos.length}})</span>
         </div>
         <div class="imgBox">
-          <a v-for="(tItem,tIndex) in item.photos" :key="tIndex">
+          <a v-for="(tItem,tIndex) in item.photos" :key="tIndex" @click="handleGoPhoto(item.name)">
             <img :src="tItem.photo">
           </a>
         </div>
@@ -309,33 +308,18 @@
         <p>本平台对项目周边文化教育的介绍旨在提供相关信息，并不意味信息发布方对就学安排作出承诺。相关教育资源就学信息存在调整的可能，应以政府教育主管部门及办学方颁布的政策规定为准。</p>
       </div>
     </div>
-    <div class="footer_fixed">
-      <div class="fixed_left">
-        <a>
-          <img src="/static/images/forward.png">
-          <span>转发分享</span>
-        </a>
-        <a>
-          <img src="/static/images/fileback.png">
-          <span>生成海报</span>
-        </a>
-        <a>
-          <img class="collection" src="/static/images/collection.png">
-          <span>收藏</span>
-        </a>
-      </div>
-      <div class="fixed_right">
-        <img src="/static/images/phone.png">
-        <span>VIP热线</span>
-      </div>
-    </div>
+      <house-footer :detail='detail'/>
   </div>
 </template>
 
 <script>
 import { postHousesDetail } from '../../http/api.js'
+import houseFooter from '../../components/house-footer'
 var QQMapWX = require('qqmap-wx-jssdk')
 export default {
+  components: {
+    houseFooter
+  },
   data () {
     return {
       detail: null,
@@ -410,6 +394,15 @@ export default {
     },
     goAroundMap (detail) {
       this.$router.push({path: '/pages/around-map/main', query: detail})
+    },
+    handleGoPhoto (name) {
+      this.$router.push({path: '/pages/estate-photo/main', query: {...this.detail, tabName: name}})
+    },
+    goActivityDetail (id) {
+      this.$router.push({ path: '/pages/activity-detail/main', query: { id } })
+    },
+    goWatchList (id) {
+      this.$router.push({ path: '/pages/watch-list/main', query: { id } })
     }
   }
 }

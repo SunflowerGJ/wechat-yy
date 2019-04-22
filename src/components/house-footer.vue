@@ -78,7 +78,6 @@ export default {
       wx.saveImageToPhotosAlbum({
         filePath: this.modalImg,
         success: (res) => {
-          console.log(res)
           this.modalHidden = true
           wx.showToast({
             title: '保存成功',
@@ -87,7 +86,6 @@ export default {
           })
         },
         fail: (e) => {
-          console.log(e)
           this.modalHidden = true
           wx.showToast({
             title: '保存失败',
@@ -97,11 +95,13 @@ export default {
         }
       })
     },
-    getPhoneNumber (e) {
+    async getPhoneNumber (e) {
       if (e.mp.detail.errMsg === 'getPhoneNumber:ok') {
+        wx.makePhoneCall({phoneNumber: '400-032-4608'})
         // 授权成功
         const { encryptedData, iv } = e.mp.detail
-        postMobileSave({ encryptedData, iv, token: this.globalData.token })
+        let token = await this.$wx.getStorage({key: 'token'})
+        await postMobileSave({ encryptedData, iv, token: token.data })
       }
     },
     // 收藏/取消收藏
