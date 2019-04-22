@@ -2,8 +2,8 @@
   <div class="container">
     <div class="photo_titel">
       <scroll-view class="scroll-view_H" scroll-x="true" style="width: 100%">
-            <div class="swiper-item scroll_item" v-for="(item,index) in itemTitle" :key="index" @click="getIndex(index)">
-              <p class="deta_panl" :class="index === active ? 'active': '' " >{{item}}</p>
+            <div class="swiper-item scroll_item" v-for="item in itemTitle" :key="item" @click="getIndex(item)">
+              <p class="deta_panl" :class="item === active ? 'active': '' " >{{item}}({{imgMap[item].length}})</p>
             </div>
           </scroll-view>
     </div>
@@ -16,59 +16,75 @@
         @change="switchItem($event)"
         style="height:240px"
       >
-        <div v-for="(item,index) in imgUrls" :key="index">
+        <div v-for="(item,index) in imgUrls" :key="index" @click="handlePreviewImage">
           <swiper-item>
-            <image  :src="item" class="slide-image"/>
+            <image :src="item.photo" class="slide-image"/>
           </swiper-item>
         </div>
       </swiper>
     </div>
-    <p class="showNum"><span>{{current+1}}/{{imgUrls.length}}</span></p>
+    <p class="showNum"><span>{{current + 1}}/{{imgUrls.length}}</span></p>
   </div>
 </template>
 
 <script>
-
+import { postAlbums } from '../../http/api.js'
 export default {
 
   data () {
     return {
-      itemTitle: [
-        '效果图（4）',
-        '样板间（5）',
-        '周边配套（6）',
-        '户型图（1）',
-        '效果图（4）'
-      ],
+      itemTitle: [],
       autoplay: false,
       indicatorDots: false,
-      current: 1, // 默认第n个
-      active: 0,
-      Total: null, // 总数
-      imgUrls: [
-        'https://images.unsplash.com/photo-1551334787-21e6bd3ab135?w=640',
-        'https://images.unsplash.com/photo-1551214012-84f95e060dee?w=640',
-        'https://images.unsplash.com/photo-1551446591-142875a901a1?w=640',
-        'https://images.unsplash.com/photo-1551334787-21e6bd3ab135?w=640',
-        'https://images.unsplash.com/photo-1551214012-84f95e060dee?w=640',
-        'https://images.unsplash.com/photo-1551446591-142875a901a1?w=640'
-      ]
+      current: 0, // 默认第n个
+      active: '',
+      imgMap: {},
+      imgUrls: []
     }
   },
 
   methods: {
-    scrolltolower (e) {
-      console.log(e)
-      console.log('加载数据')
-    },
     getIndex (e) {
-      console.log(e)
       this.active = e
     },
     switchItem (e) {
-      console.log(e)
       this.current = e.mp.detail.current
+    },
+    async _postAlbums () {
+      const datas = await postAlbums({
+        house_id: this.$route.query.id
+      })
+      let map = {}
+      let itemTitle = []
+      Object.values(datas).map(data => {
+        map[data.name] = data.photos
+        itemTitle.push(data.name)
+      })
+      this.itemTitle = itemTitle
+      this.active = this.$route.query.tabName
+      this.imgMap = map
+    },
+    handlePreviewImage () {
+      const photos = this.imgUrls.map(item => item.photo)
+      wx.previewImage({
+        current: photos[0],
+        urls: photos
+      })
     }
+  },
+
+  watch: {
+    'active': {
+      handler (value) {
+        this.imgUrls = this.imgMap[value]
+        this.current = 0
+      },
+      deep: true
+    }
+  },
+
+  async mounted () {
+    this._postAlbums()
   }
 }
 </script>
@@ -76,7 +92,12 @@ export default {
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 @import "../../stylus/mixin.styl"
   .container
-    background #f2f2f2
+    background rgba(0,0,0,0.5)
+    position absolute
+    top 0px
+    left 0
+    width 100%
+    height 100%
     .photo_titel
       background-color #ffffff
       box-sizing border-box

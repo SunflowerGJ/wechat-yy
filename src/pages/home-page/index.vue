@@ -212,7 +212,7 @@
           <span>{{item.name}}({{item.photos.length}})</span>
         </div>
         <div class="imgBox">
-          <a v-for="(tItem,tIndex) in item.photos" :key="tIndex">
+          <a v-for="(tItem,tIndex) in item.photos" :key="tIndex" @click="handleGoPhoto(item.name)">
             <img :src="tItem.photo">
           </a>
         </div>
@@ -410,6 +410,10 @@ export default {
     },
     goAroundMap (detail) {
       this.$router.push({path: '/pages/around-map/main', query: detail})
+    },
+    handleGoPhoto (name) {
+      console.log(1111, {...this.detail, tabName: name})
+      this.$router.push({path: '/pages/estate-photo/main', query: {...this.detail, tabName: name}})
     }
   }
 }

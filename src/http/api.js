@@ -131,3 +131,12 @@ export const postShowHousesAccess = params => {
     params: params
   })
 }
+
+// 17楼盘相册接口
+export const postAlbums = params => {
+  return fly({
+    method: 'post',
+    url: `api/houses/albums`,
+    params: params
+  })
+}
