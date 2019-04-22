@@ -123,11 +123,28 @@ export const postSearchCollection = params => {
     params: params
   })
 }
-// 16获取楼盘访问记录
+// 获取楼盘访问记录
 export const postShowHousesAccess = params => {
   return fly({
     method: 'post',
     url: `/api/houses/showHousesAccess`,
+    params: params
+  })
+}
+// 获取用户过去10天访问楼盘记录
+export const postShowMemberAccess = params => {
+  return fly({
+    method: 'post',
+    url: `/api/member/showMemberAccess`,
+    params: params
+  })
+}
+
+// 微信授权更新用户手机号接口
+export const postMobileSave = params => {
+  return fly({
+    method: 'post',
+    url: `/api/member/mobileSave`,
     params: params
   })
 }

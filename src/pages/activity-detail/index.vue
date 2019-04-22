@@ -1,6 +1,11 @@
 <template>
-  <div class="container" v-if="src">
-    <web-view :src="src"></web-view>
+  <div class="container" v-if="detail">
+    <h2 class="title">{{detail.title}}</h2>
+    <p class="time">{{detail.create_time}}</p>
+    <img class="banner" :src="detail.photo" alt="">
+    <div class="rich-text">
+      <rich-text :nodes="detail.content"></rich-text>
+    </div>
   </div>
 </template>
 
@@ -10,13 +15,14 @@ export default {
 
   data () {
     return {
-      src: ''
+      detail: null
     }
   },
   async mounted () {
     const data = await postArticleDetail({
       article_id: this.$route.query.id
     })
+    this.detail = data
     console.log(data)
   },
 
@@ -29,6 +35,27 @@ export default {
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 @import "../../stylus/mixin.styl"
   .container
-    background #f2f2f2
+    background #fff
+    padding 20px
+    height 100vh
+    box-sizing border-box
+    .title
+      font-family: PingFangSC-Medium
+      font-size: 20px
+      color: #3F3B3A
+      margin-bottom 12px
+    .time
+      font-family: PingFangSC-Medium
+      font-size: 14px
+      color: #9FA0A0
+      margin-bottom 12px
+    .banner
+      display block
+      width 100%
+      height 200px 
+      margin-bottom 12px 
+    .rich-text
+      font-size: 14px !important
+      color: #595757 !important
   
 </style>

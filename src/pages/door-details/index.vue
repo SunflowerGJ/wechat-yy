@@ -75,34 +75,17 @@
         <img :src="detail.house_branch_photo">
       </div>
     </div>
-    <div class="footer_fixed">
-        <div class="fixed_left">
-            <a>
-              <img src="/static/images/forward.png">
-              <button open-type='share'>转发分享</button>
-            </a>
-            <a>
-              <img src="/static/images/fileback.png">
-              <span @click="handlePlaybill(detail.poster_url)">生成海报</span>
-            </a>
-            <a>
-              <img class="collection" src="/static/images/collection.png">
-              <span @click="onAddCollection(detail.id,2)">收藏</span>
-            </a>
-        </div>
-        <div class="fixed_right">
-            <img src="/static/images/phone.png">
-            <span>VIP热线</span>
-        </div>
-    </div>
+      <house-footer :detail='detail'/>
   </div>
 </template>
 
 <script>
 import {postHouseTypeDetail, postAddCollection, postRemoveCollection} from '../../http/api.js'
-
+import houseFooter from '../../components/house-footer'
 export default {
-
+  components: {
+    houseFooter
+  },
   data () {
     return {
       detail: null
@@ -474,57 +457,5 @@ export default {
         line-height 18px
       p:first-child
         margin-bottom 20px
-  .footer_fixed
-    box-sizing border-box
-    width 100%
-    position fixed
-    z-index 10
-    left 0
-    bottom 0
-    background-color #ffffff
-    padding 7px 12px
-    display flex
-    justify-content space-between
-    .fixed_left
-      width 200px
-      display flex
-      justify-content space-between
-      a
-        display flex
-        flex-direction column
-        text-align center
-        justify-content center
-        align-items center
-        width 33%
-        img
-          width 13px
-          height 15px
-        img.collection
-          width 17px
-          height 15px
-        button
-          font-size 14px
-          color #9FA0A0
-          margin-top 2px
-          padding 0 
-          line-height 1
-          &::after 
-            border: none
-        span
-          font-size 14px
-          color #9FA0A0
-          margin-top 2px
-  .fixed_right
-    flex 1
-    font-size 14px
-    line-height 30px
-    background #E60113
-    border-radius 6px
-    text-align center
-    color #ffffff
-    img
-      width 15px
-      height 15px
-      margin-right 10px
-      margin-bottom -3px
+  
 </style>
