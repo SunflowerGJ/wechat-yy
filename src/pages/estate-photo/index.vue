@@ -2,7 +2,7 @@
   <div class="container">
     <div class="photo_titel">
       <scroll-view class="scroll-view_H" scroll-x="true" style="width: 100%">
-            <div class="swiper-item scroll_item" v-for="item in itemTitle" :key="item" @click="getIndex(item)">
+            <div class="swiper-item scroll_item" v-for="item in itemTitle" :key="item" @tap="getIndex(item)">
               <p class="deta_panl" :class="item === active ? 'active': '' " >{{item}}({{imgMap[item].length}})</p>
             </div>
           </scroll-view>
@@ -105,9 +105,10 @@ export default {
         box-sizing border-box
         display flex
         white-space nowrap
-        padding 10px 0 10px 20px
+        padding 0px 0 0px 20px
         .scroll_item
           display inline-block
+          padding 20px 0
           .deta_panl
             font-size 14px
             color #9FA0A0
