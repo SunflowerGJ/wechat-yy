@@ -1,13 +1,18 @@
 <template>
   <div class="container" v-bind:style="{ width: mapStyle.width, height: mapStyle.height }">
-    <map id="myMap"
-      :markers="markers"
-      @markertap='handleMarkerTap'
-      @callouttap='handleMarkerTap'
-      style="width: 100%; height: 50%"
-      :longitude="detail.longitude"
-      :latitude="detail.latitude" scale='15'>
-    </map>
+    <div style="width: 100%; height: 50%">
+      <map
+        :markers="markers"
+        @markertap='handleMarkerTap'
+        @callouttap='handleMarkerTap'
+        style="width: 100%; height: 100%"
+        :longitude="detail.longitude"
+        :latitude="detail.latitude" scale='15'>
+        <cover-view class="goPath" @tap="handleGoAddress">
+            去这里
+        </cover-view>
+      </map>
+    </div>
     <div class="banner" id="banner">
       <div class="title">{{detail.name}}</div>
       <div class="des">{{detail.address}}</div>
@@ -46,7 +51,10 @@ export default {
       markers: [],
       scrollH: 0,
       checkMarkerId: 0,
-      detail: {}
+      detail: {},
+      local: {
+
+      }
     }
   },
   methods: {
@@ -57,6 +65,7 @@ export default {
       })
       // 获取跳转过来的详情
       this.detail = this.$route.query
+      this.local = this.$route.query
     },
     handleSearch () {
       this.qqmapsdk.search({
@@ -90,6 +99,12 @@ export default {
     handleMarkerTap (e) {
       this.checkMarkerId = e.mp.markerId
     },
+    handleGoAddress () {
+      this.$router.push({
+        path: '/pages/go-address/main',
+        query: this.local
+      })
+    },
     getMarker (markers) {
       this.markers = markers
     },
@@ -113,6 +128,7 @@ export default {
         let cloneMarkers = JSON.parse(JSON.stringify(this.markers))
         this.markers = cloneMarkers.map((item) => {
           if (item.id === value) {
+            this.local = item
             item.iconPath = '/static/images/icon.png'
           } else {
             item.iconPath = '/static/images/icon-c.png'
@@ -133,6 +149,7 @@ export default {
 .banner {
   padding 20px
   background-color #fff
+  position relative
 }
 .title {
   font-size 20px
@@ -175,6 +192,20 @@ export default {
   color red
   padding-bottom 5px
   border-bottom 2px solid red
+}
+.goPath {
+  width 50px
+  height 50px
+  border-radius 50%
+  line-height 50px
+  color #fff
+  font-size 12px
+  text-align center
+  position absolute
+  right 20px
+  bottom 20px
+  background-color rgb(233, 104, 107)
+  box-shadow: 0 0 10px rgb(233, 104, 107)
 }
 
 </style>
