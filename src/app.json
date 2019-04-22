@@ -3,6 +3,7 @@
     "pages/index/main",
     "pages/activity/main",
     "pages/personal/main",
+    "pages/activity-detail/main",
     "pages/calculator/main",
     "pages/calculator-result/main",
     "pages/city-list/main",

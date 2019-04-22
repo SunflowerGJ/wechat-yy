@@ -1,5 +1,5 @@
 import fly from './request'
-// 登录
+// 1登录
 export const login = params => {
   return fly({
     method: 'post',
@@ -8,7 +8,7 @@ export const login = params => {
   })
 }
 
-// 首页接口
+// 2首页接口
 export const postIndex = params => {
   return fly({
     method: 'get',
@@ -17,7 +17,7 @@ export const postIndex = params => {
   })
 }
 
-// 楼盘列表接口
+// 3楼盘列表接口
 export const postHousesList = params => {
   return fly({
     method: 'post',
@@ -25,7 +25,7 @@ export const postHousesList = params => {
     params: params
   })
 }
-// 城市列表接口
+// 4城市列表接口
 export const postCities = params => {
   return fly({
     method: 'post',
@@ -33,7 +33,7 @@ export const postCities = params => {
     params: params
   })
 }
-// 城市搜索接口
+// 5城市搜索接口
 export const postCitySearch = params => {
   return fly({
     method: 'post',
@@ -41,7 +41,7 @@ export const postCitySearch = params => {
     params: params
   })
 }
-// 获取资讯列表
+// 6获取资讯列表
 export const postArticleList = params => {
   return fly({
     method: 'post',
@@ -49,7 +49,7 @@ export const postArticleList = params => {
     params
   })
 }
-// 楼盘详情接口
+// 7楼盘详情接口
 export const postHousesDetail = params => {
   return fly({
     method: 'post',
@@ -57,7 +57,7 @@ export const postHousesDetail = params => {
     params: params
   })
 }
-// 楼盘户型列表接口
+// 8楼盘户型列表接口
 export const postHouseType = params => {
   return fly({
     method: 'post',
@@ -65,7 +65,7 @@ export const postHouseType = params => {
     params: params
   })
 }
-// 楼盘户型详情接口
+// 9楼盘户型详情接口
 export const postHouseTypeDetail = params => {
   return fly({
     method: 'post',
@@ -74,7 +74,7 @@ export const postHouseTypeDetail = params => {
   })
 }
 
-// 单向房贷计算
+// 10单向房贷计算
 export const mortgageShow = params => {
   return fly({
     method: 'post',
@@ -83,7 +83,7 @@ export const mortgageShow = params => {
   })
 }
 
-// 双向房贷计算
+// 11双向房贷计算
 export const mortgageShowTwo = params => {
   return fly({
     method: 'post',
@@ -91,7 +91,7 @@ export const mortgageShowTwo = params => {
     params: params
   })
 }
-// 楼盘/户型收藏接口
+// 12楼盘/户型收藏接口
 export const postAddCollection = params => {
   return fly({
     method: 'post',
@@ -99,11 +99,35 @@ export const postAddCollection = params => {
     params: params
   })
 }
-// 取消用户收藏接口
+// 13取消用户收藏接口
 export const postRemoveCollection = params => {
   return fly({
     method: 'post',
     url: `/api/member/removeCollection`,
+    params: params
+  })
+}
+// 14.获取资讯详情
+export const postArticleDetail = params => {
+  return fly({
+    method: 'post',
+    url: `/api/article/searchArticleDetail`,
+    params: params
+  })
+}
+// 15查询用户收藏接口
+export const postSearchCollection = params => {
+  return fly({
+    method: 'post',
+    url: `/api/member/searchCollection`,
+    params: params
+  })
+}
+// 16获取楼盘访问记录
+export const postShowHousesAccess = params => {
+  return fly({
+    method: 'post',
+    url: `/api/houses/showHousesAccess`,
     params: params
   })
 }
