@@ -95,29 +95,32 @@ export default {
     goHousesSearch () {
       this.$router.push({path: '/pages/houses-search/main'})
     },
-    async  fetchIndexData (city) {
-      const data = await postIndex({city})
-      console.log(data)
+    async  fetchIndexData (params) {
+      const data = await postIndex(params)
+      // console.log(data)
       this.bannerList = data.ads
       this.houses = data.houses.map(item => ({...item, tags: item.tags.split('|')}))
     }
   },
-  watch: {
-    address (val) {
-      this.fetchIndexData(this.address)
-    }
-  },
   async mounted () { // 地址筛选待调整
     const adr = this.$route.query.addr
-
+    const obj = this.$route.query.params
+    if (obj) {
+      // 条件筛选后跳转
+      const params = JSON.parse(obj)
+      params.city = this.address
+      this.fetchIndexData(params)
+      return
+    }
     if (!adr) {
       const city = await _getUserAddress()
-
       this.address = city
       this.globalData.address = city
+      this.fetchIndexData({city: this.address})
     } else {
       this.address = adr
       this.globalData.address = adr
+      this.fetchIndexData({city: this.address})
     }
   }
 }

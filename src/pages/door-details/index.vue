@@ -75,7 +75,7 @@
         <img :src="detail.house_branch_photo">
       </div>
     </div>
-      <house-footer :detail='detail'/>
+      <house-footer :detail='detail' type='2'/>
   </div>
 </template>
 

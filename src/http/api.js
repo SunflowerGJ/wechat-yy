@@ -144,7 +144,7 @@ export const postShowMemberAccess = params => {
 export const postMobileSave = params => {
   return fly({
     method: 'post',
-    url: `api/member/mobileSave`,
+    url: `/api/member/mobileSave`,
     params: params
   })
 }
@@ -152,7 +152,7 @@ export const postMobileSave = params => {
 export const postAlbums = params => {
   return fly({
     method: 'post',
-    url: `api/houses/albums`,
+    url: `/api/houses/albums`,
     params: params
   })
 }

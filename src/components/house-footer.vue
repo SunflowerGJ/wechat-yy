@@ -9,10 +9,11 @@
         <img src="/static/images/fileback.png">
         <span>生成海报</span>
       </a>
-      <a @click="onAddCollection(detail,2)">
-        <img class="collection" src="/static/images/collection.png">
+      <a @click="onAddCollection(detail,type)">
+        <img v-if="isCollect === 0" class="collection" src="/static/images/collection.png">
         <span v-if="isCollect === 0">收藏</span>
-        <span v-else>已收藏</span>
+        <img v-if="isCollect === 1" class="collection" src="/static/images/is-collection.png">
+        <span v-if="isCollect === 1">已收藏</span>
       </a>
     </div>
     <div class="fixed_right">
@@ -34,7 +35,7 @@ import {
 } from '../http/api.js'
 
 export default {
-  props: ['detail'],
+  props: ['detail', 'type'],
   data () {
     return {
       isCollect: this.detail.is_collect,
@@ -120,7 +121,7 @@ export default {
         this.isCollect = 1
       } else {
         await postRemoveCollection({
-          aid: detail.id,
+          collection_id: detail.cid,
           type: type,
           token: this.globalData.token
         })

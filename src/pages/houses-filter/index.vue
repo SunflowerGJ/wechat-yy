@@ -12,7 +12,7 @@
           :index="index"
           :key="index"
           @click="housesTypeActive = index"
-        >{{item}}</span>
+        >{{item.label}}</span>
       </div>
     </div>
     <div class="cities">
@@ -42,7 +42,7 @@
           :index="index"
           :key="index"
           @click="apartmentActive=index"
-        >{{item}}</span>
+        >{{item.label}}</span>
       </div>
     </div>
     <div class="cities">
@@ -87,8 +87,11 @@
           :index="index"
           :key="index"
           @click="areasActive=index"
-        >{{item}}</span>
+        >{{item.label}}</span>
       </div>
+    </div>
+    <div class="footer">
+      <span @click="goIndex">确定</span>
     </div>
   </div>
 </template>
@@ -102,18 +105,32 @@ export default {
       totalpriceSetting: null,
       unitpriceSetting: null,
       spaces: null,
-      housesType: ['普通住宅', '别墅', '公寓', '商业', '办公', '全部'],
-      apartment: ['一室', '二室', '三室', '四室', '五室以上', '不限'],
+      housesType: [
+        { label: '普通住宅', value: 1 },
+        { label: '别墅', value: 2 },
+        { label: '公寓', value: 3 },
+        { label: '商业', value: 4 },
+        { label: '办公', value: 5 },
+        { label: '全部', value: 0 }
+      ],
+      apartment: [
+        { label: '一室', value: 1 },
+        { label: '二室', value: 2 },
+        { label: '三室', value: 3 },
+        { label: '四室', value: 4 },
+        { label: '五室', value: 5 },
+        { label: '不限', value: 0 }
+      ],
       areas: [
-        '50',
-        '50-70',
-        '70-90',
-        '90-110',
-        '110-130',
-        '130-150',
-        '150-200',
-        '200',
-        '不限'
+        { label: '50m²以下', value: '0-50' },
+        { label: '50-70m²', value: '50-70' },
+        { label: '70-90m²', value: '70-90' },
+        { label: '90-110m²', value: '90-110' },
+        { label: '110-130m²', value: '110-130' },
+        { label: '130-150m²', value: '130-150' },
+        { label: '150-200m²', value: '150-200' },
+        { label: '200m²以上', value: '200-0' },
+        { label: '不限', value: 0 }
       ],
       totalpriceActive: 0,
       unitpriceActive: 0,
@@ -127,6 +144,35 @@ export default {
     this.fetchIndexData(this.globalData.address)
   },
   methods: {
+    goIndex () {
+      // 住宅类型
+      const buildingType = this.housesType[this.housesTypeActive].value
+      // 城市信息
+      const areaId = this.spaces[this.spacesActive].id
+      // 户型
+      const housetype = this.apartment[this.apartmentActive].value
+      // 单价
+      const unitprice = this.unitpriceSetting[this.unitpriceActive]
+      // 总价
+      const totalprice = this.totalpriceSetting[this.totalpriceActive]
+      // 面积
+      const space = this.areas[this.areasActive].value
+      // console.log(buildingType)
+      // console.log(areaId)
+      // console.log(housetype)
+      // console.log(unitprice)
+      // console.log(totalprice)
+      // console.log(space)
+      const params = {
+        building_type: buildingType,
+        area_id: areaId,
+        housetype: housetype,
+        unitprice,
+        totalprice,
+        space
+      }
+      this.$wx.reLaunch({url: '/pages/index/main?params=' + JSON.stringify(params)})
+    },
     async fetchIndexData (city) {
       const data = await postIndex({ city })
       console.log(data)
@@ -181,9 +227,9 @@ export default {
       flex-wrap: wrap;
 
       .cities__tag {
-        width: 70px;
-        height: 24px;
-        line-height: 24px;
+        width: 100px;
+        height: 30px;
+        line-height: 30px;
         text-align: center;
         background: #F0F0F0;
         border-radius: 6px;
@@ -192,17 +238,38 @@ export default {
         color: #9FA0A0;
         display: inline-block;
         margin-bottom: 10px;
-        margin-right: 18px;
+        margin-right: 16px;
 
         &.cities__tag--selected {
           color: #fff;
           background-color: #E60113;
         }
 
-        &:nth-child(4n) {
+        &:nth-child(3n) {
           margin-right: 0;
         }
       }
+    }
+  }
+
+  .footer {
+    background: #fff;
+    padding: 0 20px;
+
+    span {
+      margin-top: 10px;
+      width: 100%;
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+      background: #F0F0F0;
+      border-radius: 6px;
+      overflow: hidden;
+      font-size: 18px;
+      color: #fff;
+      display: inline-block;
+      margin-bottom: 10px;
+      background-color: #E60113;
     }
   }
 }
