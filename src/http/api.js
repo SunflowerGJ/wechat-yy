@@ -156,3 +156,11 @@ export const postAlbums = params => {
     params: params
   })
 }
+// 生成小程序图片
+export const postEWM = params => {
+  return fly({
+    method: 'post',
+    url: `/api/member/createUnlimited`,
+    params: params
+  })
+}

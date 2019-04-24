@@ -311,7 +311,6 @@
       <house-footer :detail='detail' type='1'/>
   </div>
 </template>
-
 <script>
 import { postHousesDetail } from '../../http/api.js'
 import houseFooter from '../../components/house-footer'

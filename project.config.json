@@ -6,6 +6,7 @@
 		"postcss": true,
 		"minified": true,
 		"newFeature": true,
+		"nodeModules": false,
 		"checkInvalidKey": true
 	},
 	"miniprogramRoot": "dist/wx/",
@@ -14,6 +15,7 @@
 	"projectname": "wechat-yy",
 	"simulatorType": "wechat",
 	"simulatorPluginLibVersion": {},
+	"libVersion": "2.6.4",
 	"condition": {
 		"search": {
 			"current": -1,
