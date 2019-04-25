@@ -57,7 +57,7 @@
           :index="index"
           :key="index"
           @click="unitpriceActive=index"
-        >{{item}}</span>
+        >{{item.value}}</span>
       </div>
     </div>
     <div class="cities">
@@ -72,7 +72,7 @@
           :index="index"
           :key="index"
           @click="totalpriceActive=index"
-        >{{item}}</span>
+        >{{item.value}}</span>
       </div>
     </div>
     <div class="cities">
@@ -152,9 +152,9 @@ export default {
       // 户型
       const housetype = this.apartment[this.apartmentActive].value
       // 单价
-      const unitprice = this.unitpriceSetting[this.unitpriceActive]
+      const unitprice = this.unitpriceSetting[this.unitpriceActive].key
       // 总价
-      const totalprice = this.totalpriceSetting[this.totalpriceActive]
+      const totalprice = this.totalpriceSetting[this.totalpriceActive].key
       // 面积
       const space = this.areas[this.areasActive].value
       // console.log(buildingType)

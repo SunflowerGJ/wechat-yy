@@ -5,7 +5,7 @@
         <img src="/static/images/forward.png">
         <button open-type="share">转发分享</button>
       </a>
-      <a @click="getShareImg">
+      <a @click="getShareImgNew(detail.poster_url)">
         <img src="/static/images/fileback.png">
         <span>生成海报</span>
       </a>
@@ -16,7 +16,12 @@
         <span v-if="isCollect === 1">已收藏</span>
       </a>
     </div>
-    <div class="fixed_right">
+    <!-- // 已经有电话 -->
+    <div class="fixed_right" v-if="isPhone">
+      <img src="/static/images/phone.png">
+      <span @click='makePhoneCall'>VIP热线</span>
+    </div>
+    <div class="fixed_right" v-if="!isPhone">
       <img src="/static/images/phone.png">
       <button open-type="getPhoneNumber" @getphonenumber="getPhoneNumber">VIP热线</button>
     </div>
@@ -24,7 +29,9 @@
     <div class="modal" v-if="showModal">
       <div class="mark"></div>
       <div class="body">
-        <div class="close" @click="showModal = false"></div>
+        <div class="close" @click="showModal = false">
+          <img class="close-img" src='/static/images/icon-closed.png' />
+        </div>
         <div class="main">
           <div class='main-title'>
             <h4>保存后分享图片</h4>
@@ -33,7 +40,7 @@
            <div class="canvas-box">
             <canvas canvas-id="shareCanvas" style="width:220px;height:320px;"></canvas>
            </div>
-            <img v-if='showSharePic' :src="imagePath" alt="">
+            <img :src="imagePath" alt="">
           </div>
           <div class="main-footer">
             <span @click="modalConfirm">确定</span>
@@ -49,38 +56,24 @@
 import {
   postMobileSave,
   postAddCollection,
-  postRemoveCollection,
-  postEWM
+  postRemoveCollection
 } from '../http/api.js'
-import base64src from '../lib/base64src.js'
+
 export default {
   props: ['detail', 'type'],
   data () {
     return {
       isCollect: this.detail.is_collect,
       showModal: false,
-      modalImg: '',
       imagePath: '',
-      showSharePic: false,
-      hiddenShareCanvas: true
+      isPhone: ''
     }
   },
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function (res) {
-    return {
-      title: this.detail.house_id,
-      path: 'pages/door-details/main?id=' + this.$route.query.id
-    }
+  mounted () {
+    console.log(this.globalData.userinfo)
+    this.isPhone = this.globalData.userinfo.mobile || ''
   },
-
   methods: {
-
-    modalConfirm () {
-    // do something
-      this.saveImg()
-    },
     async getPhoneNumber (e) {
       if (e.mp.detail.errMsg === 'getPhoneNumber:ok') {
         wx.makePhoneCall({phoneNumber: '400-032-4608'})
@@ -90,14 +83,39 @@ export default {
         await postMobileSave({ encryptedData, iv, token: token.data })
       }
     },
+    makePhoneCall () { wx.makePhoneCall({phoneNumber: '400-032-4608'}) },
+    getShareImgNew (posterUrl) {
+      this.showModal = true
+      this.imagePath = posterUrl
+    },
+    modalConfirm () {
+      const _that = this
+      wx.getImageInfo({
+        src: this.imagePath,
+        success: (res) => {
+          wx.saveImageToPhotosAlbum({
+            filePath: res.path,
+            success: (res) => {
+              _that.showModal = false
+              wx.showToast({title: '保存成功', icon: 'success', duration: 1500})
+            },
+            fail: (e) => {
+              _that.showModal = false
+              wx.showToast({title: '保存失败', icon: 'success', duration: 1500})
+            }
+          })
+        }
+      })
+    },
     // 收藏/取消收藏
     async onAddCollection (detail, type) {
       if (this.isCollect === 0) {
-        await postAddCollection({
+        const data = await postAddCollection({
           obj_id: detail.id,
           type: type,
           token: this.globalData.token
         })
+        this.$emit('addCID', data.collection_id)
         wx.showToast({
           title: '收藏成功',
           icon: 'success',
@@ -117,129 +135,6 @@ export default {
         })
         this.isCollect = 0
       }
-    },
-    // 点击生产海报按钮
-    async getShareImg () {
-      console.log(this.$route)
-      // 获取小程序码和海报图片
-      const data = await postEWM({
-        route: 'pages/index/index',
-        params: this.$route.query.id,
-        token: this.globalData.token
-      })
-      this.showModal = true
-      console.log(data)
-      // 发布后替换
-      const data1 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAAGXcA1uAAAAAXNSR0IArs4c6QAAAuZJREFUSA2dVktrFEEQrp7d7MwmEfNYdjdG0fgAPQUEFcxBBUkO8SASDwqC3r0IingSf4Q3LyIYJCDm4kERBS9BA+rJS5CQYDbPkcQkO5tkpu2vku7M7MxuYgp6u+qrr6q7+jUrSMmUaJfoU1D2P39K6WNdm6hU4i+4UmiKIFGywO0I5kmS7GADAMTQYBQWxmim/ThUMiyEWa0tHA6HKIncFPLACIuYsnIvScobYdB2nENmjNTRI+T/Gjd+HsO+0kf5sVEqLE8QCCyYfFD2UAzL6tCw5ILwM3fmssYZBGbGMMm3lMRZVZPCtlVdApyFxXFegPTJE2Eu62bo4voMiVQqRtBAycqxapZ2uqFApXRe+00vV8ukyQBNAIzmR/fQkT87T+71OyTX1omyDmP6RyxkOw9WPG9SAzv0LgeseZUvSRsbCRZi8EAwf9MUHXHWMlRQpAbNw4Eze65B9OoUxQKw9jiIuW+fwlSjm4BU12Fqun+X2r9+YKe1r5lwR+z+XkOGYmrAEa8l0vcJ+wQxI5SHhhP5slIxZBDMCDCKy5MkGrNQjfDuB4GxzQhApOcZh1YaTndrlftIgFCrg+PgDtwmf26zpszFnkhAZEoRT4Kh3w43wZcIZRz7rD58PxSjLZG1d9BV70l3zRdo73m3I7nkHW/BFr/t/Wsqbsxyg74biT3BtYJaBp9R5sJ5EpbFDTqw3Uhsl1vfvqJMzznCCRXqtbCamurmCVZWSJY9ErZN6yOj5PYNRPjpiKUMf/I3iYY04bLtRngCahI45BvjE7GQWAXMEIJa37wgu/cSzywWFQJQaeXdR/pz9Rbek5BnU00eQPmEmlV++qdaosZYUBgIVlZptniKpFqqJIlczTDBudZPFLr08GG2aBFRHOZGwG2j5gCVzyO8PMHiEi0+eEwl9X5NZzu5QV96+ISCpb8kHIfWRr9vZ6zS/vvbWRVf38RHAZ8S/EUgZeDm1Y/Y2cs5VC7kRO5/7iMtye51JCIAAAAASUVORK5CYII='
-      const qrCode = await base64src(data1)
-      this.saveShareImg(qrCode)
-    },
-
-    saveShareImg (data) {
-      const goodsPicPath = 'http://yuanyang.thongfu.com/Public/Upload/image/20190407/1554566884a7c3990d0250c9b2.jpg'
-      const qrCodePath = data
-
-      if (this.imagePath) {
-        this.showSharePic = false
-        return
-      }
-      wx.showLoading({
-        title: '海报生成中…'
-      })
-      let _that = this
-      // 缓存海报图片
-      wx.getImageInfo({
-        src: goodsPicPath,
-        success: (res) => {
-          _that.goodsPicPath = res.path
-
-          // 缓存二维码图片
-          wx.getImageInfo({
-            src: qrCodePath,
-            success: (res) => {
-              wx.hideLoading()
-              _that.qrCodePath = res.path
-              _that.drawSharePic(_that.goodsPicPath, _that.qrCodePath)
-            },
-            fail: (e) => {
-              console.log(e)
-              wx.hideLoading()
-            }
-          })
-        },
-        fail: (e) => {
-          console.log(e)
-          wx.hideLoading()
-        }
-      })
-    },
-
-    // 2-绘制分享图片
-    drawSharePic (goodsPicPath, qrCodePath) {
-      let _that = this
-      // y方向的偏移量，因为是从上往下绘制的，所以y一直向下偏移，不断增大。
-      let yOffset = 0
-      const desc = '远洋置业'
-      const codeText = '长按扫码查看详情'
-      const canvasCtx = wx.createCanvasContext('shareCanvas')
-      // 在位置 220 创建蓝线  是下面例子中定义的所有文本的锚点
-      canvasCtx.setStrokeStyle()
-      canvasCtx.moveTo(220, 0)
-      canvasCtx.lineTo(220, 0)
-      canvasCtx.stroke()
-      // 绘制背景
-      canvasCtx.setFillStyle('white')
-      canvasCtx.fillRect(0, 0, 440, 640)
-      // 绘制海报图片
-      canvasCtx.drawImage(goodsPicPath, 0, 0, 440, 640)
-      // 绘制二维码
-      yOffset += 210
-      canvasCtx.drawImage(qrCodePath, 140, yOffset, 64, 64)
-      // 绘制客户产品名称
-      yOffset += 85
-      canvasCtx.setFontSize(12)
-      canvasCtx.setFillStyle('#fff')
-      canvasCtx.setTextAlign('center')
-      canvasCtx.fillText(desc, 170, yOffset)
-      // 绘制分享文字
-      yOffset += 15
-      canvasCtx.setFontSize(10)
-      canvasCtx.setFillStyle('#fff')
-      canvasCtx.setTextAlign('center')
-      canvasCtx.fillText(codeText, 170, yOffset)
-      // 绘制图片 绘制之后加一个延时去生成图片，如果直接生成可能没有绘制完成，导出图片会有问题。
-      canvasCtx.draw(false, setTimeout(function () {
-        wx.canvasToTempFilePath({
-          x: 0,
-          y: 0,
-          width: 250,
-          height: 375,
-          canvasId: 'shareCanvas',
-          success: function (res) {
-            _that.imagePath = res.tempFilePath
-            _that.showSharePic = true
-          },
-          fail: function (res) {
-            wx.showToast({title: '生成海报失败', icon: 'success', duration: 1500})
-          }
-        })
-      }, 200)
-      )
-    },
-    // 3. 当用户点击分享到朋友圈时，将图片保存到相册
-    saveImg () {
-      const _that = this
-      wx.saveImageToPhotosAlbum({
-        filePath: _that.imagePath,
-        success: (res) => {
-          _that.showModal = false
-          wx.showToast({title: '保存成功', icon: 'success', duration: 1500})
-        },
-        fail: (e) => {
-          _that.showModal = false
-          wx.showToast({title: '保存失败', icon: 'success', duration: 1500})
-        }
-      })
     }
   }
 }
@@ -319,7 +214,7 @@ export default {
     margin-right: 10px;
     margin-bottom: -3px;
   }
-
+  span,
   button {
     font-size: 14px;
     line-height: 30px;
@@ -360,10 +255,14 @@ export default {
      position absolute
      width 20px
      height 20px
-     background-color red
      top 0
      right 0
      z-index 1
+     .close-img
+       display block
+       width 14px
+       height 14px
+       margin 3px auto
     .main
       background-color #fff
       width 334px

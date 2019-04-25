@@ -72,6 +72,15 @@
 <script>
 import { postArticleList } from '../../http/api.js'
 export default {
+  // 右上角分享功能
+  onShareAppMessage: function (res) {
+    return {
+      title: '远洋置业欢迎您',
+      path: 'pages/activity/main',
+      success: function (res) {},
+      fail: function (res) {}
+    }
+  },
   data () {
     return {
       params: {

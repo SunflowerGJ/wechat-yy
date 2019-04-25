@@ -164,3 +164,11 @@ export const postEWM = params => {
     params: params
   })
 }
+// 微信授权更新用户信息接口
+export const postUserInfoSave = params => {
+  return fly({
+    method: 'post',
+    url: `/api/member/userInfoSave`,
+    params: params
+  })
+}

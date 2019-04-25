@@ -308,7 +308,7 @@
         <p>本平台对项目周边文化教育的介绍旨在提供相关信息，并不意味信息发布方对就学安排作出承诺。相关教育资源就学信息存在调整的可能，应以政府教育主管部门及办学方颁布的政策规定为准。</p>
       </div>
     </div>
-      <house-footer :detail='detail' type='1'/>
+      <house-footer :detail='detail' @addCID='addCID' type='1'/>
   </div>
 </template>
 <script>
@@ -316,6 +316,15 @@ import { postHousesDetail } from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
 var QQMapWX = require('qqmap-wx-jssdk')
 export default {
+  /**
+   * 用户点击右上角分享
+   */
+  onShareAppMessage: function (res) {
+    return {
+      title: '远洋置业欢迎您',
+      path: 'pages/home-page/main?id=' + this.$route.query.id
+    }
+  },
   components: {
     houseFooter
   },
@@ -402,6 +411,9 @@ export default {
     },
     goWatchList (id) {
       this.$router.push({ path: '/pages/watch-list/main', query: { id } })
+    },
+    addCID (cid) {
+      this.detail.cid = cid
     }
   }
 }

@@ -37,16 +37,29 @@
           :hData='item'></house-card>  
       </block>
     </div>
+    <get-user-info></get-user-info>
   </div>
 </template>
 
 <script>
+import GetUserInfo from '../../components/get-userinfo'
 import {postIndex} from '../../http/api.js'
 import HouseCard from '../../components/house-card'
 import {_getUserAddress} from '../../lib/getAddr.js'
 export default {
+
+// 右上角分享功能
+  onShareAppMessage: function (res) {
+    return {
+      title: '远洋置业欢迎您',
+      path: 'pages/index/main',
+      success: function (res) {},
+      fail: function (res) {}
+    }
+  },
   components: {
-    HouseCard
+    HouseCard,
+    GetUserInfo
   },
   data () {
     return {
@@ -65,11 +78,10 @@ export default {
           path: '/pages/houses-filter/main'
         }
       ],
-      address: '定位中'
+      address: '定位'
     }
   },
   methods: {
-    // 头部定位
     // 广告跳转
     goBanner (item) {
       // 广告类型 1外链公众号 2楼盘 3资讯

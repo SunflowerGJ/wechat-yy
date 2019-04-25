@@ -75,7 +75,7 @@
         <img :src="detail.house_branch_photo">
       </div>
     </div>
-      <house-footer :detail='detail' type='2'/>
+      <house-footer :detail='detail'  @addCID='addCID' type='2'/>
   </div>
 </template>
 
@@ -83,6 +83,18 @@
 import {postHouseTypeDetail} from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
 export default {
+  onShareAppMessage: function (res) {
+    return {
+      title: '远洋置业欢迎您',
+      path: 'pages/door-details/main?id=' + this.$route.query.id
+    }
+  },
+  onLoad: function (options) {
+    // 获取分享转发页面时携带的参数
+    // console.log('onLoad参数')
+    // console.log(options)
+  },
+
   components: {
     houseFooter
   },
@@ -91,11 +103,7 @@ export default {
       detail: null
     }
   },
-  onLoad: function (options) {
-    // 获取分享转发页面时携带的参数
-    // console.log('onLoad参数')
-    // console.log(options)
-  },
+
   async mounted () {
     const data = await postHouseTypeDetail({
       housetype_id: this.$route.query.id,
@@ -109,15 +117,6 @@ export default {
       title: data.house_id
     })
   },
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function (res) {
-    return {
-      title: this.detail.house_id,
-      path: 'pages/door-details/main?id=' + this.$route.query.id
-    }
-  },
   methods: {
     handleGoPhoto (name) {
       this.$router.push({path: '/pages/estate-photo/main', query: {...this.detail, tabName: name}})
@@ -125,6 +124,9 @@ export default {
     // 跳转计算器
     goCalculator () {
       this.$router.push({path: '/pages/calculator/main'})
+    },
+    addCID (cid) {
+      this.detail.cid = cid
     }
   }
 }

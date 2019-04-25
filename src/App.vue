@@ -15,9 +15,6 @@ export default {
     let userinfo = await this.$wx.getStorage({key: 'userinfo'})
     this.globalData.token = token.data
     this.globalData.userinfo = userinfo.data
-  },
-  methods: {
-
   }
 }
 </script>
