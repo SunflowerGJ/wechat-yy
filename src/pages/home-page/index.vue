@@ -450,15 +450,17 @@ export default {
     .label_name {
       display: flex;
       padding: 3px;
-      border: 1px solid #E60113;
+      border: 0.5px solid #E60113;
       border-radius: 3px;
       margin-right: 6px;
       margin-bottom: 6px;
       padding: 4px;
+      color: #373737
+      align-items center
 
       img {
-        width: 9px;
-        height: 9px;
+        width: 10px;
+        height: 10px;
         margin-right: 3px;
       }
 
@@ -469,6 +471,8 @@ export default {
   }
 
   .adder_panl {
+    display flex;
+    align-items center;
     padding: 0 20px;
     margin-bottom: 10px;
     font-size: 12px;
@@ -477,7 +481,7 @@ export default {
     img {
       width: 13px;
       height: 13px;
-      margin-right: 8px;
+      margin-right: 5px;
     }
   }
 
@@ -485,12 +489,13 @@ export default {
     padding: 0 20px;
     margin-bottom: 10px;
     font-size: 12px;
+    line-height 1.5;
     color: #3F3B3A;
 
     img {
       width: 11px;
       height: 14px;
-      margin-left: 16px;
+      margin-left: 8px;
       margin-bottom: -2px;
     }
   }
@@ -598,7 +603,7 @@ export default {
   background-color: #ffffff;
   margin: 10px 0;
   overflow: hidden;
-  padding: 10px 0 14px 20px;
+  padding: 15px 0 15px 20px;
 
   .estate_title {
     border-left: 2px solid #FF2B2B;
@@ -783,7 +788,7 @@ export default {
     color: #9FA0A0;
     font-size: 14px;
     text-align: center;
-    padding: 10px 0 6px 0;
+    padding: 15px 0;
   }
 }
 
@@ -804,10 +809,11 @@ export default {
   background-color: #ffffff;
 
   .imgBox {
-    margin: 14px 0 10px 0;
     width: 100%;
     display: flex;
     justify-content: space-between;
+    padding-top 15px;
+    padding-bottom 15px;
 
     a {
       width: 160px;
@@ -859,7 +865,7 @@ export default {
           img {
             width: 18px;
             height: 18px;
-            margin-right: 12px;
+            margin-right: 8px;
           }
 
           span {
@@ -1031,5 +1037,6 @@ export default {
 
 .rich-text {
   font-size: 12px !important;
+  line-height 1.5
 }
 </style>
