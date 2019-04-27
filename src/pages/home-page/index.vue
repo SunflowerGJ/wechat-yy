@@ -387,9 +387,7 @@ export default {
                 _distance: res.data[i]._distance
               })
             }
-            if (index === 0) {
-              this.mks = mks
-            }
+            this.mks = mks
           }
         })
       })
