@@ -66,7 +66,8 @@ export default {
       isCollect: this.detail.is_collect,
       showModal: false,
       imagePath: '',
-      isPhone: ''
+      isPhone: '',
+      acti: false
     }
   },
   mounted () {
@@ -249,9 +250,9 @@ export default {
     background rgba(0,0,0,.3)
   .body
     position fixed
-    top 50%
-    left 50%
-    transform translate(-50%, -50%)
+    bottom 0
+    left 0
+    // transform translate(-50%, -50%)
     z-index 3 
     .close
      position absolute
@@ -267,10 +268,10 @@ export default {
        margin 3px auto
     .main
       background-color #fff
-      width 334px
+      width 375px
       height 445px
       overflow hidden
-      border-radius 5px
+      // border-radius 5px
       padding 20px
       box-sizing border-box
       position relative
@@ -310,12 +311,6 @@ export default {
           width 170px
           height 250px
           margin 30px 25px
-
-
-
-
-
-
 .canvas-box
   width 100%
   position fixed
@@ -326,4 +321,5 @@ export default {
   width 100%
   height 300px
 }
+
 </style>

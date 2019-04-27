@@ -64,7 +64,7 @@
           <span>楼盘动态</span>
         </div>
         <div class="estate_panl">
-          <scroll-view class="scroll-view_H" scroll-x="true" style="width: 100%">
+          <scroll-view class="scroll-view_H" scroll-x="true" style="white-space: nowrap; display: flex;">
             <div class="swiper-item scroll_item" @click="goActivityDetail(item.id)" v-for="(item,index) in detail.article" :key="index">
               <div class="item-main_tag" v-if="item.is_top === '1'">
                 <i></i>
@@ -358,6 +358,15 @@ export default {
     this.detail.albums = Object.keys(data.albums).map(key => data.albums[key])
     this.detail.strong_point = JSON.parse(data.strong_point)
     this.detail.tags = data.tags.split('|')
+    this.detail.browse_users.list = this.detail.browse_users.list.filter((e, i) => i < 6)
+    this.detail.browse_users.list.push({
+      'aid': '0',
+      'mid': '0',
+      'nickname': '0',
+      'headimgurl': '/static/images/burs-avatar.png',
+      'create_time': '0',
+      'update_time': '0'
+    })
     this.$wx.setNavigationBarTitle({
       title: data.name
     })
@@ -642,8 +651,8 @@ export default {
     margin-top: 14px;
 
     .scroll-view_H {
-      display: flex;
-      white-space: nowrap;
+      // display: flex;
+      // white-space: nowrap;
 
       .scroll_item {
         display: inline-block;
@@ -655,6 +664,7 @@ export default {
         margin-right: 10px;
         overflow: hidden;
         padding: 7px;
+        vertical-align:middle;
 
         .item-main_tag {
           height: 20px;
@@ -709,6 +719,9 @@ export default {
           font-size: 14px;
           color: #9A9A9A;
           margin-top: 6px;
+          position: absolute
+          bottom :7px
+          right:7px
         }
       }
     }
