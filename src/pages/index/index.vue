@@ -2,8 +2,8 @@
   <div class="container .test"> 
     <div class="header">
       <div class="adr"  @click='goCityList'>
-        <img src="/static/images/icon-addr.png" alt="">
         <span class="adr-selected">{{address}}</span>
+         <img src="/static/images/icon-index-addr.png" alt="">
       </div>
       <div class="search" @click="goHousesSearch">
         <img src="/static/images/icon-search.png" alt="">
@@ -160,8 +160,9 @@ export default {
         color: #636363;  
       img 
         display block
-        width 16px
-        height 20px  
+        width 14px
+        height 17px 
+        margin-left 10px 
 
   .search
     background-color #fff   

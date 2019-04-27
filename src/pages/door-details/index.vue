@@ -3,6 +3,7 @@
     <div class="panl_swiper">
       <img :src="detail.photo" @click="handleGoPhoto('样板间')"/>
       <div class="tranTrian" v-if="detail.id_sale==='1'">
+        <img src="/static/images/icon-door-tag.png" alt="">
           <span class="tranTitle">在售</span>
       </div>
     </div>
@@ -142,6 +143,8 @@ export default {
     width 100%
     height 220px
     position relative
+    box-sizing border-box
+    padding 10px 50px
     img 
       display block
       width 100%
@@ -159,24 +162,25 @@ export default {
       top 0
       z-index 2
       display flex
+      width 36px
+      height 20px
+      img 
+        position absolute
+        width 100%
+        height 100%
+        left 0
+        top 0
+        z-index 1
       .tranTitle
-        width 36px
-        height 14px
-        color #ffffff
-        display inline-block
-        background-color #E60113
+        position absolute
+        width 100%
+        height 100%
+        left 0
+        top 0
+        z-index 2
         font-size 12px
         text-align center
-        padding 4px 8px
-        border-bottom-left-radius 6px 
-        border-bottom-right-radius 6px 
-      .trian
-        float left
-        width 0
-        height 0
-        border-width 18px
-        border-style solid
-        border-color #E60113 transparent transparent transparent
+        color #fff
   .door_panl
     padding 20px
     background-color #ffffff

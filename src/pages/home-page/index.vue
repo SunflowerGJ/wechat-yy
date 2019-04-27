@@ -483,6 +483,12 @@ export default {
       height: 13px;
       margin-right: 5px;
     }
+
+    span {
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap
+    }
   }
 
   .sales_panl {
