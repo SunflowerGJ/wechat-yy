@@ -3,313 +3,315 @@
     <div class="panl_swiper">
       <img :src="detail.photo" @click="handleGoPhoto('样板间')"/>
     </div>
-    <div class="delta_panl">
-      <div class="label_panl">
-        <div class="label_name" v-for="(tag,index) in detail.tags" :key="index">
-          <img src="/static/images/icon-tag.png">
-          <span>{{tag}}</span>
-        </div>
-      </div>
-      <div class="adder_panl">
-        <img src="/static/images/icon-lou.png">
-        <span>项目地址：{{detail.address}}</span>
-      </div>
-      <div class="sales_panl" @click="goAroundMap(detail)">
-        <span class="adder_panl_add">售楼处地址：{{detail.office_address}}</span>
-        <img src="/static/images/icon-addr.png">
-      </div>
-    </div>
-    <div class="price_panl">
-      <div class="price_name">
-        <p>
-          约
-          <span>{{detail.total_price}}万元</span>/套
-        </p>
-        <p>参考总价</p>
-      </div>
-      <div class="price_name">
-        <p>{{detail.average_price}}元/m²</p>
-        <p>参考均价</p>
-      </div>
-      <div class="price_name">
-        <p>{{detail.property_type}}</p>
-        <p>物业类型</p>
-      </div>
-    </div>
-    <div class="onlookers_panl">
-      <div class="looks_panl" @click="goWatchList(detail.id)" v-if="detail.is_publish === '1'">
-        <div class="left_panl">
-          <p class="num">{{detail.browse_users.count}}</p>
-          <p class="title">围观人数</p>
-        </div>
-        <div class="right_panl">
-          <div
-            class="imgall"
-            v-for="(item,index)  in detail.browse_users.list"
-            :key="index"
-            :style="{zIndex:index,left:(index*30)+'px'}"
-          >
-            <img v-if="item.headimgurl" :src="item.headimgurl">
+    <div class="sroll_container">
+      <div class="delta_panl">
+        <div class="label_panl">
+          <div class="label_name" v-for="(tag,index) in detail.tags" :key="index">
+            <img src="/static/images/icon-tag.png">
+            <span>{{tag}}</span>
           </div>
         </div>
-      </div>
-      <div class="copent_panl" @click="handleGo">
-        <img src="/static/images/cpument.png">
-        <span>房贷计算器</span>
-      </div>
-    </div>
-    <div class="estate_news_panl">
-      <div class="estate_title">
-        <span>楼盘动态</span>
-      </div>
-      <div class="estate_panl">
-        <scroll-view class="scroll-view_H" scroll-x="true" style="width: 100%">
-          <div class="swiper-item scroll_item" @click="goActivityDetail(item.id)" v-for="(item,index) in detail.article" :key="index">
-            <div class="item-main_tag" v-if="item.is_top === '1'">
-              <i></i>
-              <div class="lawyerType-bgImg"></div>
-              <span>置顶</span>
-            </div>
-            <p class="text_panl">{{item.content}}</p>
-            <p class="deta_panl">{{item.create_time}}</p>
-          </div>
-        </scroll-view>
-      </div>
-    </div>
-    <div class="apartment_panl">
-      <div class="apar_title">
-        <span>户型介绍</span>
-        <a @click="goDoorList(detail.id)">更多户型 ></a>
-      </div>
-      <div class="apar_panl"  @click="goHousesDetail(item.id)" v-for="(item,index) in detail.housetypes" :key="index">
-        <div class="apar_left">
-          <img mode="aspectFit" :src="item.photo">
+        <div class="adder_panl">
+          <img src="/static/images/icon-lou.png">
+          <span>项目地址：{{detail.address}}</span>
         </div>
-        <div class="apar_right">
-          <p class="titel">
-            <img src="/static/images/storey.png">
-            <span>{{item.name}}</span>
+        <div class="sales_panl" @click="goAroundMap(detail)">
+          <span class="adder_panl_add">售楼处地址：{{detail.office_address}}</span>
+          <img src="/static/images/icon-addr.png">
+        </div>
+      </div>
+      <div class="price_panl">
+        <div class="price_name">
+          <p>
+            约
+            <span>{{detail.total_price}}万元</span>/套
           </p>
-          <ul class="apar_details">
+          <p>参考总价</p>
+        </div>
+        <div class="price_name">
+          <p>{{detail.average_price}}元/m²</p>
+          <p>参考均价</p>
+        </div>
+        <div class="price_name">
+          <p>{{detail.property_type}}</p>
+          <p>物业类型</p>
+        </div>
+      </div>
+      <div class="onlookers_panl">
+        <div class="looks_panl" @click="goWatchList(detail.id)" v-if="detail.is_publish === '1'">
+          <div class="left_panl">
+            <p class="num">{{detail.browse_users.count}}</p>
+            <p class="title">围观人数</p>
+          </div>
+          <div class="right_panl">
+            <div
+              class="imgall"
+              v-for="(item,index)  in detail.browse_users.list"
+              :key="index"
+              :style="{zIndex:index,left:(index*30)+'px'}"
+            >
+              <img v-if="item.headimgurl" :src="item.headimgurl">
+            </div>
+          </div>
+        </div>
+        <div class="copent_panl" @click="handleGo">
+          <img src="/static/images/cpument.png">
+          <span>房贷计算器</span>
+        </div>
+      </div>
+      <div class="estate_news_panl">
+        <div class="estate_title">
+          <span>楼盘动态</span>
+        </div>
+        <div class="estate_panl">
+          <scroll-view class="scroll-view_H" scroll-x="true" style="width: 100%">
+            <div class="swiper-item scroll_item" @click="goActivityDetail(item.id)" v-for="(item,index) in detail.article" :key="index">
+              <div class="item-main_tag" v-if="item.is_top === '1'">
+                <i></i>
+                <div class="lawyerType-bgImg"></div>
+                <span>置顶</span>
+              </div>
+              <p class="text_panl">{{item.content}}</p>
+              <p class="deta_panl">{{item.create_time}}</p>
+            </div>
+          </scroll-view>
+        </div>
+      </div>
+      <div class="apartment_panl">
+        <div class="apar_title">
+          <span>户型介绍</span>
+          <a @click="goDoorList(detail.id)">更多户型 ></a>
+        </div>
+        <div class="apar_panl"  @click="goHousesDetail(item.id)" v-for="(item,index) in detail.housetypes" :key="index">
+          <div class="apar_left">
+            <img mode="aspectFit" :src="item.photo">
+          </div>
+          <div class="apar_right">
+            <p class="titel">
+              <img src="/static/images/storey.png">
+              <span>{{item.name}}</span>
+            </p>
+            <ul class="apar_details">
+              <li>
+                <label>【 建 面 】</label>
+                {{item.inside_space}}m²
+              </li>
+              <li>
+                <label>【 朝 向 】</label>
+                {{item.orientation}}
+              </li>
+              <li>
+                <label>【 总 价 】</label>
+                约<span>{{item.total_price}}万元</span>/套
+              </li>
+              <li>
+                <label>【 单 价 】</label>
+                {{item.unit_price}}元/m²
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="estateDetails_panl">
+        <div class="titles_panl">
+          <span>楼盘详情</span>
+        </div>
+        <ul class="floor_details">
+          <li>
+            <label>售楼地址：</label>
+            <span>{{detail.address}}</span>
+          </li>
+          <li>
+            <label>楼盘别名：</label>
+            <span>{{detail.alias}}</span>
+          </li>
+          <li>
+            <label>参考均价：</label>
+            <span>{{detail.average_price}}/m²</span>
+          </li>
+          <li>
+            <label>参考总价：</label>
+            <span>{{detail.total_price}}万/套起</span>
+          </li>
+          <li>
+            <label>物业类型：</label>
+            <span>{{detail.property_type}}</span>
+          </li>
+          <li>
+            <label>建筑类型：</label>
+            <span>{{detail.building_type}}</span>
+          </li>
+          <li>
+            <label>装修标准：</label>
+            <span>{{detail.decoration_standard}}</span>
+          </li>
+          <li>
+            <label>产权年限：</label>
+            <span>{{detail.property_limit}}年</span>
+          </li>
+          <li>
+            <label>最新开盘：</label>
+            <span>{{detail.opening_time}}</span>
+          </li>
+          <block v-if="getMore">
             <li>
-              <label>【 建 面 】</label>
-              {{item.inside_space}}m²
+              <label>占地面积：</label>
+              <span>{{detail.land_acreage}}</span>
             </li>
             <li>
-              <label>【 朝 向 】</label>
-              {{item.orientation}}
+              <label>建筑面积：</label>
+              <span>{{detail.floor_space}}</span>
             </li>
             <li>
-              <label>【 总 价 】</label>
-              约<span>{{item.total_price}}万元</span>/套
+              <label>容<i class="space-1"></i>积<i class="space-1"></i>率： </label>
+              <span>{{detail.plot_ratio}}</span>
             </li>
             <li>
-              <label>【 单 价 】</label>
-              {{item.unit_price}}元/m²
+              <label>绿<i class="space-1"></i>化<i class="space-1"></i>率：</label>
+              <span>{{detail.greening_rate}}</span>
+            </li>
+            <li>
+              <label>规划车位：</label>
+              <span>{{detail.parking_spaces}}</span>
+            </li>
+            <li>
+              <label>规划楼栋：</label>
+              <span>{{detail.building}}</span>
+            </li>
+            <li>
+              <label>规划户数：</label>
+              <span>{{detail.households}}</span>
+            </li>
+            <li>
+              <label>物业公司：</label>
+              <span>{{detail.property_company}}</span>
+            </li>
+            <li>
+              <label>物业费用：</label>
+              <span>{{detail.property_costs}}</span>
+            </li>
+            <li>
+              <label>供暖方式：</label>
+              <span>{{detail.heating_type}}</span>
+            </li>
+            <li>
+              <label>供<i class="space-2"></i>水：</label>
+              <span>{{detail.water_supply}}</span>
+            </li>
+            <li>
+              <label>供<i class="space-2"></i>电：</label>
+              <span>{{detail.power_supply}}</span>
+            </li>
+          </block>
+        </ul>
+        <p class="getMore" @click="getMore = !getMore">{{getMore?"上拉收起":'下拉展开更多'}}</p>
+      </div>
+      <div class="designImg_panl">
+        <div class="itemImg_panl" v-for="(item,index) in detail.albums" :key="index">
+          <div class="titles_panl">
+            <span>{{item.name}}({{item.photos.length}})</span>
+          </div>
+          <div class="imgBox">
+            <a v-for="(tItem,tIndex) in item.photos" :key="tIndex" @click="handleGoPhoto(item.name)">
+              <img :src="tItem.photo">
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="brighDot_panl">
+        <div class="brigDotBox">
+          <div class="titles_panl">
+            <span>楼盘亮点</span>
+          </div>
+          <div class="about_panl">
+            <rich-text class="rich-text" :nodes="detail.intro"></rich-text>
+          </div>
+        </div>
+        <div class="flootAbout">
+          <ul>
+            <li v-for="(item,index) in detail.strong_point" :key="index">
+              <p class="titel_p">
+                <img src="/static/images/icon-tag.png">
+                <span>{{item.key}}</span>
+              </p>
+              <p class="about_p">{{item.value}}</p>
             </li>
           </ul>
         </div>
       </div>
-    </div>
-    <div class="estateDetails_panl">
-      <div class="titles_panl">
-        <span>楼盘详情</span>
-      </div>
-      <ul class="floor_details">
-        <li>
-          <label>售楼地址：</label>
-          <span>{{detail.address}}</span>
-        </li>
-        <li>
-          <label>楼盘别名：</label>
-          <span>{{detail.alias}}</span>
-        </li>
-        <li>
-          <label>参考均价：</label>
-          <span>{{detail.average_price}}/m²</span>
-        </li>
-        <li>
-          <label>参考总价：</label>
-          <span>{{detail.total_price}}万/套起</span>
-        </li>
-        <li>
-          <label>物业类型：</label>
-          <span>{{detail.property_type}}</span>
-        </li>
-        <li>
-          <label>建筑类型：</label>
-          <span>{{detail.building_type}}</span>
-        </li>
-        <li>
-          <label>装修标准：</label>
-          <span>{{detail.decoration_standard}}</span>
-        </li>
-        <li>
-          <label>产权年限：</label>
-          <span>{{detail.property_limit}}年</span>
-        </li>
-        <li>
-          <label>最新开盘：</label>
-          <span>{{detail.opening_time}}</span>
-        </li>
-        <block v-if="getMore">
-          <li>
-            <label>占地面积：</label>
-            <span>{{detail.land_acreage}}</span>
-          </li>
-          <li>
-            <label>建筑面积：</label>
-            <span>{{detail.floor_space}}</span>
-          </li>
-          <li>
-            <label>容<i class="space-1"></i>积<i class="space-1"></i>率： </label>
-            <span>{{detail.plot_ratio}}</span>
-          </li>
-          <li>
-            <label>绿<i class="space-1"></i>化<i class="space-1"></i>率：</label>
-            <span>{{detail.greening_rate}}</span>
-          </li>
-          <li>
-            <label>规划车位：</label>
-            <span>{{detail.parking_spaces}}</span>
-          </li>
-          <li>
-            <label>规划楼栋：</label>
-            <span>{{detail.building}}</span>
-          </li>
-          <li>
-            <label>规划户数：</label>
-            <span>{{detail.households}}</span>
-          </li>
-          <li>
-            <label>物业公司：</label>
-            <span>{{detail.property_company}}</span>
-          </li>
-          <li>
-            <label>物业费用：</label>
-            <span>{{detail.property_costs}}</span>
-          </li>
-          <li>
-            <label>供暖方式：</label>
-            <span>{{detail.heating_type}}</span>
-          </li>
-          <li>
-            <label>供<i class="space-2"></i>水：</label>
-            <span>{{detail.water_supply}}</span>
-          </li>
-          <li>
-            <label>供<i class="space-2"></i>电：</label>
-            <span>{{detail.power_supply}}</span>
-          </li>
-        </block>
-      </ul>
-      <p class="getMore" @click="getMore = !getMore">{{getMore?"上拉收起":'下拉展开更多'}}</p>
-    </div>
-    <div class="designImg_panl">
-      <div class="itemImg_panl" v-for="(item,index) in detail.albums" :key="index">
-        <div class="titles_panl">
-          <span>{{item.name}}({{item.photos.length}})</span>
-        </div>
-        <div class="imgBox">
-          <a v-for="(tItem,tIndex) in item.photos" :key="tIndex" @click="handleGoPhoto(item.name)">
-            <img :src="tItem.photo">
-          </a>
-        </div>
-      </div>
-    </div>
-    <div class="brighDot_panl">
-      <div class="brigDotBox">
-        <div class="titles_panl">
-          <span>楼盘亮点</span>
-        </div>
-        <div class="about_panl">
-          <rich-text class="rich-text" :nodes="detail.intro"></rich-text>
-        </div>
-      </div>
-      <div class="flootAbout">
-        <ul>
-          <li v-for="(item,index) in detail.strong_point" :key="index">
-            <p class="titel_p">
-              <img src="/static/images/icon-tag.png">
-              <span>{{item.key}}</span>
-            </p>
-            <p class="about_p">{{item.value}}</p>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <div class="match_panl">
-      <div class="title_marig">
-        <div class="titles_panl">
-          <span>周边配套</span>
-        </div>
-      </div>
-      <div class="map_img">
-        <img src="/static/images/mapImg.jpeg">
-        <div class="dialog">
-          {{detail.name}}
-          <div class="triangle_border_down"></div>
-        </div>
-      </div>
-      <div class="matchBox">
-        <div class="macund">
-          <img src="/static/images/route.png">
-          <div class="cen_text">
-            <p>公交路线</p>
-            <p>约{{searchMap['公交路线']}}处</p>
+      <div class="match_panl">
+        <div class="title_marig">
+          <div class="titles_panl">
+            <span>周边配套</span>
           </div>
         </div>
-        <div class="macund">
-          <img src="/static/images/education.png">
-          <div class="cen_text">
-            <p>教育机构</p>
-            <p>约{{searchMap['教育机构']}}处</p>
+        <div class="map_img">
+          <img src="/static/images/mapImg.jpeg">
+          <div class="dialog">
+            {{detail.name}}
+            <div class="triangle_border_down"></div>
           </div>
         </div>
-        <div class="macund">
-          <img src="/static/images/hospital.png">
-          <div class="cen_text">
-            <p>医院设施</p>
-            <p>约{{searchMap['医院设施']}}处</p>
+        <div class="matchBox">
+          <div class="macund">
+            <img src="/static/images/route.png">
+            <div class="cen_text">
+              <p>公交路线</p>
+              <p>约{{searchMap['公交路线']}}处</p>
+            </div>
+          </div>
+          <div class="macund">
+            <img src="/static/images/education.png">
+            <div class="cen_text">
+              <p>教育机构</p>
+              <p>约{{searchMap['教育机构']}}处</p>
+            </div>
+          </div>
+          <div class="macund">
+            <img src="/static/images/hospital.png">
+            <div class="cen_text">
+              <p>医院设施</p>
+              <p>约{{searchMap['医院设施']}}处</p>
+            </div>
+          </div>
+          <div class="macund">
+            <img src="/static/images/bank.png">
+            <div class="cen_text">
+              <p>银行网点</p>
+              <p>约{{searchMap['银行网点']}}处</p>
+            </div>
+          </div>
+          <div class="macund">
+            <img src="/static/images/foot.png">
+            <div class="cen_text">
+              <p>餐饮商户</p>
+              <p>约{{searchMap['餐饮商户']}}处</p>
+            </div>
+          </div>
+          <div class="macund">
+            <img src="/static/images/bus.png">
+            <div class="cen_text">
+              <p>公交</p>
+              <p>约{{searchMap['公交']}}处</p>
+            </div>
           </div>
         </div>
-        <div class="macund">
-          <img src="/static/images/bank.png">
-          <div class="cen_text">
-            <p>银行网点</p>
-            <p>约{{searchMap['银行网点']}}处</p>
-          </div>
-        </div>
-        <div class="macund">
-          <img src="/static/images/foot.png">
-          <div class="cen_text">
-            <p>餐饮商户</p>
-            <p>约{{searchMap['餐饮商户']}}处</p>
-          </div>
-        </div>
-        <div class="macund">
-          <img src="/static/images/bus.png">
-          <div class="cen_text">
-            <p>公交</p>
-            <p>约{{searchMap['公交']}}处</p>
-          </div>
-        </div>
-      </div>
 
-      <div class="distancBox">
-        <ul>
-          <li :key="key" v-for="(mk, key) in mks">
-            <p class="addr">{{mk.title}}</p>
-            <p class="add_but">
-              <img src="/static/images/icon-addr.png">
-              <span>{{mk._distance}}m</span>
-            </p>
-          </li>
-        </ul>
-      </div>
-      <div class="affirm_panl">
-        <p>免责声明：以上价格仅供参考，具体一房一价的信息以售楼处展示为准。本网显示房屋位置、交通、医疗、教育、商业等配套信息，均来源于第三方网络数据，不作为要约，仅供参考。双方具体权利义务应以法律规定及买卖合同约定为准。</p>
-        <p>本平台对项目周边文化教育的介绍旨在提供相关信息，并不意味信息发布方对就学安排作出承诺。相关教育资源就学信息存在调整的可能，应以政府教育主管部门及办学方颁布的政策规定为准。</p>
+        <div class="distancBox">
+          <ul>
+            <li :key="key" v-for="(mk, key) in mks">
+              <p class="addr">{{mk.title}}</p>
+              <p class="add_but">
+                <img src="/static/images/icon-addr.png">
+                <span>{{mk._distance}}m</span>
+              </p>
+            </li>
+          </ul>
+        </div>
+        <div class="affirm_panl">
+          <p>免责声明：以上价格仅供参考，具体一房一价的信息以售楼处展示为准。本网显示房屋位置、交通、医疗、教育、商业等配套信息，均来源于第三方网络数据，不作为要约，仅供参考。双方具体权利义务应以法律规定及买卖合同约定为准。</p>
+          <p>本平台对项目周边文化教育的介绍旨在提供相关信息，并不意味信息发布方对就学安排作出承诺。相关教育资源就学信息存在调整的可能，应以政府教育主管部门及办学方颁布的政策规定为准。</p>
+        </div>
       </div>
     </div>
       <house-footer :detail='detail' @addCID='addCID' type='1'/>
@@ -432,12 +434,21 @@ export default {
 .panl_swiper {
   width: 100%;
   height: 200px;
+  position: fixed;
+  top:0;
+  left: 0;
 
   img {
     display: block;
     width: 100%;
     height: 100%;
   }
+}
+.sroll_container {
+  margin-top: 200px;
+  position: relative;
+  z-index: 1;
+  background-color: #fff;
 }
 
 .delta_panl {
