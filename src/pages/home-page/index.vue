@@ -15,7 +15,7 @@
         <span>项目地址：{{detail.address}}</span>
       </div>
       <div class="sales_panl" @click="goAroundMap(detail)">
-        <span>售楼处地址：{{detail.office_address}}</span>
+        <span class="adder_panl_add">售楼处地址：{{detail.office_address}}</span>
         <img src="/static/images/icon-addr.png">
       </div>
     </div>
@@ -485,12 +485,6 @@ export default {
       height: 13px;
       margin-right: 5px;
     }
-
-    span {
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap
-    }
   }
 
   .sales_panl {
@@ -499,12 +493,22 @@ export default {
     font-size: 12px;
     line-height 1.5;
     color: #3F3B3A;
+    position: relative
 
     img {
       width: 11px;
       height: 14px;
-      margin-left: 8px;
-      margin-bottom: -2px;
+      position absolute
+      top:2px
+      right:20px
+    }
+
+    .adder_panl_add {
+      overflow: hidden
+      text-overflow:ellipsis
+      white-space: nowrap
+      width: 98%
+      display:block
     }
   }
 }
