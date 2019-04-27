@@ -245,7 +245,11 @@
         </div>
       </div>
       <div class="map_img">
-        <img src="/static/images/mapImg.png">
+        <img src="/static/images/mapImg.jpeg">
+        <div class="dialog">
+          {{detail.name}}
+          <div class="triangle_border_down"></div>
+        </div>
       </div>
       <div class="matchBox">
         <div class="macund">
@@ -894,11 +898,34 @@ export default {
   .map_img {
     width: 100%;
     height: 150px;
+    position: relative;
 
     img {
       width: 100%;
       height: 100%;
     }
+  }
+
+  .dialog {
+    position:absolute
+    top 13%;
+    left 50%;
+    transform translateX(-20%);
+    background-color #fff;
+    padding: 10px;
+    border-radius 5px;
+    font-size: 12px;
+  }
+  .triangle_border_down{
+    width:0;
+    height:0;
+    border-width:6px 6px 0;
+    border-style:solid;
+    border-color:#fff transparent transparent;/*灰 透明 透明 */
+    position:absolute;
+    bottom: -6px;
+    left: 50%;
+    margin-left: -3px;
   }
 
   .matchBox {
