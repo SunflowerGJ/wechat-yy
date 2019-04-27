@@ -70,7 +70,6 @@ export default {
     }
   },
   mounted () {
-    console.log(this.globalData.userinfo)
     this.isPhone = this.globalData.userinfo.mobile || ''
   },
   methods: {
@@ -79,7 +78,10 @@ export default {
         wx.makePhoneCall({phoneNumber: '400-032-4608'})
         // 授权成功
         const { encryptedData, iv } = e.mp.detail
-        let token = await this.$wx.getStorage({key: 'token'})
+        let token
+        try {
+          token = await this.$wx.getStorage({key: 'token'})
+        } catch (error) {}
         await postMobileSave({ encryptedData, iv, token: token.data })
       }
     },

@@ -100,8 +100,8 @@
               {{item.orientation}}
             </li>
             <li>
-              <label>【 总 价 】</label>约
-              <span>{{item.total_price}}万元</span>/套
+              <label>【 总 价 】</label>
+              约<span>{{item.total_price}}万元</span>/套
             </li>
             <li>
               <label>【 单 价 】</label>
@@ -162,11 +162,11 @@
             <span>{{detail.floor_space}}</span>
           </li>
           <li>
-            <label>容积率：</label>
+            <label>容<i class="space-1"></i>积<i class="space-1"></i>率： </label>
             <span>{{detail.plot_ratio}}</span>
           </li>
           <li>
-            <label>绿化率：</label>
+            <label>绿<i class="space-1"></i>化<i class="space-1"></i>率：</label>
             <span>{{detail.greening_rate}}</span>
           </li>
           <li>
@@ -194,11 +194,11 @@
             <span>{{detail.heating_type}}</span>
           </li>
           <li>
-            <label>供水：</label>
+            <label>供<i class="space-2"></i>水：</label>
             <span>{{detail.water_supply}}</span>
           </li>
           <li>
-            <label>供电：</label>
+            <label>供<i class="space-2"></i>电：</label>
             <span>{{detail.power_supply}}</span>
           </li>
         </block>
@@ -1037,6 +1037,16 @@ export default {
 
 .rich-text {
   font-size: 12px !important;
-  line-height 1.5
+  line-height 1.5 !important;
+  font-size 12px !important;
+}
+
+.space-2 {
+  display inline-block
+  width 54rpx
+}
+.space-1 {
+  display inline-block
+  width 15rpx
 }
 </style>

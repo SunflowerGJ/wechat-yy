@@ -1,9 +1,9 @@
 <template>
   <div class="container .test"> 
     <div class="header">
-      <div class="adr">
+      <div class="adr"  @click='goCityList'>
+        <img src="/static/images/icon-addr.png" alt="">
         <span class="adr-selected">{{address}}</span>
-        <span class="adr-select" @click='goCityList'>选择地址></span>
       </div>
       <div class="search" @click="goHousesSearch">
         <img src="/static/images/icon-search.png" alt="">
@@ -149,6 +149,8 @@ export default {
     box-sizing border-box
     .adr
       width 100px
+      display flex
+      align-items center
       .adr-selected
         font-family: PingFangSC-Regular;
         font-size: 20px;
@@ -156,6 +158,11 @@ export default {
       .adr-select
         font-size: 12px;
         color: #636363;  
+      img 
+        display block
+        width 16px
+        height 20px  
+
   .search
     background-color #fff   
     width 218px
@@ -167,7 +174,11 @@ export default {
     img 
       width 24px
       height 24px
-      margin 0 10px 0 24px   
+      margin 0 10px 0 24px 
+    input 
+     display block
+     height 28px
+     line-height 28px    
   .swipe-banner
     height 160px
     .swipe-banner__wrap

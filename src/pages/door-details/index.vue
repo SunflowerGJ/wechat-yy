@@ -32,16 +32,19 @@
         <div class="looks_panl">
           <span v-for="(item,index) in detail.tags" :key="index">{{item}}</span>
         </div>
-        <div class="copent_panl">
+        <div class="copent_panl" @click="goCalculator">
             <img src="/static/images/cpument.png">
-            <span @click="goCalculator">房贷计算器</span>
+            <span>房贷计算器</span>
         </div>
     </div>
     <div class="estate_news_panl">
         <div class="estate_title">
           <span>户型优势</span>
         </div>
-        <ul class="advanTage">
+        <div class="estate_intro">
+          <rich-text class="rich-text" :nodes="detail.intro"></rich-text>
+        </div>
+        <!-- <ul class="advanTage">
           <li>
             <img src="/static/images/icon-tag.png">
             <span>客厅和餐厅贯穿南北</span>
@@ -58,10 +61,8 @@
             <img src="/static/images/icon-tag.png">
             <span>冬暖夏凉</span>
           </li>
-        </ul>
+        </ul> -->
     </div>
-     
-     
     <div class="match_panl">
       <div class="title_marig">
         <div class="titles_panl">
@@ -109,12 +110,12 @@ export default {
       housetype_id: this.$route.query.id,
       token: this.globalData.token
     })
-    console.log(data)
     this.detail = data
     this.detail.tags = data.tags.split('|')
-    this.detail.intro = data.intro.split('|')
+    // this.detail.intro = data.intro.split('|')
+    this.detail.intro = data.intro
     this.$wx.setNavigationBarTitle({
-      title: data.house_id
+      title: data.name
     })
   },
   methods: {
@@ -251,6 +252,12 @@ export default {
       span 
         font-size 18px
         color #3F3B3A
+    .estate_intro 
+      matgin-top:10px;
+      .rich-text 
+        font-size: 12px !important;
+        line-height 1.5 !important;
+        font-size 12px !important;
     .advanTage
       width 100%
       display flex
@@ -449,6 +456,6 @@ export default {
         color #5C5A5A
         line-height 18px
       p:first-child
-        margin-bottom 20px
-  
+        margin-bottom 20px       
+ 
 </style>

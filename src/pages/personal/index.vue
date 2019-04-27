@@ -80,7 +80,7 @@
         >
           <view
             class="info-section__item"
-            @click="goHomePage(item.id)"
+            @click="goHomePage(item.house_id)"
             v-for="(item,index) in houseHisList"
             :key="index"
           >

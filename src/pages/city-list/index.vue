@@ -9,9 +9,9 @@
     <div class="cities">
       <div class="cities__key">
         <p>您在</p>
-        <img src="/static/images/icon-addr.png" alt>
+        <!-- <img src="/static/images/icon-addr.png" alt> -->
       </div>
-      <div class="cities__tags">
+      <div class="cities__tags cities__tags--current">
         <span class="cities__tag cities__tag--selected">{{curAddr}}</span>
       </div>
     </div>
@@ -195,6 +195,9 @@ export default {
       padding-top: 12px;
       display: flex;
       flex-wrap: wrap;
+      &.cities__tags--current {
+          padding 0
+      }
 
       .cities__tag {
         width: 70px;

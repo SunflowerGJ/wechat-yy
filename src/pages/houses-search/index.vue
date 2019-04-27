@@ -7,7 +7,9 @@
         @confirm="bindconfirm"
          placeholder="搜索"/></div>
     </div>
-    <div v-if="houses.length===0" class="no-result">没有符合条件的搜索结果</div>
+    <div v-if="houses.length===0" class="no-result">
+      没有符合条件的搜索结果
+    </div>
     <block v-for="(item,index) in houses" :index="index" :key="index">
       <house-card
         :key="index"
@@ -69,9 +71,10 @@ export default {
       display flex
       justify-content center
       align-items center
-      font-size:18px
+      font-size:14px
       margin-top 100px
       color #676767
+
 
     
 
