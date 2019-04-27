@@ -92,7 +92,8 @@ export default {
         '基准利率上浮5%(5.145%)', '基准利率上浮10%(5.39%)', '基准利率上浮15%(5.635%)',
         '基准利率上浮20%(5.88%)', '基准利率上浮25%(6.125%)', '基准利率上浮30%(6.37%)',
         '基准利率上浮35%(6.615%)', '基准利率上浮40%(6.86%)' ],
-      gjzRates: ['基准利率(3.25%)', '基准利率上浮10%(3.575%)'],
+      gjzRates: ['基准利率(3.25%)', '基准利率1.1倍(3.58%)', '基准利率1.2倍(3.9%)',
+        '基准利率1.3倍(4.23%)' ],
       dates: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30].map(item => `${item}年(${item * 12}期)`),
       types: ['等额本息', '等额本金'],
       query: {
@@ -141,7 +142,7 @@ export default {
       const gjzDknl = this.gjzRates[copyGjzQuery.dknl2]
       copyGjzQuery.type2 = +copyGjzQuery.type2 + 1
       copyGjzQuery.dkm2 = (+copyGjzQuery.dkm2 + 1) * 12
-      copyGjzQuery.dknl2 = (gjzDknl.slice(dknl.indexOf('(') + 1, gjzDknl.lastIndexOf('%'))) / 100
+      copyGjzQuery.dknl2 = (gjzDknl.slice(gjzDknl.indexOf('(') + 1, gjzDknl.lastIndexOf('%'))) / 100
       copyGjzQuery.dkTotal2 = +copyGjzQuery.dkTotal2 * 10000
 
       return {
@@ -156,17 +157,30 @@ export default {
       let res = null
       if (tabType === '商业贷款') {
         parmas = copyData.copyQuery
+        if (this._check(!parmas.dkTotal, '请输入商业贷款')) return
         res = await mortgageShow(parmas)
       } else if (tabType === '公积金贷款') {
         parmas = copyData.copyGjzQuery
+        if (this._check(!parmas.dkTotal2, '请输入公积金贷款')) return
         res = await mortgageShow(parmas)
       } else if (tabType === '组合贷款') {
         parmas = {...copyData.copyQuery, ...copyData.copyGjzQuery}
+        if (this._check((!parmas.dkTotal || !parmas.dkTotal2), '请输入组合贷款')) return
         res = await mortgageShowTwo(parmas)
       }
       parmas.tabType = tabType
       if (res) {
         this.$router.push({path: '/pages/calculator-result/main', query: parmas})
+      }
+    },
+    _check (check, msg) {
+      if (check) {
+        wx.showToast({
+          title: msg,
+          icon: 'success',
+          duration: 2000
+        })
+        return true
       }
     }
   }
