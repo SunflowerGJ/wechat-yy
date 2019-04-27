@@ -162,7 +162,12 @@ export default {
       } else if (tabType === '公积金贷款') {
         parmas = copyData.copyGjzQuery
         if (this._check(!parmas.dkTotal2, '请输入公积金贷款')) return
-        res = await mortgageShow(parmas)
+        res = await mortgageShow({
+          type: parmas.type2,
+          dkm: parmas.dkm2,
+          dknl: parmas.dknl2,
+          dkTotal: parmas.dkTotal2
+        })
       } else if (tabType === '组合贷款') {
         parmas = {...copyData.copyQuery, ...copyData.copyGjzQuery}
         if (this._check((!parmas.dkTotal || !parmas.dkTotal2), '请输入组合贷款')) return
