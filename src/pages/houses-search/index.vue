@@ -8,7 +8,8 @@
          placeholder="搜索"/></div>
     </div>
     <div v-if="houses.length===0" class="no-result">
-      没有符合条件的搜索结果
+     <div class="no-result--img"><img src="/static/images/no-reuslt.png" alt=""></div>
+      <p>没有符合条件的搜索结果</p>
     </div>
     <block v-for="(item,index) in houses" :index="index" :key="index">
       <house-card
@@ -68,14 +69,23 @@ export default {
         input 
           width 100% 
     .no-result
-      display flex
-      justify-content center
-      align-items center
-      font-size:14px
-      margin-top 100px
-      color #676767
-
-
-    
+      width 100%
+      position absolute
+      top 10%
+      left 0
+      .no-result--img
+        opacity 0.2
+        img 
+          display block
+          width 280px
+          height 80px
+          margin 15px auto
+          opacity 0.3
+      p 
+        display block
+        text-align center
+        font-size:14px
+        color #676767
+        opacity 0.4
 
 </style>
