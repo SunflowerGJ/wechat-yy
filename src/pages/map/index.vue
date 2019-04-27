@@ -29,7 +29,6 @@ export default {
       },
       controls: [{
         id: 1,
-        iconPath: '/resources/location.png',
         position: {
           left: 0,
           top: 300 - 50,
@@ -56,8 +55,6 @@ export default {
         city: '北京'
       })
       this.markers = datas.map((data, key) => {
-        data.width = 50
-        data.height = 50
         data.callout = {
           content: data.name,
           color: '#fff',
