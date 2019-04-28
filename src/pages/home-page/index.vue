@@ -1,9 +1,9 @@
 <template>
   <div class="container" v-if="detail">
     <div class="panl_swiper">
-      <img :src="detail.photo" @click="handleGoPhoto('样板间')"/>
+      <!-- <img v-bind:style="{ transform: scaleStyle }" :src="detail.photo" @click="handleGoPhoto('样板间')"/> -->
     </div>
-    <div class="sroll_container">
+    <div class="sroll_container" id='scrollContainer'>
       <div class="delta_panl">
         <div class="label_panl">
           <div class="label_name" v-for="(tag,index) in detail.tags" :key="index">
@@ -339,6 +339,8 @@ export default {
       detail: null,
       getMore: false,
       mks: [],
+      overScrollFlag: false,
+      scaleStyle: `scale(${1.78})`,
       searchMap: {
         '公交路线': 0,
         '教育机构': 0,
@@ -371,6 +373,13 @@ export default {
       title: data.name
     })
     this.handleSearch()
+  },
+  onPageScroll (e) {
+    console.log(11)
+    if (e.scrollTop < 0) {
+      this.overScrollFlag = true
+      this.scaleStyle = `scale(${(Math.abs(e.scrollTop) / 100 + 1)})`
+    }
   },
   methods: {
     handleSearch () {
@@ -438,6 +447,7 @@ export default {
 .container {
   background: #f2f2f2;
   margin-bottom: 50px;
+  height:auto;
 }
 
 .panl_swiper {
@@ -454,7 +464,7 @@ export default {
   }
 }
 .sroll_container {
-  margin-top: 200px;
+  padding-top: 200px;
   position: relative;
   z-index: 1;
   background-color: #fff;
