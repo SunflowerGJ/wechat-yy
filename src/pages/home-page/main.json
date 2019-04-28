@@ -1,5 +1,4 @@
 {
   "navigationBarTitleText": "楼盘主页",
-  "navigationBarBackgroundColor": "#ffffff",
-  "enablePullDownRefresh": true
+  "navigationBarBackgroundColor": "#ffffff"
 }

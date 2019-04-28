@@ -1,9 +1,9 @@
 <template>
   <div class="container" v-if="detail">
     <div class="panl_swiper">
-      <!-- <img v-bind:style="{ transform: scaleStyle }" :src="detail.photo" @click="handleGoPhoto('样板间')"/> -->
+      <img v-bind:style="{ transform: scaleStyle }" :src="detail.photo" @click="handleGoPhoto('样板间')"/>
     </div>
-    <div class="sroll_container" id='scrollContainer'>
+    <div class="sroll_container" id="sroll_container" @scroll="onScroll">
       <div class="delta_panl">
         <div class="label_panl">
           <div class="label_name" v-for="(tag,index) in detail.tags" :key="index">
@@ -239,7 +239,7 @@
           </ul>
         </div>
       </div>
-      <div class="match_panl">
+      <div class="match_panl" id="test">
         <div class="title_marig">
           <div class="titles_panl">
             <span>周边配套</span>
@@ -341,6 +341,7 @@ export default {
       mks: [],
       overScrollFlag: false,
       scaleStyle: `scale(${1.78})`,
+      timer: null,
       searchMap: {
         '公交路线': 0,
         '教育机构': 0,
@@ -375,13 +376,16 @@ export default {
     this.handleSearch()
   },
   onPageScroll (e) {
-    console.log(11)
-    if (e.scrollTop < 0) {
-      this.overScrollFlag = true
-      this.scaleStyle = `scale(${(Math.abs(e.scrollTop) / 100 + 1)})`
-    }
+    clearTimeout(this.timer)
+    this.timer = setTimeout(() => {
+      console.log(1)
+    }, 25)
   },
   methods: {
+    onScroll () {
+      console.log(111)
+    },
+
     handleSearch () {
       // 实例化API核心类
       const qqmapsdk = new QQMapWX({
@@ -464,7 +468,7 @@ export default {
   }
 }
 .sroll_container {
-  padding-top: 200px;
+  margin-top: 200px;
   position: relative;
   z-index: 1;
   background-color: #fff;
