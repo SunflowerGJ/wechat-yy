@@ -360,7 +360,7 @@ export default {
     this.detail = data
     this.detail.albums = Object.keys(data.albums).map(key => data.albums[key])
     this.detail.strong_point = JSON.parse(data.strong_point)
-    this.detail.tags = data.tags.split('|')
+    this.detail.tags = data.tags ? data.tags.split('|') : []
     this.detail.browse_users.list = this.detail.browse_users.list.filter((e, i) => i < 6)
     this.detail.browse_users.list.push({
       'aid': '0',

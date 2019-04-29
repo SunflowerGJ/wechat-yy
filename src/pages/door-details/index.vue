@@ -112,7 +112,7 @@ export default {
       token: this.globalData.token
     })
     this.detail = data
-    this.detail.tags = data.tags.split('|')
+    this.detail.tags = data.tags ? data.tags.split('|') : []
     // this.detail.intro = data.intro.split('|')
     this.detail.intro = data.intro
     this.$wx.setNavigationBarTitle({

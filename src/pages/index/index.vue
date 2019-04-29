@@ -108,10 +108,19 @@ export default {
       this.$router.push({path: '/pages/houses-search/main'})
     },
     async  fetchIndexData (params) {
-      const data = await postIndex(params)
-      // console.log(data)
-      this.bannerList = data.ads
-      this.houses = data.houses.map(item => ({...item, tags: item.tags.split('|')}))
+      try {
+        const data = await postIndex(params)
+        this.bannerList = data.ads
+        this.houses = data.houses.map(item => {
+          if (item.tags) {
+            return {...item, tags: item.tags.split('|')}
+          } else {
+            return item
+          }
+        })
+      } catch (error) {
+        console.log(error)
+      }
     }
   },
   async mounted () { // 地址筛选待调整
