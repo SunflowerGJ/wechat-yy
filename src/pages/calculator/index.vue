@@ -20,7 +20,7 @@
       </picker>
       <div class="form-item">
         <span>商贷借款金额(万)</span>
-        <input v-model="query.dkTotal" class="ipt" placeholder="请输入" type="text">
+        <input v-model="query.dkTotal" class="ipt" placeholder="请输入" type="digit">
       </div>
       <picker :value="query.dkm" :range="dates" @change="bindPickerChange('dkm', $event, 'query')">
         <div class="form-item">
@@ -38,6 +38,10 @@
           </span>
         </div>
       </picker>
+      <div class="form-item">
+        <span>自定义利率</span>
+        <input v-model="query.dknl_custom" class="ipt" placeholder="请输入" type="digit">
+      </div>
     </div>
     <div :class="['form', {'gjzContainer': tabType === '组合贷款'}]" v-if="tabType === '公积金贷款' || tabType === '组合贷款'">
       <picker :value="gjzQuery.type2" :range="types" @change="bindPickerChange('type2', $event, 'gjzQuery')">
@@ -48,7 +52,7 @@
       </picker>
       <div class="form-item">
         <span>公积金借款金额(万)</span>
-        <input v-model="gjzQuery.dkTotal2" class="ipt" placeholder="请输入" type="text">
+        <input v-model="gjzQuery.dkTotal2" class="ipt" placeholder="请输入" type="digit">
       </div>
       <picker :value="gjzQuery.dkm2" :range="dates" @change="bindPickerChange('dkm2', $event, 'gjzQuery')">
         <div class="form-item">
@@ -66,6 +70,10 @@
           </span>
         </div>
       </picker>
+      <div class="form-item">
+        <span>自定义利率</span>
+        <input v-model="query.dknl2_custom" class="ipt" placeholder="请输入" type="digit">
+      </div>
     </div>
     <div class="form-item btn-container">
       <div class="btn-left btn" @click="handleRest">
@@ -91,10 +99,9 @@ export default {
       rates: ['基准利率(4.9%)', '基准利率7折(3.43%)',
         '基准利率75折(3.675%)', '基准利率8折(3.92%)',
         '基准利率85折(4.17%)', '基准利率9折(4.41%)',
-        '基准利率95折(4.655%)', '基准利率上浮5%(5.145%)',
-        '基准利率上浮10%(5.39%)', '基准利率上浮15%(5.635%)',
-        '基准利率上浮20%(5.88%)', '基准利率上浮25%(6.125%)',
-        '基准利率上浮30%(6.37%)', '基准利率上浮35%(6.615%)', '基准利率上浮40%(6.86%)' ],
+        '基准利率95折(4.655%)', '基准利率1.05倍(5.145%)',
+        '基准利率1.1倍(5.39%)', '基准利率1.2倍(5.88%)',
+        '基准利率1.3倍(6.37%)', '基准利率上浮35%(6.615%)', '基准利率上浮40%(6.86%)' ],
       gjzRates: ['基准利率(3.25%)', '基准利率1.1倍(3.58%)', '基准利率1.2倍(3.9%)',
         '基准利率1.3倍(4.23%)' ],
       dates: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30].map(item => `${item}年(${item * 12}期)`),
@@ -103,13 +110,15 @@ export default {
         type: 0,
         dkm: 29,
         dknl: 0,
-        dkTotal: ''
+        dkTotal: '',
+        dknl_custom: ''
       },
       gjzQuery: {
         type2: 0,
         dkm2: 29,
         dknl2: 0,
-        dkTotal2: ''
+        dkTotal2: '',
+        dknl2_custom: ''
       }
     }
   },
@@ -124,13 +133,15 @@ export default {
         type: 0,
         dkm: 29,
         dknl: 2,
-        dkTotal: ''
+        dkTotal: '',
+        dknl_custom: ''
       }
       this.gjzQuery = {
         type2: 0,
         dkm2: 29,
         dknl2: 0,
-        dkTotal2: ''
+        dkTotal2: '',
+        dknl2_custom: ''
       }
     },
     _resolveQuery () {
@@ -138,14 +149,18 @@ export default {
       const dknl = this.rates[copyQuery.dknl]
       copyQuery.type = +copyQuery.type + 1
       copyQuery.dkm = (+copyQuery.dkm + 1) * 12
-      copyQuery.dknl = (dknl.slice(dknl.indexOf('(') + 1, dknl.lastIndexOf('%'))) / 100
+      copyQuery.dknl = copyQuery.dknl_custom === ''
+        ? (dknl.slice(dknl.indexOf('(') + 1, dknl.lastIndexOf('%'))) / 100
+        : copyQuery.dknl_custom
       copyQuery.dkTotal = +copyQuery.dkTotal * 10000
 
       let copyGjzQuery = JSON.parse(JSON.stringify(this.gjzQuery))
       const gjzDknl = this.gjzRates[copyGjzQuery.dknl2]
       copyGjzQuery.type2 = +copyGjzQuery.type2 + 1
       copyGjzQuery.dkm2 = (+copyGjzQuery.dkm2 + 1) * 12
-      copyGjzQuery.dknl2 = (gjzDknl.slice(gjzDknl.indexOf('(') + 1, gjzDknl.lastIndexOf('%'))) / 100
+      copyGjzQuery.dknl2 = copyGjzQuery.dknl2_custom === ''
+        ? (gjzDknl.slice(gjzDknl.indexOf('(') + 1, gjzDknl.lastIndexOf('%'))) / 100
+        : copyGjzQuery.dknl2_custom
       copyGjzQuery.dkTotal2 = +copyGjzQuery.dkTotal2 * 10000
 
       return {
