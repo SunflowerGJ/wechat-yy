@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="apartment_panl">
-      <div class="apar_panl" v-for="(item,index) in list" :key="index">
+      <div class="apar_panl" @click="goHousesDetail(item.id)" v-for="(item,index) in list" :key="index">
         <div class="apar_left">
           <img mode="aspectFit" :src="item.photo"/>
         </div>
@@ -38,12 +38,10 @@ export default {
       token: this.globalData.token
     })
     this.list = data
-    console.log(data)
   },
   methods: {
-    scrolltolower (e) {
-      console.log(e)
-      console.log('加载数据')
+    goHousesDetail (id) {
+      this.$router.push({path: '/pages/door-details/main', query: {id}})
     }
   }
 }

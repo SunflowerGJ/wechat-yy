@@ -143,7 +143,7 @@ export default {
     this.fetchIndexData(this.globalData.address)
   },
   methods: {
-    goIndex () {
+    async goIndex () {
       // 住宅类型
       const buildingType = this.housesType[this.housesTypeActive].value
       // 城市信息
@@ -164,7 +164,18 @@ export default {
         totalprice,
         space
       }
-      this.$wx.reLaunch({url: '/pages/index/main?params=' + JSON.stringify(params)})
+      params.city = this.globalData.address
+      const data = await postIndex(params)
+      const houses = data.houses
+      if (houses.length > 0) {
+        this.$wx.reLaunch({url: '/pages/index/main?params=' + JSON.stringify(params)})
+      } else {
+        wx.showToast({
+          title: '未找到符合条件的楼盘',
+          icon: 'none',
+          duration: 1500
+        })
+      }
     },
     async fetchIndexData (city) {
       const data = await postIndex({ city })

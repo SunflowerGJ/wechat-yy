@@ -9,6 +9,7 @@
     </div>
     <div class="swiper_box">
       <swiper
+        :circular='true'
         :indicator-dots="indicatorDots"
         :autoplay="autoplay"
         :current="current"

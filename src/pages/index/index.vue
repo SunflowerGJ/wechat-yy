@@ -12,6 +12,7 @@
     </div>
     <div class="swipe-banner">
       <swiper
+        :circular='true'
         class="swipe-banner__wrap"
         indicator-dots="true"
         autoplay="true"

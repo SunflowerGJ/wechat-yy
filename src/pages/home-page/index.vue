@@ -378,14 +378,13 @@ export default {
   onPageScroll (e) {
     clearTimeout(this.timer)
     this.timer = setTimeout(() => {
-      console.log(1)
+      // console.log(1)
     }, 25)
   },
   methods: {
     onScroll () {
-      console.log(111)
+      // console.log(111)
     },
-
     handleSearch () {
       // 实例化API核心类
       const qqmapsdk = new QQMapWX({
