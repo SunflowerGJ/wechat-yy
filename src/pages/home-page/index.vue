@@ -1,9 +1,9 @@
 <template>
   <div class="container" v-if="detail">
     <div class="panl_swiper">
-      <img v-bind:style="{ transform: scaleStyle }" :src="detail.photo" @click="handleGoPhoto('样板间')"/>
+      <img :src="detail.photo" @click="handleGoPhoto('样板间')"/>
     </div>
-    <div class="sroll_container" id="sroll_container" @scroll="onScroll">
+    <div class="sroll_container" id="sroll_container" @touchmove='onScroll'>
       <div class="delta_panl">
         <div class="label_panl">
           <div class="label_name" v-for="(tag,index) in detail.tags" :key="index">
@@ -383,7 +383,7 @@ export default {
   },
   methods: {
     onScroll () {
-      // console.log(111)
+      console.log(111)
     },
     handleSearch () {
       // 实例化API核心类
@@ -459,6 +459,7 @@ export default {
   position: fixed;
   top:0;
   left: 0;
+  overflow hidden
 
   img {
     display: block;
