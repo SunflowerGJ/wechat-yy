@@ -98,7 +98,9 @@ export default {
     },
     // nav栏跳转
     goNav (path) {
-      this.$router.push({path: path, query: {city: this.address}})
+      if (this.address !== '定位') {
+        this.$router.push({path: path, query: {city: this.address}})
+      }
     },
     // 城市列表跳转
     goCityList () {

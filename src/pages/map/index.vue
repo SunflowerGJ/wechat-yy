@@ -52,7 +52,7 @@ export default {
     },
     async getMarker () {
       let datas = await postHousesList({
-        city: '北京'
+        city: this.$route.query.city
       })
       this.markers = datas.map((data, key) => {
         data.callout = {
