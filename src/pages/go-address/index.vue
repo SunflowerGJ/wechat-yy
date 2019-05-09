@@ -38,12 +38,26 @@ export default {
         address,
         scale: 18
       })
+    },
+    goDoorAddress () {
+      wx.openLocation({
+        latitude: +this.detail.office_latitude,
+        longitude: +this.detail.office_longitude,
+        name: this.detail.office_address,
+        // address: this.detail.office_address,
+        scale: 18
+      })
     }
   },
   async mounted () {
     this._init()
     this.getInnerHeight()
-    this.goAddress()
+    // 地址详情
+    if (this.detail.tp && this.detail.tp === 'office') {
+      this.goDoorAddress()
+    } else {
+      this.goAddress()
+    }
   },
   watch: {}
 

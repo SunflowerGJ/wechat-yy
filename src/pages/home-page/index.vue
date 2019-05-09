@@ -15,9 +15,9 @@
           <img src="/static/images/icon-lou.png">
           <span>项目地址：{{detail.address}}</span>
         </div>
-        <div class="sales_panl">
-          <span class="adder_panl_add" @click="goAroundMap(detail)">售楼处地址：{{detail.office_address}}</span>
-          <img src="/static/images/icon-addr.png" @tap="handleGoAddress">
+        <div class="sales_panl" @click="handleGoAddress">
+          <span class="adder_panl_add">售楼处地址：{{detail.office_address}}</span>
+          <img src="/static/images/icon-addr.png">
         </div>
       </div>
       <div class="price_panl">
@@ -137,10 +137,10 @@
             <label>物业类型：</label>
             <span>{{detail.property_type}}</span>
           </li>
-          <li>
+          <!-- <li>
             <label>建筑类型：</label>
             <span>{{detail.building_type}}</span>
-          </li>
+          </li> -->
           <li>
             <label>装修标准：</label>
             <span>{{detail.decoration_standard}}</span>
@@ -379,7 +379,7 @@ export default {
     handleGoAddress () {
       this.$router.push({
         path: '/pages/go-address/main',
-        query: this.detail
+        query: {tp: 'office', ...this.detail}
       })
     },
     handleSearch () {

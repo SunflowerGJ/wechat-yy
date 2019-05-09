@@ -1,7 +1,19 @@
 <template>
   <div class="container" v-if="detail">
     <div class="panl_swiper">
-      <img :src="detail.photo" @click="handleGoPhoto('样板间')"/>
+      <!-- <img :src="detail.photo" @click="handleGoPhoto('样板间')"/> -->
+      <swiper
+        :circular='true'
+        :indicator-dots="indicatorDots"
+        :autoplay="autoplay"
+        :interval="interval"
+        class="swiper">
+        <div v-for="(item,index)  in detail.photo" :key="index" @click="handleGoPhoto('样板间')">
+          <swiper-item>
+            <div class="swiper-item"><image mode="aspectFit" :src="item" class="slide-image"/></div>
+          </swiper-item>
+        </div>
+      </swiper>
       <div class="tranTrian" v-if="detail.id_sale==='1'">
         <img src="/static/images/icon-door-tag.png" alt="">
           <span class="tranTitle">在售</span>
@@ -102,7 +114,10 @@ export default {
   },
   data () {
     return {
-      detail: null
+      detail: null,
+      indicatorDots: true,
+      autoplay: true,
+      interval: 2000
     }
   },
 
@@ -144,7 +159,7 @@ export default {
     height 220px
     position relative
     box-sizing border-box
-    padding 10px 50px
+
     img 
       display block
       width 100%
@@ -152,6 +167,11 @@ export default {
     .swiper
       width 100%
       height 100%
+      .swiper-item
+        width 100%
+        height 100%
+        padding 10px 50px
+        box-sizing border-box
       .slide-image
         width 100%
         height 100%
