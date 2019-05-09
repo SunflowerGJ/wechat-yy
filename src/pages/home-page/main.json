@@ -1,4 +1,7 @@
 {
   "navigationBarTitleText": "楼盘主页",
-  "navigationBarBackgroundColor": "#ffffff"
+  "navigationBarBackgroundColor": "#ffffff",
+  "usingComponents": {
+    "van-transition": "/static/vant/transition/index"
+  }
 }

@@ -1,7 +1,8 @@
 <template>
   <div class="container" v-if="detail">
+
     <div class="panl_swiper">
-      <img :src="detail.photo" @click="handleGoPhoto('样板间')"/>
+      <img :src="detail.photo"  @click="handleGoPhoto('样板间')"/>
     </div>
     <div class="sroll_container" id="sroll_container">
       <div class="delta_panl">
@@ -247,7 +248,7 @@
         </div>
         <div class="map_img">
           <img src="/static/images/mapImg.jpeg">
-          <div class="dialog">
+          <div class="dialog" @click="goAroundMap(detail)">
             {{detail.name}}
             <div class="triangle_border_down"></div>
           </div>
@@ -336,6 +337,7 @@ export default {
   },
   data () {
     return {
+      show: false,
       detail: null,
       getMore: false,
       mks: [],

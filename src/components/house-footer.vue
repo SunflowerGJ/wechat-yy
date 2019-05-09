@@ -5,7 +5,7 @@
         <img src="/static/images/forward.png">
         <button open-type="share">转发分享</button>
       </a>
-      <a @click="getShareImgNew(detail.poster_url)">
+      <a @click="getShareImgNew(detail)">
         <img src="/static/images/fileback.png">
         <span>生成海报</span>
       </a>
@@ -26,28 +26,30 @@
       <button open-type="getPhoneNumber" @getphonenumber="getPhoneNumber">VIP热线</button>
     </div>
     <!-- https://www.jianshu.com/p/a7c4d394f51a -->
-    <div class="modal" v-if="showModal">
-      <div class="mark"></div>
-      <div class="body">
-        <div class="close" @click="showModal = false">
-          <img class="close-img" src='/static/images/icon-closed.png' />
-        </div>
-        <div class="main">
-          <div class='main-title'>
-            <h4>保存后分享图片</h4>
+    <van-transition :show="showModal">
+      <div class="modal" >
+        <div class="mark"></div>
+        <div class="body">
+          <div class="close" @click="showModal = false">
+            <img class="close-img" src='/static/images/icon-closed.png' />
           </div>
-          <div class="main-content">
-           <div class="canvas-box">
-            <canvas canvas-id="shareCanvas" style="width:220px;height:320px;"></canvas>
-           </div>
-            <img :src="imagePath" alt="">
-          </div>
-          <div class="main-footer">
-            <span @click="modalConfirm">确定</span>
+          <div class="main">
+            <div class='main-title'>
+              <h4>保存后分享图片</h4>
+            </div>
+            <div class="main-content">
+            <div class="canvas-box">
+              <canvas canvas-id="shareCanvas" style="width:220px;height:320px;"></canvas>
+            </div>
+              <img :src="imagePath" alt="">
+            </div>
+            <div class="main-footer">
+              <span @click="modalConfirm">确定</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </van-transition>
   </div>
 
 </template>
@@ -87,7 +89,8 @@ export default {
       }
     },
     makePhoneCall () { wx.makePhoneCall({phoneNumber: '400-032-4608'}) },
-    getShareImgNew (posterUrl) {
+    getShareImgNew (item) {
+      const posterUrl = this.type === '2' ? item.housetype_hposter_url : item.poster_url
       this.showModal = true
       this.imagePath = posterUrl
     },
