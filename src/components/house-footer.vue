@@ -26,10 +26,11 @@
       <button open-type="getPhoneNumber" @getphonenumber="getPhoneNumber">VIP热线</button>
     </div>
     <!-- https://www.jianshu.com/p/a7c4d394f51a -->
-    <van-transition :show="showModal">
-      <div class="modal" >
-        <div class="mark"></div>
-        <div class="body">
+    <!-- <van-transition :show="showModal"> -->
+      <van-popup  :show="showModal" position="bottom" >
+      <!-- <div class="modal"> -->
+        <!-- <div class="mark"></div>
+        <div class="body"> -->
           <div class="close" @click="showModal = false">
             <img class="close-img" src='/static/images/icon-closed.png' />
           </div>
@@ -47,9 +48,10 @@
               <span @click="modalConfirm">确定</span>
             </div>
           </div>
-        </div>
-      </div>
-    </van-transition>
+        <!-- </div>
+      </div> -->
+      </van-popup>
+    <!-- </van-transition> -->
   </div>
 
 </template>
@@ -257,63 +259,63 @@ export default {
     left 0
     // transform translate(-50%, -50%)
     z-index 3 
-    .close
-     position absolute
-     width 20px
-     height 20px
-     top 0
-     right 0
-     z-index 1
-     .close-img
-       display block
-       width 14px
-       height 14px
-       margin 3px auto
-    .main
-      background-color #fff
-      width 375px
-      height 445px
-      overflow hidden
-      // border-radius 5px
-      padding 20px
-      box-sizing border-box
-      position relative
-      .main-title
-        h4
-          font-family: PingFangSC-Medium;
-          font-size: 18px;
-          color: #3F3B3A;
-          padding-left 10px
-          border-left 2px solid #FF2B2B 
-      .main-footer
-        position absolute
-        bottom 18px
-        left 50%
-        transform translateX(-50%)
-        span
-          width: 252px;
-          height: 30px;
-          line-height: 30px;
-          text-align: center;
-          background: #F0F0F0;
-          border-radius: 6px;
-          overflow: hidden;
-          font-size: 18px;
-          color: #fff;
-          display: inline-block;
-          background-color: #E60113;
-      .main-content
-        width 220px
-        height 320px
-        margin 20px auto 
-        background: #EFEFEF;
-        border-radius: 6px;
-        overflow hidden 
-        img
-          display block
-          width 170px
-          height 250px
-          margin 30px 25px
+.close
+  position absolute
+  width 20px
+  height 20px
+  top 0
+  right 0
+  z-index 1
+  .close-img
+    display block
+    width 14px
+    height 14px
+    margin 3px auto
+.main
+  background-color #fff
+  width 375px
+  height 445px
+  overflow hidden
+  // border-radius 5px
+  padding 20px
+  box-sizing border-box
+  position relative
+  .main-title
+    h4
+      font-family: PingFangSC-Medium;
+      font-size: 18px;
+      color: #3F3B3A;
+      padding-left 10px
+      border-left 2px solid #FF2B2B 
+  .main-footer
+    position absolute
+    bottom 18px
+    left 50%
+    transform translateX(-50%)
+    span
+      width: 252px;
+      height: 30px;
+      line-height: 30px;
+      text-align: center;
+      background: #F0F0F0;
+      border-radius: 6px;
+      overflow: hidden;
+      font-size: 18px;
+      color: #fff;
+      display: inline-block;
+      background-color: #E60113;
+  .main-content
+    width 220px
+    height 320px
+    margin 20px auto 
+    background: #EFEFEF;
+    border-radius: 6px;
+    overflow hidden 
+    img
+      display block
+      width 170px
+      height 250px
+      margin 30px 25px
 .canvas-box
   width 100%
   position fixed
