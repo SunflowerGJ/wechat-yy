@@ -3,7 +3,7 @@
     <div class="fixed_left">
       <a>
         <img src="/static/images/forward.png">
-        <button open-type="share">转发分享</button>
+        <button open-type="share">转发</button>
       </a>
       <a @click="getShareImgNew(detail)">
         <img src="/static/images/fileback.png">
@@ -13,7 +13,7 @@
         <img v-if="isCollect === 0" class="collection" src="/static/images/collection.png">
         <span v-if="isCollect === 0">收藏</span>
         <img v-if="isCollect === 1" class="collection" src="/static/images/is-collection.png">
-        <span v-if="isCollect === 1">已收藏</span>
+        <span v-if="isCollect === 1">收藏</span>
       </a>
     </div>
     <!-- // 已经有电话 -->

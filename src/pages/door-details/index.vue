@@ -96,17 +96,13 @@
 <script>
 import {postHouseTypeDetail} from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
+import getQueryString from '../../utils/getQueryString.js'
 export default {
   onShareAppMessage: function (res) {
     return {
       title: '远洋置业欢迎您',
-      path: 'pages/door-details/main?id=' + this.$route.query.id
+      path: 'pages/door-details/main?id=' + this.housetype_id
     }
-  },
-  onLoad: function (options) {
-    // 获取分享转发页面时携带的参数
-    // console.log('onLoad参数')
-    // console.log(options)
   },
 
   components: {
@@ -117,13 +113,24 @@ export default {
       detail: null,
       indicatorDots: true,
       autoplay: true,
-      interval: 2000
+      interval: 2000,
+      housetype_id: ''
     }
   },
-
+  onLoad: function (options) {
+    if (options.q || options.scene) {
+      const parmas = options.q || options.scene
+      // 获取二维码的携带的链接信息
+      let qrUrl = decodeURIComponent(parmas)
+      this.house_id = getQueryString(qrUrl, 'id')
+    }
+  },
   async mounted () {
+    if (this.$route.query.id) {
+      this.housetype_id = this.$route.query.id
+    }
     const data = await postHouseTypeDetail({
-      housetype_id: this.$route.query.id,
+      housetype_id: this.housetype_id,
       token: this.globalData.token
     })
     this.detail = data

@@ -257,45 +257,45 @@
           <div class="macund">
             <img src="/static/images/route.png">
             <div class="cen_text">
-              <p>公交路线</p>
-              <p>约{{searchMap['公交路线']}}处</p>
+              <p>交通</p>
+              <p>约{{searchMap['交通']}}处</p>
             </div>
           </div>
           <div class="macund">
             <img src="/static/images/education.png">
             <div class="cen_text">
-              <p>教育机构</p>
-              <p>约{{searchMap['教育机构']}}处</p>
+              <p>教育</p>
+              <p>约{{searchMap['教育']}}处</p>
             </div>
           </div>
           <div class="macund">
             <img src="/static/images/hospital.png">
             <div class="cen_text">
-              <p>医院设施</p>
-              <p>约{{searchMap['医院设施']}}处</p>
+              <p>医疗</p>
+              <p>约{{searchMap['医疗']}}处</p>
             </div>
           </div>
           <div class="macund">
             <img src="/static/images/bank.png">
             <div class="cen_text">
-              <p>银行网点</p>
-              <p>约{{searchMap['银行网点']}}处</p>
+              <p>银行</p>
+              <p>约{{searchMap['银行']}}处</p>
             </div>
           </div>
           <div class="macund">
             <img src="/static/images/foot.png">
             <div class="cen_text">
-              <p>餐饮商户</p>
-              <p>约{{searchMap['餐饮商户']}}处</p>
+              <p>餐饮</p>
+              <p>约{{searchMap['餐饮']}}处</p>
             </div>
           </div>
-          <div class="macund">
+          <!-- <div class="macund">
             <img src="/static/images/bus.png">
             <div class="cen_text">
               <p>公交</p>
               <p>约{{searchMap['公交']}}处</p>
             </div>
-          </div>
+          </div> -->
         </div>
 
         <div class="distancBox">
@@ -321,6 +321,7 @@
 <script>
 import { postHousesDetail } from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
+import getQueryString from '../../utils/getQueryString.js'
 var QQMapWX = require('qqmap-wx-jssdk')
 export default {
   /**
@@ -329,7 +330,7 @@ export default {
   onShareAppMessage: function (res) {
     return {
       title: '远洋置业欢迎您',
-      path: 'pages/home-page/main?id=' + this.$route.query.id
+      path: 'pages/home-page/main?id=' + this.house_id
     }
   },
   components: {
@@ -337,6 +338,7 @@ export default {
   },
   data () {
     return {
+      house_id: '',
       show: false,
       detail: null,
       getMore: false,
@@ -345,18 +347,29 @@ export default {
       scaleStyle: `scale(${1.78})`,
       timer: null,
       searchMap: {
-        '公交路线': 0,
-        '教育机构': 0,
-        '医院设施': 0,
-        '银行网点': 0,
-        '餐饮商户': 0,
-        '公交': 0
+        '交通': 0,
+        '教育': 0,
+        '医疗': 0,
+        '银行': 0,
+        '餐饮': 0
+        // '公交': 0
       }
     }
   },
+  onLoad: function (options) {
+    if (options.q || options.scene) {
+      const parmas = options.q || options.scene
+      // 获取二维码的携带的链接信息
+      let qrUrl = decodeURIComponent(parmas)
+      this.house_id = getQueryString(qrUrl, 'id')
+    }
+  },
   async mounted () {
+    if (this.$route.query.id) {
+      this.house_id = this.$route.query.id
+    }
     const data = await postHousesDetail({
-      house_id: this.$route.query.id,
+      house_id: this.house_id,
       token: this.globalData.token
     })
     this.detail = data
@@ -426,7 +439,8 @@ export default {
       this.$router.push({path: '/pages/door-details/main', query: {id}})
     },
     goAroundMap (detail) {
-      this.$router.push({path: '/pages/around-map/main', query: detail})
+      const query = { ...detail, ...this.searchMap }
+      this.$router.push({path: '/pages/around-map/main', query: query})
     },
     handleGoPhoto (name) {
       this.$router.push({path: '/pages/estate-photo/main', query: {...this.detail, tabName: name}})
@@ -981,7 +995,8 @@ export default {
     .macund {
       display: flex;
       flex-direction: column;
-      width: 17%;
+      width: 20%;
+      // width: 17%;
       text-align: center;
       align-items: center;
       justify-content: center;

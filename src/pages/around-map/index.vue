@@ -17,10 +17,11 @@
       <div class="title">{{detail.name}}</div>
       <div class="des">{{detail.address}}</div>
       <div class="tabs">
-        <div class="tab"><span :class="[{'checked': tabCheck === '交通'}]" @click="handleChangeTab('交通')">交通(10)</span></div>
-        <div class="tab"><span :class="[{'checked': tabCheck === '教育'}]" @click="handleChangeTab('教育')">教育(10)</span></div>
-        <div class="tab"><span :class="[{'checked': tabCheck === '医疗'}]" @click="handleChangeTab('医疗')">医疗(10)</span></div>
-        <div class="tab"><span :class="[{'checked': tabCheck === '商业'}]" @click="handleChangeTab('商业')">商业(10)</span></div>
+        <div class="tab"><span :class="[{'checked': tabCheck === '交通'}]" @click="handleChangeTab('交通')">交通({{searchMap['交通']}})</span></div>
+        <div class="tab"><span :class="[{'checked': tabCheck === '教育'}]" @click="handleChangeTab('教育')">教育({{searchMap['教育']}})</span></div>
+        <div class="tab"><span :class="[{'checked': tabCheck === '医疗'}]" @click="handleChangeTab('医疗')">医疗({{searchMap['医疗']}})</span></div>
+        <div class="tab"><span :class="[{'checked': tabCheck === '银行网点'}]" @click="handleChangeTab('银行')">银行({{searchMap['银行']}})</span></div>
+        <div class="tab"><span :class="[{'checked': tabCheck === '餐饮'}]" @click="handleChangeTab('餐饮')">餐饮({{searchMap['餐饮']}})</span></div>
       </div>
     </div>
     <div class="content" v-bind:style="{ height: scrollH }">
@@ -52,8 +53,14 @@ export default {
       scrollH: 0,
       checkMarkerId: 0,
       detail: {},
-      local: {
-
+      local: {},
+      searchMap: {
+        '交通': 0,
+        '教育': 0,
+        '医疗': 0,
+        '银行': 0,
+        '餐饮': 0
+        // '公交': 0
       }
     }
   },
@@ -66,13 +73,22 @@ export default {
       // 获取跳转过来的详情
       this.detail = this.$route.query
       this.local = this.$route.query
+      this.searchMap = {
+        '交通': this.detail.交通,
+        '教育': this.detail.教育,
+        '医疗': this.detail.医疗,
+        '银行': this.detail.银行,
+        '餐饮': this.detail.餐饮
+      }
     },
     handleSearch () {
+      const _that = this
       this.qqmapsdk.search({
         keyword: this.tabCheck, // 搜索关键词
         location: `${this.detail.latitude},${this.detail.longitude}`, // 设置周边搜索中心点
         auto_extend: '0',
         success: (res) => { // 搜索成功后的回调
+          _that.searchMap[_that.tabCheck] = res.count
           var mks = []
           for (var i = 0; i < res.data.length; i++) {
             mks.push({ // 获取返回结果，放到mks数组中
