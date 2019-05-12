@@ -1,7 +1,7 @@
 // 引入 fly
+import { login } from './api'
 var Fly = require('flyio/dist/npm/wx')
 var fly = new Fly()
-
 // 配置请求基地址
 // //定义公共headers
 // fly.config.headers = {}
@@ -11,10 +11,29 @@ var fly = new Fly()
 // fly.config.baseURL="https://wendux.github.io/"
 
 // 添加拦截器
-fly.interceptors.request.use((config, promise) => {
+fly.interceptors.request.use((request, promise) => {
   // 给所有请求添加自定义header
-  config.headers['content-type'] = 'application/x-www-form-urlencoded'
-  return config
+  request.headers['content-type'] = 'application/x-www-form-urlencoded'
+  if (wx.getStorageSync('token')) { // 检查本地缓存是否有token存在没有则重新获取
+    request.body.token = wx.getStorageSync('token')
+    return request
+  } else {
+    fly.lock()// 锁住请求
+    wx.login({
+      success (res) {
+        if (res.code) {
+          // 发起网络请求
+          login({code: res.code}).then(data => {
+            wx.setStorage({key: 'token', data: data.token})
+            wx.setStorage({key: 'userinfo', data: data.userinfo})
+            request.body.token = wx.getStorageSync('token')
+          })
+        }
+      }
+    })
+    fly.unlock()// 解锁请求
+    return request
+  }
 })
 
 var request = (options, showLoading = true, loadingConfig = {title: '加载中...'}) => {

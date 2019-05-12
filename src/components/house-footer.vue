@@ -26,11 +26,7 @@
       <button open-type="getPhoneNumber" @getphonenumber="getPhoneNumber">VIP热线</button>
     </div>
     <!-- https://www.jianshu.com/p/a7c4d394f51a -->
-    <!-- <van-transition :show="showModal"> -->
       <van-popup  :show="showModal" position="bottom" >
-      <!-- <div class="modal"> -->
-        <!-- <div class="mark"></div>
-        <div class="body"> -->
           <div class="close" @click="showModal = false">
             <img class="close-img" src='/static/images/icon-closed.png' />
           </div>
@@ -48,10 +44,8 @@
               <span @click="modalConfirm">确定</span>
             </div>
           </div>
-        <!-- </div>
-      </div> -->
       </van-popup>
-    <!-- </van-transition> -->
+
   </div>
 
 </template>
@@ -80,17 +74,13 @@ export default {
   methods: {
     async getPhoneNumber (e) {
       if (e.mp.detail.errMsg === 'getPhoneNumber:ok') {
-        wx.makePhoneCall({phoneNumber: '400-032-4608'})
+        wx.makePhoneCall({phoneNumber: this.detail.sales_mobile})
         // 授权成功
         const { encryptedData, iv } = e.mp.detail
-        let token
-        try {
-          token = await this.$wx.getStorage({key: 'token'})
-        } catch (error) {}
-        await postMobileSave({ encryptedData, iv, token: token.data })
+        await postMobileSave({ encryptedData, iv })
       }
     },
-    makePhoneCall () { wx.makePhoneCall({phoneNumber: '400-032-4608'}) },
+    makePhoneCall () { wx.makePhoneCall({phoneNumber: this.detail.sales_mobile}) },
     getShareImgNew (item) {
       const posterUrl = this.type === '2' ? item.housetype_hposter_url : item.poster_url
       this.showModal = true
