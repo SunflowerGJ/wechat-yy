@@ -151,7 +151,7 @@ export default {
       copyQuery.dkm = (+copyQuery.dkm + 1) * 12
       copyQuery.dknl = copyQuery.dknl_custom === ''
         ? (dknl.slice(dknl.indexOf('(') + 1, dknl.lastIndexOf('%'))) / 100
-        : copyQuery.dknl_custom
+        : copyQuery.dknl_custom / 100
       copyQuery.dkTotal = +copyQuery.dkTotal * 10000
 
       let copyGjzQuery = JSON.parse(JSON.stringify(this.gjzQuery))
@@ -160,7 +160,7 @@ export default {
       copyGjzQuery.dkm2 = (+copyGjzQuery.dkm2 + 1) * 12
       copyGjzQuery.dknl2 = copyGjzQuery.dknl2_custom === ''
         ? (gjzDknl.slice(gjzDknl.indexOf('(') + 1, gjzDknl.lastIndexOf('%'))) / 100
-        : copyGjzQuery.dknl2_custom
+        : copyGjzQuery.dknl2_custom / 100
       copyGjzQuery.dkTotal2 = +copyGjzQuery.dkTotal2 * 10000
 
       return {

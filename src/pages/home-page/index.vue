@@ -575,7 +575,7 @@ export default {
     p {
       text-align: center;
       font-size: 14px;
-      color: #000000;
+      color: #686564 ;
 
       span {
         color: #E60113;
@@ -584,6 +584,7 @@ export default {
 
     p:last-child {
       margin-top: 6px;
+      color:#000
     }
   }
 

@@ -232,11 +232,12 @@ export default {
       p
         text-align center
         font-size 14px
-        color #000000
+        color: #686564 
         span 
           color #E60113
       p:last-child
-        margin-top 6px   
+        margin-top 6px 
+        color: #000  
     .price_name:last-child
       border-right 0 
   .onlookers_panl
