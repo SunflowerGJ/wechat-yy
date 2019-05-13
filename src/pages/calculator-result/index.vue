@@ -105,7 +105,13 @@ export default {
         parmas = {...this.$route.query, ...par}
         res = await mortgageShow(parmas)
       } else if (tabType === '公积金贷款') {
-        parmas = {...this.$route.query, ...par}
+        const query = this.$route.query
+        parmas = {
+          type: query.type2,
+          dkm: query.dkm2,
+          dknl: query.dknl2,
+          dkTotal: query.dkTotal2,
+          ...par}
         res = await mortgageShow(parmas)
       } else if (tabType === '组合贷款') {
         parmas = {...this.$route.query, ...par}
