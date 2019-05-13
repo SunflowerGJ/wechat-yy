@@ -2,7 +2,7 @@
   <div class="container" v-if="detail">
     <h2 class="title">{{detail.title}}</h2>
     <p class="time">{{detail.create_time}}</p>
-    <img class="banner" :src="detail.photo" alt="">
+    <!-- <img class="banner" :src="detail.photo" alt=""> -->
     <div class="rich-text">
       <rich-text :nodes="detail.content"></rich-text>
     </div>
@@ -23,11 +23,8 @@ export default {
       article_id: this.$route.query.id
     })
     this.detail = data
-    console.log(data)
-  },
-
-  methods: {
-
+    const regex = new RegExp('<img', 'gi')
+    this.detail.content = this.detail.content.replace(regex, `<img style="max-width: 100%;"`)
   }
 }
 </script>
@@ -57,5 +54,9 @@ export default {
     .rich-text
       font-size: 14px !important
       color: #595757 !important
+      img 
+        display block
+        width 100%
+        height 200px 
   
 </style>

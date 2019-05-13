@@ -72,7 +72,7 @@
                 <div class="lawyerType-bgImg"></div>
                 <span>置顶</span>
               </div>
-              <p class="text_panl">{{item.content}}</p>
+              <p class="text_panl">{{item.title}}</p>
               <p class="deta_panl">{{item.create_time}}</p>
             </div>
           </scroll-view>
