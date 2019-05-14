@@ -95,7 +95,7 @@
             <ul class="apar_details">
               <li>
                 <label>【 建 面 】</label>
-                {{item.inside_space}}m²
+                {{item.floor_space}}m²
               </li>
               <li>
                 <label>【 朝 向 】</label>
@@ -122,7 +122,7 @@
             <label>售楼地址：</label>
             <span>{{detail.address}}</span>
           </li>
-          <li>
+          <li v-if="detail.alias">
             <label>楼盘别名：</label>
             <span>{{detail.alias}}</span>
           </li>
@@ -213,9 +213,11 @@
             <span>{{item.name}}({{item.photos.length}})</span>
           </div>
           <div class="imgBox">
-            <a v-for="(tItem,tIndex) in item.photos" :key="tIndex" @click="handleGoPhoto(item.name)">
-              <img :src="tItem.photo">
-            </a>
+            <scroll-view :scroll-x="true" style="white-space: nowrap; display: flex;" >
+              <a style="margin-right:13px" v-for="(tItem,tIndex) in item.photos" :key="tIndex" @click="handleGoPhoto(item.name)">
+                <img :src="tItem.photo">
+              </a>
+          </scroll-view>
           </div>
         </div>
       </div>
@@ -463,7 +465,7 @@ export default {
 
 .container {
   background: #f2f2f2;
-  margin-bottom: 50px;
+  padding-bottom: 50px;
   height:auto;
 }
 
@@ -601,7 +603,7 @@ export default {
   .looks_panl {
     display: flex;
     justify-content: space-between;
-    margin: 20px 0;
+    margin: 20px 0 0 0;
 
     .left_panl {
       p.num {
@@ -646,6 +648,7 @@ export default {
     line-height: 38px;
     border-radius: 6px;
     margin-bottom: 10px;
+    margin-top: 20px
 
     img {
       width: 17px;

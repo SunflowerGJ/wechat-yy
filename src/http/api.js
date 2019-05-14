@@ -1,6 +1,6 @@
 import fly from './request'
 // 1登录
-export const login = params => {
+export const login = (params = {}) => {
   return fly({
     method: 'post',
     url: `/api/member/login`,
@@ -9,7 +9,7 @@ export const login = params => {
 }
 
 // 2首页接口
-export const postIndex = params => {
+export const postIndex = (params = {}) => {
   return fly({
     method: 'get',
     url: `/api/page/index`,
@@ -18,7 +18,7 @@ export const postIndex = params => {
 }
 
 // 3楼盘列表接口
-export const postHousesList = params => {
+export const postHousesList = (params = {}) => {
   return fly({
     method: 'post',
     url: `/api/houses/index`,
@@ -26,7 +26,7 @@ export const postHousesList = params => {
   })
 }
 // 4城市列表接口
-export const postCities = params => {
+export const postCities = (params = {}) => {
   return fly({
     method: 'post',
     url: `/api/city/index`,
@@ -34,7 +34,7 @@ export const postCities = params => {
   })
 }
 // 5城市搜索接口
-export const postCitySearch = params => {
+export const postCitySearch = (params = {}) => {
   return fly({
     method: 'post',
     url: `/api/city/search`,
@@ -42,7 +42,7 @@ export const postCitySearch = params => {
   })
 }
 // 6获取资讯列表
-export const postArticleList = params => {
+export const postArticleList = (params = {}) => {
   return fly({
     method: 'post',
     url: `/api/article/searchArticleList`,
@@ -50,7 +50,7 @@ export const postArticleList = params => {
   })
 }
 // 7楼盘详情接口
-export const postHousesDetail = params => {
+export const postHousesDetail = (params = {}) => {
   return fly({
     method: 'post',
     url: `/api/houses/detail`,
@@ -58,7 +58,7 @@ export const postHousesDetail = params => {
   })
 }
 // 8楼盘户型列表接口
-export const postHouseType = params => {
+export const postHouseType = (params = {}) => {
   return fly({
     method: 'post',
     url: `/api/housetype/index`,
@@ -66,7 +66,7 @@ export const postHouseType = params => {
   })
 }
 // 9楼盘户型详情接口
-export const postHouseTypeDetail = params => {
+export const postHouseTypeDetail = (params = {}) => {
   return fly({
     method: 'post',
     url: `/api/housetype/detail`,
@@ -75,7 +75,7 @@ export const postHouseTypeDetail = params => {
 }
 
 // 10单向房贷计算
-export const mortgageShow = params => {
+export const mortgageShow = (params = {}) => {
   return fly({
     method: 'post',
     url: `/api/Apis/mortgageShow`,
@@ -84,7 +84,7 @@ export const mortgageShow = params => {
 }
 
 // 11双向房贷计算
-export const mortgageShowTwo = params => {
+export const mortgageShowTwo = (params = {}) => {
   return fly({
     method: 'post',
     url: `/api/Apis/mortgageShowTwo`,
@@ -92,7 +92,7 @@ export const mortgageShowTwo = params => {
   })
 }
 // 12楼盘/户型收藏接口
-export const postAddCollection = params => {
+export const postAddCollection = (params = {}) => {
   return fly({
     method: 'post',
     url: `/api/member/addCollection`,
@@ -100,7 +100,7 @@ export const postAddCollection = params => {
   })
 }
 // 13取消用户收藏接口
-export const postRemoveCollection = params => {
+export const postRemoveCollection = (params = {}) => {
   return fly({
     method: 'post',
     url: `/api/member/removeCollection`,
@@ -108,7 +108,7 @@ export const postRemoveCollection = params => {
   })
 }
 // 14.获取资讯详情
-export const postArticleDetail = params => {
+export const postArticleDetail = (params = {}) => {
   return fly({
     method: 'post',
     url: `/api/article/searchArticleDetail`,
@@ -116,7 +116,7 @@ export const postArticleDetail = params => {
   })
 }
 // 15查询用户收藏接口
-export const postSearchCollection = params => {
+export const postSearchCollection = (params = {}) => {
   return fly({
     method: 'post',
     url: `/api/member/searchCollection`,
@@ -124,7 +124,7 @@ export const postSearchCollection = params => {
   })
 }
 // 获取楼盘访问记录
-export const postShowHousesAccess = params => {
+export const postShowHousesAccess = (params = {}) => {
   return fly({
     method: 'post',
     url: `/api/houses/showHousesAccess`,
@@ -132,7 +132,7 @@ export const postShowHousesAccess = params => {
   })
 }
 // 获取用户过去10天访问楼盘记录
-export const postShowMemberAccess = params => {
+export const postShowMemberAccess = (params = {}) => {
   return fly({
     method: 'post',
     url: `/api/member/showMemberAccess`,
@@ -141,7 +141,7 @@ export const postShowMemberAccess = params => {
 }
 
 // 微信授权更新用户手机号接口
-export const postMobileSave = params => {
+export const postMobileSave = (params = {}) => {
   return fly({
     method: 'post',
     url: `/api/member/mobileSave`,
@@ -149,7 +149,7 @@ export const postMobileSave = params => {
   })
 }
 // 17楼盘相册接口
-export const postAlbums = params => {
+export const postAlbums = (params = {}) => {
   return fly({
     method: 'post',
     url: `/api/houses/albums`,
@@ -157,7 +157,7 @@ export const postAlbums = params => {
   })
 }
 // 生成小程序图片
-export const postEWM = params => {
+export const postEWM = (params = {}) => {
   return fly({
     method: 'post',
     url: `/api/member/createUnlimited`,
@@ -165,7 +165,7 @@ export const postEWM = params => {
   })
 }
 // 微信授权更新用户信息接口
-export const postUserInfoSave = params => {
+export const postUserInfoSave = (params = {}) => {
   return fly({
     method: 'post',
     url: `/api/member/userInfoSave`,

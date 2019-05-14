@@ -165,7 +165,6 @@ export default {
     async fetchCollection (options) {
       const params = Object.assign(options, { token: this.globalData.token })
       const data = await postSearchCollection(params)
-      console.log(data)
       if (options.type === 1) {
         this.houseList = data.list
       } else {
@@ -176,7 +175,6 @@ export default {
     async fetchHousesAccess (options) {
       const params = Object.assign(options, { token: this.globalData.token })
       const data = await postShowMemberAccess(params)
-      console.log(data)
       this.houseHisList = data
     },
     onSscrolltolowerHouse (e) {

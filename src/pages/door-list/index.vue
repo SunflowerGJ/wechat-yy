@@ -11,7 +11,7 @@
               <span>{{item.name}}</span>
             </p>
             <ul class="apar_details">
-              <li><label>【 建    面 】</label>{{item.inside_space}}m²</li>
+              <li><label>【 建    面 】</label>{{item.floor_space}}m²</li>
               <li><label>【 朝    向 】</label>{{item.orientation}}</li>
               <li><label>【 总    价 】</label>约<span>{{item.total_price}}万元</span>/套</li>
               <li><label>【 单    价 】</label>{{item.unit_price}}元/m²</li>

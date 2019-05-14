@@ -70,6 +70,7 @@
 </template>
 
 <script>
+import {_getUserAddress} from '../../lib/getAddr.js'
 import { postArticleList } from '../../http/api.js'
 export default {
   // 右上角分享功能
@@ -114,10 +115,18 @@ export default {
       },
       groupList: [],
       cityList: [],
-      projectList: []
+      projectList: [],
+      address: ''
     }
   },
-  mounted () {
+  async mounted () {
+    if (!this.globalData.address) {
+      const city = await _getUserAddress()
+      this.address = city
+      this.globalData.address = city
+    } else {
+      this.address = this.globalData.address
+    }
     const { group, city, project } = this.params
     this.fetchArticleList(group, 'group')
     this.fetchArticleList(city, 'city')
@@ -126,7 +135,12 @@ export default {
   methods: {
     async fetchArticleList (params, typeDesc) {
       const { type, page, pagesize } = params
-      const data = await postArticleList({ type, page, pagesize })
+      var data
+      if (type === 3 || type === 4) {
+        data = await postArticleList({ type, page, pagesize, city: this.address })
+      } else {
+        data = await postArticleList({ type, page, pagesize })
+      }
       if (params.type === 2) {
         this.groupList = data.list
       }
