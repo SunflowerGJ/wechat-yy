@@ -53,7 +53,7 @@
             v-for="(item,index) in doorList"
             :key="index"
           >
-            <img class="info-section__item-img" :src="item.photo" alt>
+            <img class="info-section__item-img" :src="item.photo[0]" alt>
             <div class="info-section__item-info">
               <span class="title">{{item.name}}</span>
               <span class="area">建积{{item.inside_space}}m²</span>
