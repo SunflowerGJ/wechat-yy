@@ -10,25 +10,23 @@ export const _getUserAddress = () => {
         let addressComponent = data[0].regeocodeData.addressComponent
         let location = addressComponent.city.length === 0
           ? addressComponent.province
-          : addressComponent.city[0]
+          : addressComponent.city
         const shortName = location.replace(/市$/,'')
-        wx.showModal({
-          title: '定位城市',
-          content: location,
-          success(res) {
-            if (res.confirm) {
-              wx.showToast({
-                title: `${addressComponent.province}+${addressComponent.city[0]}`,
-                icon: 'success',
-                duration: 2000
-              })
-            } else if (res.cancel) {
-              console.log('用户点击取消')
-            }
-          }
-        })
-        console.log(location);
-        console.log(location.replace(/市$/,''));
+        // wx.showModal({
+        //   title: '定位城市',
+        //   content:JSON.stringify(addressComponent),
+        //   success(res) {
+        //     if (res.confirm) {
+        //       wx.showToast({
+        //         title: `${addressComponent.province}+${addressComponent.city[0]}`,
+        //         icon: 'success',
+        //         duration: 2000
+        //       })
+        //     } else if (res.cancel) {
+        //       console.log('用户点击取消')
+        //     }
+        //   }
+        // })
         resolve(shortName)
       },
       fail: function (info) {
