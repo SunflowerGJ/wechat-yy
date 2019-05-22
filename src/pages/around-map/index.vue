@@ -117,10 +117,18 @@ export default {
       this.checkMarkerId = e.mp.markerId
     },
     handleGoAddress () {
-      this.$router.push({
-        path: '/pages/go-address/main',
-        query: this.local
+      // console.log(this.local)
+      wx.openLocation({
+        latitude: +this.local.latitude,
+        longitude: +this.local.longitude,
+        name: this.local.name,
+        address: this.local.address,
+        scale: 18
       })
+      // this.$router.push({
+      //   path: '/pages/go-address/main',
+      //   query: this.local
+      // })
     },
     getMarker (markers) {
       this.markers = markers

@@ -3,7 +3,7 @@
     <div class="apartment_panl">
       <div class="apar_panl" @click="goHousesDetail(item.id)" v-for="(item,index) in list" :key="index">
         <div class="apar_left">
-          <img mode="aspectFit" :src="item.photo"/>
+          <img mode="aspectFit" :src="item.photo[0]"/>
         </div>
         <div class="apar_right">
             <p class="titel">

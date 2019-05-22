@@ -8,7 +8,7 @@
         :autoplay="autoplay"
         :interval="interval"
         class="swiper">
-        <div v-for="(item,index)  in detail.photo" :key="index" @click="handleGoPhoto('样板间')">
+        <div v-for="(item,index)  in detail.photo" :key="index">
           <swiper-item>
             <div class="swiper-item"><image mode="aspectFit" :src="item" class="slide-image"/></div>
           </swiper-item>
@@ -160,7 +160,8 @@ export default {
 @import "../../stylus/mixin.styl"
   .container
     background #f2f2f2
-    margin-bottom 50px
+    padding-bottom: 50px;
+    height:auto;
   .panl_swiper
     width 100%
     height 220px

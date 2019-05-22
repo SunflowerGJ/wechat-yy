@@ -85,7 +85,7 @@
         </div>
         <div class="apar_panl"  @click="goHousesDetail(item.id)" v-for="(item,index) in detail.housetypes" :key="index">
           <div class="apar_left">
-            <img mode="aspectFit" :src="item.photo">
+            <img mode="aspectFit" :src="item.photo[0]">
           </div>
           <div class="apar_right">
             <p class="titel">
@@ -118,7 +118,7 @@
           <span>楼盘详情</span>
         </div>
         <ul class="floor_details">
-          <li>
+          <li v-if="detail.address">
             <label>售楼地址：</label>
             <span>{{detail.address}}</span>
           </li>
@@ -126,15 +126,15 @@
             <label>楼盘别名：</label>
             <span>{{detail.alias}}</span>
           </li>
-          <li>
+          <li v-if="detail.average_price">
             <label>参考均价：</label>
             <span>{{detail.average_price}}/m²</span>
           </li>
-          <li>
+          <li v-if="detail.total_price">
             <label>参考总价：</label>
             <span>{{detail.total_price}}万/套起</span>
           </li>
-          <li>
+          <li v-if="detail.property_type">
             <label>物业类型：</label>
             <span>{{detail.property_type}}</span>
           </li>
@@ -142,64 +142,64 @@
             <label>建筑类型：</label>
             <span>{{detail.building_type}}</span>
           </li> -->
-          <li>
+          <li v-if="detail.decoration_standard">
             <label>装修标准：</label>
             <span>{{detail.decoration_standard}}</span>
           </li>
-          <li>
+          <li v-if="detail.property_limit">
             <label>产权年限：</label>
             <span>{{detail.property_limit}}年</span>
           </li>
-          <li>
+          <li v-if="detail.opening_time">
             <label>最新开盘：</label>
             <span>{{detail.opening_time}}</span>
           </li>
           <block v-if="getMore">
-            <li>
+            <li v-if="detail.land_acreage">
               <label>占地面积：</label>
               <span>{{detail.land_acreage}}</span>
             </li>
-            <li>
+            <li v-if="detail.floor_space">
               <label>建筑面积：</label>
               <span>{{detail.floor_space}}</span>
             </li>
-            <li>
+            <li v-if="detail.plot_ratio">
               <label>容<i class="space-1"></i>积<i class="space-1"></i>率： </label>
               <span>{{detail.plot_ratio}}</span>
             </li>
-            <li>
+            <li v-if="detail.greening_rate">
               <label>绿<i class="space-1"></i>化<i class="space-1"></i>率：</label>
               <span>{{detail.greening_rate}}</span>
             </li>
-            <li>
+            <li v-if="detail.parking_spaces">
               <label>规划车位：</label>
               <span>{{detail.parking_spaces}}</span>
             </li>
-            <li>
+            <li v-if="detail.building">
               <label>规划楼栋：</label>
               <span>{{detail.building}}</span>
             </li>
-            <li>
+            <li v-if="detail.households">
               <label>规划户数：</label>
               <span>{{detail.households}}</span>
             </li>
-            <li>
+            <li v-if="detail.property_company">
               <label>物业公司：</label>
               <span>{{detail.property_company}}</span>
             </li>
-            <li>
+            <li v-if="detail.property_costs">
               <label>物业费用：</label>
               <span>{{detail.property_costs}}</span>
             </li>
-            <li>
+            <li v-if="detail.heating_type">
               <label>供暖方式：</label>
               <span>{{detail.heating_type}}</span>
             </li>
-            <li>
+            <li v-if="detail.water_supply">
               <label>供<i class="space-2"></i>水：</label>
               <span>{{detail.water_supply}}</span>
             </li>
-            <li>
+            <li v-if="detail.power_supply">
               <label>供<i class="space-2"></i>电：</label>
               <span>{{detail.power_supply}}</span>
             </li>
@@ -248,9 +248,9 @@
             <span>周边配套</span>
           </div>
         </div>
-        <div class="map_img">
+        <div class="map_img" @click="goAroundMap(detail)">
           <img src="/static/images/mapImg.jpeg">
-          <div class="dialog" @click="goAroundMap(detail)">
+          <div class="dialog">
             {{detail.name}}
             <div class="triangle_border_down"></div>
           </div>
@@ -394,10 +394,17 @@ export default {
   },
   methods: {
     handleGoAddress () {
-      this.$router.push({
-        path: '/pages/go-address/main',
-        query: {tp: 'office', ...this.detail}
+      wx.openLocation({
+        latitude: +this.detail.office_latitude,
+        longitude: +this.detail.office_longitude,
+        name: this.detail.office_address,
+        // address: this.detail.office_address,
+        scale: 18
       })
+      // this.$router.push({
+      //   path: '/pages/go-address/main',
+      //   query: {tp: 'office', ...this.detail}
+      // })
     },
     handleSearch () {
       // 实例化API核心类
