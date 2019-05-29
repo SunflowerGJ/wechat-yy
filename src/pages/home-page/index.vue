@@ -583,7 +583,7 @@ export default {
 
     p {
       text-align: center;
-      font-size: 14px;
+      font-size: 12px;
       color: #686564 ;
 
       span {

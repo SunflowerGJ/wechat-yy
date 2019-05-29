@@ -232,7 +232,7 @@ export default {
       border-right 1px solid #d8d8d8
       p
         text-align center
-        font-size 14px
+        font-size 12px
         color: #686564 
         span 
           color #E60113
