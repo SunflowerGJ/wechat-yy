@@ -8,7 +8,7 @@
         :autoplay="autoplay"
         :interval="interval"
         class="swiper">
-        <div v-for="(item,index)  in detail.photo" :key="index">
+        <div v-for="(item,index)  in detail.photo" :key="index" @click="handlePreviewImage(detail.photo)">
           <swiper-item>
             <div class="swiper-item"><image mode="aspectFit" :src="item" class="slide-image"/></div>
           </swiper-item>
@@ -142,6 +142,12 @@ export default {
     })
   },
   methods: {
+    handlePreviewImage (photos) {
+      wx.previewImage({
+        current: photos[0],
+        urls: photos
+      })
+    },
     handleGoPhoto (name) {
       this.$router.push({path: '/pages/estate-photo/main', query: {...this.detail, tabName: name}})
     },

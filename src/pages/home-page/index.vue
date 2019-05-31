@@ -85,6 +85,11 @@
         </div>
         <div class="apar_panl"  @click="goHousesDetail(item.id)" v-for="(item,index) in detail.housetypes" :key="index">
           <div class="apar_left">
+              <div class="item-main_tag" v-if="item.is_hot === '1'">
+                <i></i>
+                <div class="lawyerType-bgImg"></div>
+                <span>热销</span>
+              </div>
             <img mode="aspectFit" :src="item.photo[0]">
           </div>
           <div class="apar_right">
@@ -705,45 +710,6 @@ export default {
         padding: 7px;
         vertical-align:middle;
 
-        .item-main_tag {
-          height: 20px;
-          display: inline-block;
-          position: absolute;
-          left: 0px;
-          top: 0px;
-          z-index: 1;
-          padding-left: 5px;
-
-          span {
-            font-size: 12px;
-            color: #fff;
-            float: left;
-            line-height: 20px;
-            padding: 0 10px;
-          }
-
-          .lawyerType-bgImg {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            right: 0;
-            top: 0;
-            z-index: -1;
-            background: #E60113;
-          }
-
-          i {
-            position: absolute;
-            right: -20px;
-            top: 0;
-            width: 0;
-            height: 0;
-            border-width: 10px;
-            border-style: solid;
-            border-color: transparent transparent transparent #E60113;
-          }
-        }
-
         .text_panl {
           no-wrap-more(3);
           font-size: 12px;
@@ -766,7 +732,44 @@ export default {
     }
   }
 }
+.item-main_tag {
+  height: 20px;
+  display: inline-block;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  z-index: 1;
+  padding-left: 5px;
 
+  span {
+    font-size: 12px;
+    color: #fff;
+    float: left;
+    line-height: 20px;
+    padding: 0 10px;
+  }
+
+  .lawyerType-bgImg {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: -1;
+    background: #E60113;
+  }
+
+  i {
+    position: absolute;
+    right: -20px;
+    top: 0;
+    width: 0;
+    height: 0;
+    border-width: 10px;
+    border-style: solid;
+    border-color: transparent transparent transparent #E60113;
+  }
+}
 .apartment_panl {
   background-color: #ffffff;
   padding: 15px 20px;
@@ -797,6 +800,7 @@ export default {
       height: 127px;
       margin-right: 15px;
       border: 1px solid #eee;
+      position:relative;
 
       img {
         width: 100%;
