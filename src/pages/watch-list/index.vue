@@ -26,7 +26,7 @@ export default {
     return {
       list: [],
       page: 1,
-      pagesize: 1,
+      pagesize: 10,
       total_page: 0,
       falg: true
 
