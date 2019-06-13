@@ -1,7 +1,7 @@
 <template>
   <div class="footer_fixed">
     <div class="fixed_left">
-      <a>
+      <a @click="share">
         <img src="/static/images/forward.png">
         <button open-type="share">转发</button>
       </a>
@@ -54,7 +54,9 @@
 import {
   postMobileSave,
   postAddCollection,
-  postRemoveCollection
+  postRemoveCollection,
+  POINTHouseClick,
+  POINTHouseType
 } from '../http/api.js'
 
 export default {
@@ -72,7 +74,39 @@ export default {
     this.isPhone = this.globalData.userinfo.mobile || ''
   },
   methods: {
+    share () {
+      if (this.type === '1') {
+        POINTHouseClick({
+          cityId: this.globalData.address,
+          houseId: this.detail.id,
+          type: 3
+        })
+      }
+      if (this.type === '2') {
+        POINTHouseType({
+          cityId: this.globalData.address,
+          houseId: this.detail.house_id,
+          housetypeId: this.detail.id,
+          type: 3
+        })
+      }
+    },
     async getPhoneNumber (e) {
+      if (this.type === '1') {
+        POINTHouseClick({
+          cityId: this.globalData.address,
+          houseId: this.detail.id,
+          type: 4
+        })
+      }
+      if (this.type === '2') {
+        POINTHouseType({
+          cityId: this.globalData.address,
+          houseId: this.detail.house_id,
+          housetypeId: this.detail.id,
+          type: 4
+        })
+      }
       if (e.mp.detail.errMsg === 'getPhoneNumber:ok') {
         wx.makePhoneCall({phoneNumber: this.detail.sales_mobile})
         // 授权成功
@@ -80,8 +114,40 @@ export default {
         await postMobileSave({ encryptedData, iv })
       }
     },
-    makePhoneCall () { wx.makePhoneCall({phoneNumber: this.detail.sales_mobile}) },
+    makePhoneCall () {
+      if (this.type === '1') {
+        POINTHouseClick({
+          cityId: this.globalData.address,
+          houseId: this.detail.id,
+          type: 4
+        })
+      }
+      if (this.type === '2') {
+        POINTHouseType({
+          cityId: this.globalData.address,
+          houseId: this.detail.house_id,
+          housetypeId: this.detail.id,
+          type: 4
+        })
+      }
+      wx.makePhoneCall({phoneNumber: this.detail.sales_mobile})
+    },
     getShareImgNew (item) {
+      if (this.type === '1') {
+        POINTHouseClick({
+          cityId: this.globalData.address,
+          houseId: this.detail.id,
+          type: 5
+        })
+      }
+      if (this.type === '2') {
+        POINTHouseType({
+          cityId: this.globalData.address,
+          houseId: this.detail.house_id,
+          housetypeId: this.detail.id,
+          type: 5
+        })
+      }
       const posterUrl = this.type === '2' ? item.housetype_hposter_url : item.poster_url
       this.showModal = true
       this.imagePath = posterUrl
@@ -107,6 +173,21 @@ export default {
     },
     // 收藏/取消收藏
     async onAddCollection (detail, type) {
+      if (this.type === '1') {
+        POINTHouseClick({
+          cityId: this.globalData.address,
+          houseId: this.detail.id,
+          type: 2
+        })
+      }
+      if (this.type === '2') {
+        POINTHouseType({
+          cityId: this.globalData.address,
+          houseId: this.detail.house_id,
+          housetypeId: this.detail.id,
+          type: 2
+        })
+      }
       if (this.isCollect === 0) {
         const data = await postAddCollection({
           obj_id: detail.id,

@@ -172,3 +172,53 @@ export const postUserInfoSave = (params = {}) => {
     params: params
   })
 }
+
+// 城市统计
+export const POINTCity = (params = {}) => {
+  return fly({
+    method: 'get',
+    url: `/api/Statis/cityClick`,
+    params: params
+  })
+}
+// 广告统计
+export const POINTAd = (params = {}) => {
+  return fly({
+    method: 'get',
+    url: `/api/Statis/adClick`,
+    params: params
+  })
+}
+export const POINTAlbums = (params = {}) => {
+  return fly({
+    method: 'get',
+    url: `/api/Statis/albumsClick`,
+    params: params
+  })
+}
+// 项目访问
+
+export const POINTHouseClick = (params = {}) => {
+  return fly({
+    method: 'get',
+    url: `/api/Statis/houseClick`,
+    params: params
+  })
+}
+// 户型统计
+export const POINTHouseType = (params = {}) => {
+  return fly({
+    method: 'get',
+    url: `/api/Statis/housetypeClick`,
+    params: params
+  })
+}
+
+// 咨询统计
+export const POINTArticleClick = (params = {}) => {
+  return fly({
+    method: 'get',
+    url: `/api/Statis/articleClick`,
+    params: params
+  })
+}

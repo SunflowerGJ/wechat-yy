@@ -12,7 +12,7 @@
         >
           <view
             class="info-section__item"
-            @click="goActivityDetail(item.id)"
+            @click="goActivityDetail(item.id,item.house_id,1)"
             v-for="(item,index) in  groupList"
             :key="index"
           >
@@ -34,7 +34,7 @@
         >
           <view
             class="info-section__item"
-            @click="goActivityDetail(item.id)"
+            @click="goActivityDetail(item.id,item.house_id,2)"
             v-for="(item,index) in cityList"
             :key="index"
           >
@@ -56,7 +56,7 @@
         >
           <view
             class="info-section__item"
-            @click="goActivityDetail(item.id)"
+            @click="goActivityDetail(item.id,item.house_id,3)"
             v-for="(item,index) in projectList"
             :key="index"
           >
@@ -71,7 +71,7 @@
 
 <script>
 import {_getUserAddress} from '../../lib/getAddr.js'
-import { postArticleList } from '../../http/api.js'
+import { postArticleList, POINTArticleClick } from '../../http/api.js'
 export default {
   // 右上角分享功能
   onShareAppMessage: function (res) {
@@ -172,7 +172,13 @@ export default {
         this.fetchArticleList(this.params.project, 'project')
       }
     },
-    goActivityDetail (id) {
+    goActivityDetail (id, houseId, type) {
+      POINTArticleClick({
+        cityId: this.globalData.address,
+        houseId: houseId,
+        articleId: id,
+        type: type
+      })
       this.$router.push({ path: '/pages/activity-detail/main', query: { id } })
     }
   }

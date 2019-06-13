@@ -49,7 +49,7 @@
         >
           <view
             class="info-section__item"
-            @click="goHousesDetail(item.id)"
+            @click="goHousesDetail(item)"
             v-for="(item,index) in doorList"
             :key="index"
           >
@@ -80,7 +80,7 @@
         >
           <view
             class="info-section__item"
-            @click="goHomePage(item.house_id)"
+            @click="goHomePage(item.id)"
             v-for="(item,index) in houseHisList"
             :key="index"
           >
@@ -102,7 +102,7 @@
 </template>
 
 <script>
-import { postSearchCollection, postShowMemberAccess } from '../../http/api.js'
+import { postSearchCollection, postShowMemberAccess, POINTHouseClick, POINTHouseType } from '../../http/api.js'
 export default {
   data () {
     return {
@@ -156,6 +156,7 @@ export default {
     }
   },
   mounted () {
+    console.log(this.globalData.address)
     this.fetchCollection(this.house)
     this.fetchCollection(this.door)
     this.fetchHousesAccess(this.houseHis)
@@ -196,13 +197,29 @@ export default {
       }
     },
     goHomePage (id) {
+      POINTHouseClick({
+        cityId: this.globalData.address,
+        houseId: id,
+        type: 9
+      })
       this.$router.push({
         path: '/pages/home-page/main',
         query: { id }
       })
     },
-    goHousesDetail (id) {
-      this.$router.push({ path: '/pages/door-details/main', query: { id } })
+    goHousesDetail (item) {
+      // POINTHouseClick({
+      //   cityId: this.globalData.address,
+      //   houseId: item.id,
+      //   type: 9
+      // })
+      POINTHouseType({
+        cityId: this.globalData.address,
+        houseId: item.house_id,
+        housetypeId: item.id,
+        type: 7
+      })
+      this.$router.push({ path: '/pages/door-details/main', query: { id: item.id } })
     }
   }
 }

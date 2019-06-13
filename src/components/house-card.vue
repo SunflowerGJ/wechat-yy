@@ -1,5 +1,5 @@
 <template>
-  <div class="main_item" @click="goHomePage(hData.id)">
+  <div class="main_item" @click="goHomePage(hData)">
     <div class="item-header">
       <h3>{{hData.name}}</h3>
       <span class="price-wrap">
@@ -24,14 +24,27 @@
 </template>
 
 <script>
+import {POINTHouseClick, POINTHouseType} from '../http/api.js'
 export default {
-  props: ['hData'],
+  props: ['hData', 'houseClick'],
 
   methods: {
-    goHomePage (id) {
+    goHomePage (data) {
       this.$router.push({
         path: '/pages/home-page/main',
-        query: {id}
+        query: {id: data.id}
+      })
+      if (!this.houseClick) return
+      POINTHouseClick({
+        cityId: this.globalData.address,
+        houseId: data.id,
+        type: this.houseClick.type
+      })
+      POINTHouseType({
+        cityId: this.globalData.address,
+        houseId: data.id,
+        housetypeId: data.id,
+        type: this.houseClick.type
       })
     }
   }

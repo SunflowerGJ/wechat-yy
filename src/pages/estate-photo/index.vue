@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { postAlbums } from '../../http/api.js'
+import { postAlbums, POINTAlbums } from '../../http/api.js'
 export default {
 
   data () {
@@ -47,6 +47,19 @@ export default {
   methods: {
     getIndex (e) {
       this.active = e
+      const tyepMap = {
+        样板间: 1,
+        实景图: 2,
+        效果图: 3,
+        周边配套: 4,
+        户型图: 5,
+        规划图: 6
+      }
+      POINTAlbums({
+        cityId: this.$route.query.city_name,
+        houseId: this.$route.query.id,
+        type: tyepMap[e]
+      })
     },
     switchItem (e) {
       this.current = e.mp.detail.current

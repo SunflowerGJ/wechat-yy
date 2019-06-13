@@ -94,7 +94,7 @@
 </template>
 
 <script>
-import {postHouseTypeDetail} from '../../http/api.js'
+import {postHouseTypeDetail, POINTHouseType} from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
 import getQueryString from '../../utils/getQueryString.js'
 export default {
@@ -153,6 +153,12 @@ export default {
     },
     // 跳转计算器
     goCalculator () {
+      POINTHouseType({
+        cityId: this.detail.city_name,
+        houseId: this.detail.house_id,
+        housetypeId: this.detail.id,
+        type: 6
+      })
       this.$router.push({path: '/pages/calculator/main'})
     },
     addCID (cid) {

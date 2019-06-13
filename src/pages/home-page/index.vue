@@ -219,7 +219,7 @@
           </div>
           <div class="imgBox">
             <scroll-view :scroll-x="true" style="white-space: nowrap; display: flex;" >
-              <a style="margin-right:13px" v-for="(tItem,tIndex) in item.photos" :key="tIndex" @click="handleGoPhoto(item.name)">
+              <a style="margin-right:13px" v-for="(tItem,tIndex) in item.photos" :key="tIndex" @click="handleGoPhoto(item.name,index)">
                 <img :src="tItem.photo">
               </a>
           </scroll-view>
@@ -326,7 +326,7 @@
   </div>
 </template>
 <script>
-import { postHousesDetail } from '../../http/api.js'
+import { postHousesDetail, POINTAlbums, POINTHouseClick } from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
 import getQueryString from '../../utils/getQueryString.js'
 var QQMapWX = require('qqmap-wx-jssdk')
@@ -399,6 +399,11 @@ export default {
   },
   methods: {
     handleGoAddress () {
+      POINTHouseClick({
+        cityId: this.detail.city_name,
+        houseId: this.detail.id,
+        type: 7
+      })
       wx.openLocation({
         latitude: +this.detail.office_latitude,
         longitude: +this.detail.office_longitude,
@@ -406,10 +411,6 @@ export default {
         // address: this.detail.office_address,
         scale: 18
       })
-      // this.$router.push({
-      //   path: '/pages/go-address/main',
-      //   query: {tp: 'office', ...this.detail}
-      // })
     },
     handleSearch () {
       // 实例化API核心类
@@ -444,9 +445,19 @@ export default {
       this.searchMap = copyMap
     },
     handleGo () {
+      POINTHouseClick({
+        cityId: this.detail.city_name,
+        houseId: this.detail.id,
+        type: 6
+      })
       this.$router.push({path: '/pages/calculator/main'})
     },
     goDoorList (id) {
+      POINTHouseClick({
+        cityId: this.detail.city_name,
+        houseId: this.detail.id,
+        type: 8
+      })
       this.$router.push({path: '/pages/door-list/main', query: {id}})
     },
     goHousesDetail (id) {
@@ -457,6 +468,19 @@ export default {
       this.$router.push({path: '/pages/around-map/main', query: query})
     },
     handleGoPhoto (name) {
+      const tyepMap = {
+        样板间: 1,
+        实景图: 2,
+        效果图: 3,
+        周边配套: 4,
+        户型图: 5,
+        规划图: 6
+      }
+      POINTAlbums({
+        cityId: this.detail.city_name,
+        houseId: this.detail.id,
+        type: tyepMap[name]
+      })
       this.$router.push({path: '/pages/estate-photo/main', query: {...this.detail, tabName: name}})
     },
     goActivityDetail (id) {

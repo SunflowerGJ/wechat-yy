@@ -26,7 +26,7 @@
       </swiper>
     </div>
     <div class="nav">
-      <div class="nav__item" @click="goNav(item.path)" v-for="item in navList" :index="item" :key="item">
+      <div class="nav__item" @click="goNav(item)" v-for="item in navList" :index="item" :key="item">
         <image :src="item.icon" class="nav_img"/>
         <p class="nav_text">{{item.text}}</p>
       </div>
@@ -34,6 +34,7 @@
     <div class="main">
       <block v-for="(item,index) in houses"  :index="index" :key="index">
         <house-card
+          :houseClick="houseClick"
           :key="index"
           :hData='item'></house-card>  
       </block>
@@ -44,7 +45,7 @@
 
 <script>
 import GetUserInfo from '../../components/get-userinfo'
-import {postIndex} from '../../http/api.js'
+import {postIndex, POINTCity, POINTAd} from '../../http/api.js'
 import HouseCard from '../../components/house-card'
 import {_getUserAddress} from '../../lib/getAddr.js'
 export default {
@@ -64,6 +65,9 @@ export default {
   },
   data () {
     return {
+      houseClick: {
+        type: 1
+      },
       serValue: '',
       bannerList: [],
       houses: [],
@@ -71,12 +75,14 @@ export default {
         {
           icon: '/static/images/index-nav-map.png',
           text: '地图找房',
-          path: '/pages/map/main'
+          path: '/pages/map/main',
+          type: 'map'
         },
         {
           icon: '/static/images/index-nav-search.png',
           text: '条件筛选',
-          path: '/pages/houses-filter/main'
+          path: '/pages/houses-filter/main',
+          type: 'select'
         }
       ],
       address: '定位'
@@ -95,12 +101,24 @@ export default {
       if (item.type === '3') {
         this.$router.push({ path: '/pages/activity-detail/main', query: {id: item.url} })
       }
+      POINTCity({
+        cityId: this.address,
+        type: 'ad'
+      })
+      POINTAd({
+        cityId: this.address,
+        adId: item.url
+      })
     },
     // nav栏跳转
-    goNav (path) {
+    goNav (item) {
       if (this.address !== '定位') {
-        this.$router.push({path: path, query: {city: this.address}})
+        this.$router.push({path: item.path, query: {city: this.address}})
       }
+      POINTCity({
+        cityId: this.address,
+        type: item.type
+      })
     },
     // 城市列表跳转
     goCityList () {
@@ -121,6 +139,7 @@ export default {
             return item
           }
         })
+        this.houseClick.cityId = data.cityInfo.shortname
       } catch (error) {
         console.log(error)
       }
@@ -146,7 +165,12 @@ export default {
       this.globalData.address = adr
       this.fetchIndexData({city: this.address})
     }
+    POINTCity({
+      cityId: this.address,
+      type: 'index'
+    })
   }
+
 }
 </script>
 
