@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import {POINTHouseClick, POINTHouseType} from '../http/api.js'
+import {POINTHouseClick} from '../http/api.js'
 export default {
   props: ['hData', 'houseClick'],
 
@@ -38,12 +38,6 @@ export default {
       POINTHouseClick({
         cityId: this.globalData.address,
         houseId: data.id,
-        type: this.houseClick.type
-      })
-      POINTHouseType({
-        cityId: this.globalData.address,
-        houseId: data.id,
-        housetypeId: data.id,
         type: this.houseClick.type
       })
     }

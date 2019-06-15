@@ -83,7 +83,7 @@
           <span>户型介绍</span>
           <a @click="goDoorList(detail.id)">更多户型 ></a>
         </div>
-        <div class="apar_panl"  @click="goHousesDetail(item.id)" v-for="(item,index) in detail.housetypes" :key="index">
+        <div class="apar_panl"  @click="goHousesDetail(item)" v-for="(item,index) in detail.housetypes" :key="index">
           <div class="apar_left">
               <div class="item-main_tag" v-if="item.is_hot === '1'">
                 <i></i>
@@ -326,7 +326,7 @@
   </div>
 </template>
 <script>
-import { postHousesDetail, POINTAlbums, POINTHouseClick } from '../../http/api.js'
+import { postHousesDetail, POINTAlbums, POINTHouseClick, POINTHouseType } from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
 import getQueryString from '../../utils/getQueryString.js'
 var QQMapWX = require('qqmap-wx-jssdk')
@@ -460,8 +460,14 @@ export default {
       })
       this.$router.push({path: '/pages/door-list/main', query: {id}})
     },
-    goHousesDetail (id) {
-      this.$router.push({path: '/pages/door-details/main', query: {id}})
+    goHousesDetail (item) {
+      POINTHouseType({
+        cityId: this.detail.city_name,
+        houseId: item.house_id,
+        housetypeId: item.id,
+        type: 1
+      })
+      this.$router.push({path: '/pages/door-details/main', query: {id: item.id}})
     },
     goAroundMap (detail) {
       const query = { ...detail, ...this.searchMap }

@@ -10,10 +10,10 @@
         <span>生成海报</span>
       </a>
       <a @click="onAddCollection(detail,type)">
-        <img v-if="isCollect === 0" class="collection" src="/static/images/collection.png">
-        <span v-if="isCollect === 0">收藏</span>
-        <img v-if="isCollect === 1" class="collection" src="/static/images/is-collection.png">
-        <span v-if="isCollect === 1">收藏</span>
+        <img v-if="detail.is_collect === 0" class="collection" src="/static/images/collection.png">
+        <span v-if="detail.is_collect === 0">收藏</span>
+        <img v-if="detail.is_collect === 1" class="collection" src="/static/images/is-collection.png">
+        <span v-if="detail.is_collect === 1">收藏</span>
       </a>
     </div>
     <!-- // 已经有电话 -->
@@ -41,7 +41,7 @@
               <img :src="imagePath" alt="">
             </div>
             <div class="main-footer">
-              <span @click="modalConfirm">确定</span>
+              <span @click="modalConfirm">保存到手机</span>
             </div>
           </div>
       </van-popup>
@@ -63,14 +63,13 @@ export default {
   props: ['detail', 'type'],
   data () {
     return {
-      isCollect: this.detail.is_collect,
       showModal: false,
       imagePath: '',
       isPhone: '',
       acti: false
     }
   },
-  mounted () {
+  created () {
     this.isPhone = this.globalData.userinfo.mobile || ''
   },
   methods: {
@@ -92,6 +91,7 @@ export default {
       }
     },
     async getPhoneNumber (e) {
+      console.log(e)
       if (this.type === '1') {
         POINTHouseClick({
           cityId: this.globalData.address,
@@ -188,7 +188,7 @@ export default {
           type: 2
         })
       }
-      if (this.isCollect === 0) {
+      if (this.detail.is_collect === 0) {
         const data = await postAddCollection({
           obj_id: detail.id,
           type: type,
@@ -200,7 +200,8 @@ export default {
           icon: 'success',
           duration: 1500
         })
-        this.isCollect = 1
+        this.$set(this.detail, 'is_collect', 1)
+        this.detail.is_collect = 1
       } else {
         await postRemoveCollection({
           collection_id: detail.cid,
@@ -212,7 +213,7 @@ export default {
           icon: 'success',
           duration: 1500
         })
-        this.isCollect = 0
+        this.$set(this.detail, 'is_collect', 0)
       }
     }
   }

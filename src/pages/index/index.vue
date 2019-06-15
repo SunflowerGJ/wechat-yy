@@ -107,7 +107,7 @@ export default {
       })
       POINTAd({
         cityId: this.address,
-        adId: item.url
+        adId: item.id
       })
     },
     // nav栏跳转
