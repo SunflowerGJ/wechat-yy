@@ -326,7 +326,7 @@
   </div>
 </template>
 <script>
-import { postHousesDetail, POINTAlbums, POINTHouseClick, POINTHouseType } from '../../http/api.js'
+import { postHousesDetail, POINTAlbums, POINTHouseClick, POINTHouseType, POINTArticleClick } from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
 import getQueryString from '../../utils/getQueryString.js'
 var QQMapWX = require('qqmap-wx-jssdk')
@@ -490,6 +490,12 @@ export default {
       this.$router.push({path: '/pages/estate-photo/main', query: {...this.detail, tabName: name}})
     },
     goActivityDetail (id) {
+      POINTArticleClick({
+        cityId: this.detail.city_name,
+        houseId: this.detail.id,
+        articleId: id,
+        type: 4
+      })
       this.$router.push({ path: '/pages/activity-detail/main', query: { id } })
     },
     goWatchList (id) {

@@ -1,15 +1,15 @@
 <template>
   <div class="footer_fixed">
     <div class="fixed_left">
-      <a @click="share">
+      <button open-type="share" class="item item--button" @click="share">
         <img src="/static/images/forward.png">
-        <button open-type="share">转发</button>
-      </a>
-      <a @click="getShareImgNew(detail)">
+        <span>转发</span>
+      </button>
+      <a class="item" @click="getShareImgNew(detail)">
         <img src="/static/images/fileback.png">
         <span>生成海报</span>
       </a>
-      <a @click="onAddCollection(detail,type)">
+      <a class="item" @click="onAddCollection(detail,type)">
         <img v-if="detail.is_collect === 0" class="collection" src="/static/images/collection.png">
         <span v-if="detail.is_collect === 0">收藏</span>
         <img v-if="detail.is_collect === 1" class="collection" src="/static/images/is-collection.png">
@@ -240,13 +240,18 @@ export default {
     display: flex;
     justify-content: space-between;
 
-    a {
+    .item {
       display: flex;
       flex-direction: column;
       text-align: center;
       justify-content: center;
       align-items: center;
       width: 33%;
+      line-height: 1;
+
+      &::after {
+          border: none;
+        } 
 
       img {
         width: 13px;

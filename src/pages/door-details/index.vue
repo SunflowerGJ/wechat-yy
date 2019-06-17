@@ -154,7 +154,7 @@ export default {
     // 跳转计算器
     goCalculator () {
       POINTHouseType({
-        cityId: this.detail.city_name,
+        cityId: this.detail.city_id,
         houseId: this.detail.house_id,
         housetypeId: this.detail.id,
         type: 6

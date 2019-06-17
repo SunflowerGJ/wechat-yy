@@ -6,7 +6,8 @@
       @callouttap='handleMarkerTap'
       style="width: 100%; height: 100%"
       :longitude="logLat.longitude"
-      :latitude="logLat.latitude" scale='15'>
+      :latitude="logLat.latitude"
+      scale='9'>
     </map>
   </div>
 </template>
@@ -24,8 +25,8 @@ export default {
       },
       markers: [],
       logLat: {
-        longitude: '116.231281',
-        latitude: '40.220771'
+        longitude: '',
+        latitude: ''
       },
       controls: [{
         id: 1,
