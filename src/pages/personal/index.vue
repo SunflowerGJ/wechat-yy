@@ -155,8 +155,7 @@ export default {
       doorList: []
     }
   },
-  mounted () {
-    console.log(this.globalData.address)
+  onShow () {
     this.fetchCollection(this.house)
     this.fetchCollection(this.door)
     this.fetchHousesAccess(this.houseHis)
@@ -208,11 +207,6 @@ export default {
       })
     },
     goHousesDetail (item) {
-      // POINTHouseClick({
-      //   cityId: this.globalData.address,
-      //   houseId: item.id,
-      //   type: 9
-      // })
       POINTHouseType({
         cityId: this.globalData.address,
         houseId: item.house_id,

@@ -72,6 +72,9 @@ export default {
   created () {
     this.isPhone = this.globalData.userinfo.mobile || ''
   },
+  onShow () {
+    this.isPhone = this.globalData.userinfo.mobile || ''
+  },
   methods: {
     share () {
       if (this.type === '1') {
