@@ -45,7 +45,6 @@ export default {
         withCredentials: true, // 此处设为true，才会返回encryptedData等敏感信息
         success: async (res) => {
         // 可以将 res 发送给后台解码出 unionId
-          console.log(res)
           _that.hidden = false
           const { encryptedData, iv, userInfo } = res
           const token = this.globalData.token

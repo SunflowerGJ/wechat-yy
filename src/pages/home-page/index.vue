@@ -328,7 +328,6 @@
 <script>
 import { postHousesDetail, POINTAlbums, POINTHouseClick, POINTHouseType, POINTArticleClick } from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
-import getQueryString from '../../utils/getQueryString.js'
 var QQMapWX = require('qqmap-wx-jssdk')
 export default {
   /**
@@ -364,11 +363,14 @@ export default {
     }
   },
   onLoad: function (options) {
+    console.log(options)
     if (options.q || options.scene) {
       const parmas = options.q || options.scene
+      console.log(options)
+      console.log(parmas)
       // 获取二维码的携带的链接信息
-      let qrUrl = decodeURIComponent(parmas)
-      this.house_id = getQueryString(qrUrl, 'id')
+      this.house_id = decodeURIComponent(parmas)
+      console.log(decodeURIComponent(parmas))
     }
   },
   async mounted () {

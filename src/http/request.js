@@ -26,7 +26,7 @@ fly.interceptors.request.use((request, promise) => {
           login({code: res.code}).then(data => {
             wx.setStorage({key: 'token', data: data.token})
             wx.setStorage({key: 'userinfo', data: data.userinfo})
-            request.body.token = wx.getStorageSync('token')
+            request.body.token = data.token
           })
         }
       }
@@ -35,6 +35,18 @@ fly.interceptors.request.use((request, promise) => {
     return request
   }
 })
+
+fly.interceptors.response.use(
+  (response) => {
+    if (response.data && [50001, 50002, 50003].includes(response.data.code)) {
+      wx.removeStorage({key: 'token'})
+    }
+    return response
+  },
+  (err) => {
+    console.log(err)
+  }
+)
 
 var request = (options, showLoading = true, loadingConfig = {title: '加载中...'}) => {
   var ROOT_API = process.env.ROOT_API

@@ -96,7 +96,6 @@
 <script>
 import {postHouseTypeDetail, POINTHouseType} from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
-import getQueryString from '../../utils/getQueryString.js'
 export default {
   onShareAppMessage: function (res) {
     return {
@@ -121,8 +120,7 @@ export default {
     if (options.q || options.scene) {
       const parmas = options.q || options.scene
       // 获取二维码的携带的链接信息
-      let qrUrl = decodeURIComponent(parmas)
-      this.house_id = getQueryString(qrUrl, 'id')
+      this.housetype_id = decodeURIComponent(parmas)
     }
   },
   async mounted () {
