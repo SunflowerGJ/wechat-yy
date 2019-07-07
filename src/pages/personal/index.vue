@@ -80,7 +80,7 @@
         >
           <view
             class="info-section__item"
-            @click="goHomePage(item.id)"
+            @click="goHomePage(item.house_id)"
             v-for="(item,index) in houseHisList"
             :key="index"
           >
@@ -163,8 +163,7 @@ export default {
   methods: {
     // 查询用户收藏
     async fetchCollection (options) {
-      const params = Object.assign(options, { token: this.globalData.token })
-      const data = await postSearchCollection(params)
+      const data = await postSearchCollection(options)
       if (options.type === 1) {
         this.houseList = data.list
       } else {
@@ -173,8 +172,7 @@ export default {
     },
     // 获取楼盘访问记录
     async fetchHousesAccess (options) {
-      const params = Object.assign(options, { token: this.globalData.token })
-      const data = await postShowMemberAccess(params)
+      const data = await postShowMemberAccess(options)
       this.houseHisList = data
     },
     onSscrolltolowerHouse (e) {

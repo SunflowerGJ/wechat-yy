@@ -108,7 +108,7 @@ export default {
           background: #E60113
         i 
           position: absolute;
-          right: -20px;
+          right: -39rpx;
           top: 0;
           width: 0; 
           height: 0;

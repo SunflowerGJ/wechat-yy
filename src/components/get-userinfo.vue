@@ -32,9 +32,10 @@ export default {
     let reject = false
     try {
       reject = await this.$wx.getStorage({key: 'reject'})
+      var token = await this.$wx.getStorage({key: 'token'})
+      var userinfo = await this.$wx.getStorage({key: 'userinfo'})
     } catch (e) {}
-    const {token, userinfo} = this.globalData
-    if (token && (!userinfo.nickname) && !reject) {
+    if (token.data && (!userinfo.data.nickname) && !reject.data) {
       this.hidden = true
     }
   },
@@ -47,7 +48,6 @@ export default {
         // 可以将 res 发送给后台解码出 unionId
           _that.hidden = false
           const { encryptedData, iv, userInfo } = res
-          const token = this.globalData.token
           const userinfo = {
             nickname: userInfo.nickName,
             headimgurl: userInfo.avatarUrl,
@@ -56,8 +56,8 @@ export default {
             province: userInfo.province,
             city: userInfo.city
           }
-          postMobileSave({ encryptedData, iv, token })
-          postUserInfoSave({token, ...userinfo}).then(res => {
+          postMobileSave({ encryptedData, iv })
+          postUserInfoSave({...userinfo}).then(res => {
             wx.setStorage({key: 'userinfo', data: userinfo})
             this.globalData.userinfo = userinfo
           })

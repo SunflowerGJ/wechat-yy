@@ -1,21 +1,18 @@
 <script>
-import { login } from './http/api.js'
+// import { login } from './http/api.js'
 export default {
-  async mounted () {
-    try {
-      await this.$wx.checkSession()
-    } catch (error) {
-      // 重新登录
-      const {code} = await this.$wx.login()
-      const data = await login({code})
-      wx.setStorage({key: 'token', data: data.token})
-      wx.setStorage({key: 'userinfo', data: data.userinfo})
-    }
-    let token = await this.$wx.getStorage({key: 'token'})
-    let userinfo = await this.$wx.getStorage({key: 'userinfo'})
-    this.globalData.token = token.data
-    this.globalData.userinfo = userinfo.data
-  }
+  // async mounted () {
+  //   try {
+  //     await this.$wx.checkSession()
+  //   } catch (error) {
+  //     // 重新登录
+  //     const {code} = await this.$wx.login()
+  //     const data = await login({code})
+  //     wx.setStorage({key: 'token', data: data.token})
+  //     wx.setStorage({key: 'userinfo', data: data.userinfo})
+  //     this.globalData.userinfo = data.userinfo
+  //   }
+  // }
 }
 </script>
 

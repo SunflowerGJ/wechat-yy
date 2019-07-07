@@ -1,50 +1,78 @@
 // 引入 fly
-import { login } from './api'
+// import { login } from './api'
 var Fly = require('flyio/dist/npm/wx')
 var fly = new Fly()
+var loginFly = new Fly()
 // 配置请求基地址
 // //定义公共headers
-// fly.config.headers = {}
-// //设置超时
-// fly.config.timeout=10000;
-// //设置请求基地址
-// fly.config.baseURL="https://wendux.github.io/"
+const headers = {
+  'content-type': 'application/x-www-form-urlencoded'
+}
+fly.config = {
+  headers: headers,
+  timeout: 30000,
+  withCredentials: true
+}
+loginFly.config = fly.config
+
+const reLogin = () => {
+  return new Promise((resolve, reject) => {
+    wx.login({
+      success: res => {
+        var ROOT_API = process.env.ROOT_API
+        loginFly.post(`${ROOT_API}/api/member/login`, {code: res.code})
+          .then(result => {
+            wx.setStorage({key: 'token', data: result.data.data.token})
+            wx.setStorage({key: 'userinfo', data: result.data.data.userinfo})
+            resolve(result.data.data)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      },
+      fail: res => {
+        reject(res)
+      }
+    })
+  })
+}
 
 // 添加拦截器
 fly.interceptors.request.use((request, promise) => {
-  // 给所有请求添加自定义header
-  request.headers['content-type'] = 'application/x-www-form-urlencoded'
   if (wx.getStorageSync('token')) { // 检查本地缓存是否有token存在没有则重新获取
     request.body.token = wx.getStorageSync('token')
     return request
   } else {
     fly.lock()// 锁住请求
-    wx.login({
-      success (res) {
-        if (res.code) {
-          // 发起网络请求
-          login({code: res.code}).then(data => {
-            wx.setStorage({key: 'token', data: data.token})
-            wx.setStorage({key: 'userinfo', data: data.userinfo})
-            request.body.token = data.token
-          })
-        }
-      }
+    // 发起网络请求
+    return reLogin().then(res => {
+      fly.unlock()
+      return request
+    }).catch(() => {
+      fly.unlock()
+      return request
     })
-    fly.unlock()// 解锁请求
-    return request
   }
 })
 
 fly.interceptors.response.use(
   (response) => {
-    if (response.data && [50001, 50002, 50003].includes(response.data.code)) {
+    if (response.data && ['50001', '50002', '50003'].includes(response.data.code)) {
       wx.removeStorage({key: 'token'})
+      wx.setStorage({key: 'reject', data: false})
+      fly.lock()// 锁住请求
+      // 发起网络请求
+      return reLogin().then(res => {
+        fly.unlock()
+        // 重新请求
+        return fly.request(response.request)
+      }).catch(() => {
+        fly.unlock()
+        return response
+      })
+    } else {
+      return response
     }
-    return response
-  },
-  (err) => {
-    console.log(err)
   }
 )
 

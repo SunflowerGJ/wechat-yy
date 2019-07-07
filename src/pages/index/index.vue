@@ -3,7 +3,7 @@
     <div class="header">
       <div class="adr"  @click='goCityList'>
         <span class="adr-selected">{{address}}</span>
-         <img src="/static/images/icon-index-addr.png" alt="">
+          <img src="/static/images/icon-index-addr.png" alt="">
       </div>
       <div class="search" @click="goHousesSearch">
         <img src="/static/images/icon-search.png" alt="">
@@ -140,9 +140,7 @@ export default {
           }
         })
         this.houseClick.cityId = data.cityInfo.shortname
-      } catch (error) {
-        console.log(error)
-      }
+      } catch (err) {}
     }
   },
   async mounted () { // 地址筛选待调整

@@ -70,23 +70,27 @@ export default {
     }
   },
   created () {
-    this.isPhone = this.globalData.userinfo.mobile || ''
+    if (this.globalData.userinfo) {
+      this.isPhone = this.globalData.userinfo.mobile || ''
+    }
   },
   onShow () {
-    this.isPhone = this.globalData.userinfo.mobile || ''
+    if (this.globalData.userinfo) {
+      this.isPhone = this.globalData.userinfo.mobile || ''
+    }
   },
   methods: {
     share () {
       if (this.type === '1') {
         POINTHouseClick({
-          cityId: this.globalData.address,
+          cityId: this.detail.city_id,
           houseId: this.detail.id,
           type: 3
         })
       }
       if (this.type === '2') {
         POINTHouseType({
-          cityId: this.globalData.address,
+          cityId: this.detail.city_id,
           houseId: this.detail.house_id,
           housetypeId: this.detail.id,
           type: 3
@@ -94,17 +98,16 @@ export default {
       }
     },
     async getPhoneNumber (e) {
-      console.log(e)
       if (this.type === '1') {
         POINTHouseClick({
-          cityId: this.globalData.address,
+          cityId: this.detail.city_id,
           houseId: this.detail.id,
           type: 4
         })
       }
       if (this.type === '2') {
         POINTHouseType({
-          cityId: this.globalData.address,
+          cityId: this.detail.city_id,
           houseId: this.detail.house_id,
           housetypeId: this.detail.id,
           type: 4
@@ -120,14 +123,14 @@ export default {
     makePhoneCall () {
       if (this.type === '1') {
         POINTHouseClick({
-          cityId: this.globalData.address,
+          cityId: this.detail.city_id,
           houseId: this.detail.id,
           type: 4
         })
       }
       if (this.type === '2') {
         POINTHouseType({
-          cityId: this.globalData.address,
+          cityId: this.detail.city_id,
           houseId: this.detail.house_id,
           housetypeId: this.detail.id,
           type: 4
@@ -135,23 +138,23 @@ export default {
       }
       wx.makePhoneCall({phoneNumber: this.detail.sales_mobile})
     },
-    getShareImgNew (item) {
+    getShareImgNew (detail) {
       if (this.type === '1') {
         POINTHouseClick({
-          cityId: this.globalData.address,
-          houseId: this.detail.id,
+          cityId: detail.city_id,
+          houseId: detail.id,
           type: 5
         })
       }
       if (this.type === '2') {
         POINTHouseType({
-          cityId: this.globalData.address,
-          houseId: this.detail.house_id,
-          housetypeId: this.detail.id,
+          cityId: detail.city_id,
+          houseId: detail.house_id,
+          housetypeId: detail.id,
           type: 5
         })
       }
-      const posterUrl = this.type === '2' ? item.housetype_hposter_url : item.poster_url
+      const posterUrl = this.type === '2' ? detail.housetype_hposter_url : detail.poster_url
       this.showModal = true
       this.imagePath = posterUrl
     },
@@ -178,24 +181,23 @@ export default {
     async onAddCollection (detail, type) {
       if (this.type === '1') {
         POINTHouseClick({
-          cityId: this.globalData.address,
-          houseId: this.detail.id,
+          cityId: detail.city_id,
+          houseId: detail.id,
           type: 2
         })
       }
       if (this.type === '2') {
         POINTHouseType({
-          cityId: this.globalData.address,
-          houseId: this.detail.house_id,
-          housetypeId: this.detail.id,
+          cityId: detail.city_id,
+          houseId: detail.house_id,
+          housetypeId: detail.id,
           type: 2
         })
       }
       if (this.detail.is_collect === 0) {
         const data = await postAddCollection({
           obj_id: detail.id,
-          type: type,
-          token: this.globalData.token
+          type: type
         })
         this.$emit('addCID', data.collection_id)
         wx.showToast({
@@ -208,8 +210,7 @@ export default {
       } else {
         await postRemoveCollection({
           collection_id: detail.cid,
-          type: type,
-          token: this.globalData.token
+          type: type
         })
         wx.showToast({
           title: '取消收藏成功',

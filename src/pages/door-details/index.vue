@@ -128,8 +128,7 @@ export default {
       this.housetype_id = this.$route.query.id
     }
     const data = await postHouseTypeDetail({
-      housetype_id: this.housetype_id,
-      token: this.globalData.token
+      housetype_id: this.housetype_id
     })
     this.detail = data
     this.detail.tags = data.tags ? data.tags.split('|') : []
@@ -478,7 +477,7 @@ export default {
           display flex
           margin-bottom 7px
           p.addr
-            width 270px
+            width 254px
             line-height 20px
             font-size 14px
             color #5C5A5A

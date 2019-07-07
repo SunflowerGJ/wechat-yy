@@ -180,7 +180,6 @@ export default {
       } else if (tabType === '公积金贷款') {
         parmas = copyData.copyGjzQuery
         if (this._check(!parmas.dkTotal2, '请输入公积金贷款')) return
-        console.log(tabType)
         res = await mortgageShow({
           type: parmas.type2,
           dkm: parmas.dkm2,

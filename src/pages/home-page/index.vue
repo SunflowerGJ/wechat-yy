@@ -261,35 +261,35 @@
           </div>
         </div>
         <div class="matchBox">
-          <div class="macund">
+          <div class="macund" @click='tabMatchBox(1)'>
             <img src="/static/images/route.png">
             <div class="cen_text">
               <p>交通</p>
               <p>约{{searchMap['交通']}}处</p>
             </div>
           </div>
-          <div class="macund">
+          <div class="macund" @click='tabMatchBox(2)'>
             <img src="/static/images/education.png">
             <div class="cen_text">
               <p>教育</p>
               <p>约{{searchMap['教育']}}处</p>
             </div>
           </div>
-          <div class="macund">
+          <div class="macund" @click='tabMatchBox(3)'>
             <img src="/static/images/hospital.png">
             <div class="cen_text">
               <p>医疗</p>
               <p>约{{searchMap['医疗']}}处</p>
             </div>
           </div>
-          <div class="macund">
+          <div class="macund" @click='tabMatchBox(4)'>
             <img src="/static/images/bank.png">
             <div class="cen_text">
               <p>银行</p>
               <p>约{{searchMap['银行']}}处</p>
             </div>
           </div>
-          <div class="macund">
+          <div class="macund" @click='tabMatchBox(5)'>
             <img src="/static/images/foot.png">
             <div class="cen_text">
               <p>餐饮</p>
@@ -304,10 +304,9 @@
             </div>
           </div> -->
         </div>
-
         <div class="distancBox">
           <ul>
-            <li :key="key" v-for="(mk, key) in mks">
+            <li :key="key" v-for="(mk, key) in mkitem">
               <p class="addr">{{mk.title}}</p>
               <p class="add_but">
                 <img src="/static/images/icon-addr.png">
@@ -348,10 +347,18 @@ export default {
       show: false,
       detail: null,
       getMore: false,
-      mks: [],
+      mks: {},
       overScrollFlag: false,
       scaleStyle: `scale(${1.78})`,
       timer: null,
+
+      searchMAP: {
+        '交通': '1',
+        '教育': '2',
+        '医疗': '3',
+        '银行': '4',
+        '餐饮': '5'
+      },
       searchMap: {
         '交通': 0,
         '教育': 0,
@@ -359,18 +366,15 @@ export default {
         '银行': 0,
         '餐饮': 0
         // '公交': 0
-      }
+      },
+      mkitem: []
     }
   },
   onLoad: function (options) {
-    console.log(options)
     if (options.q || options.scene) {
       const parmas = options.q || options.scene
-      console.log(options)
-      console.log(parmas)
       // 获取二维码的携带的链接信息
       this.house_id = decodeURIComponent(parmas)
-      console.log(decodeURIComponent(parmas))
     }
   },
   async mounted () {
@@ -378,8 +382,7 @@ export default {
       this.house_id = this.$route.query.id
     }
     const data = await postHousesDetail({
-      house_id: this.house_id,
-      token: this.globalData.token
+      house_id: this.house_id
     })
     this.detail = data
     this.detail.albums = Object.keys(data.albums).map(key => data.albums[key])
@@ -402,7 +405,7 @@ export default {
   methods: {
     handleGoAddress () {
       POINTHouseClick({
-        cityId: this.detail.city_name,
+        cityId: this.detail.city_id,
         houseId: this.detail.id,
         type: 7
       })
@@ -420,16 +423,24 @@ export default {
         key: 'NBMBZ-7E6C4-ERMUP-XGJTV-WFLDQ-S3FDK'
       })
       let copyMap = JSON.parse(JSON.stringify(this.searchMap))
-      Object.keys(this.searchMap).map((keyword, index) => {
+      var mks = {
+        '1': [],
+        '2': [],
+        '3': [],
+        '4': [],
+        '5': []
+      }
+      Object.keys(this.searchMAP).forEach((keyword, index) => {
         qqmapsdk.search({
           keyword, // 搜索关键词
           auto_extend: '0',
           location: `${this.detail.latitude},${this.detail.longitude}`, // 设置周边搜索中心点
           success: (res) => { // 搜索成功后的回调
             copyMap[keyword] = res.count
-            var mks = []
+            let key = this.searchMAP[keyword]
+            if (!key) return
             for (var i = 0; i < res.data.length; i++) {
-              mks.push({ // 获取返回结果，放到mks数组中
+              mks[key].push({ // 获取返回结果，放到mks数组中
                 title: res.data[i].title,
                 id: res.data[i].id,
                 latitude: res.data[i].location.lat,
@@ -440,15 +451,19 @@ export default {
                 _distance: res.data[i]._distance
               })
             }
-            this.mks = mks
           }
         })
       })
       this.searchMap = copyMap
+      this.mks = mks
+      this.mkitem = mks[1]
+    },
+    tabMatchBox (active) {
+      this.mkitem = this.mks[active]
     },
     handleGo () {
       POINTHouseClick({
-        cityId: this.detail.city_name,
+        cityId: this.detail.city_id,
         houseId: this.detail.id,
         type: 6
       })
@@ -456,7 +471,7 @@ export default {
     },
     goDoorList (id) {
       POINTHouseClick({
-        cityId: this.detail.city_name,
+        cityId: this.detail.city_id,
         houseId: this.detail.id,
         type: 8
       })
@@ -464,7 +479,7 @@ export default {
     },
     goHousesDetail (item) {
       POINTHouseType({
-        cityId: this.detail.city_name,
+        cityId: this.detail.city_id,
         houseId: item.house_id,
         housetypeId: item.id,
         type: 1
@@ -485,7 +500,7 @@ export default {
         规划图: 6
       }
       POINTAlbums({
-        cityId: this.detail.city_name,
+        cityId: this.detail.city_id,
         houseId: this.detail.id,
         type: tyepMap[name]
       })
@@ -493,7 +508,7 @@ export default {
     },
     goActivityDetail (id) {
       POINTArticleClick({
-        cityId: this.detail.city_name,
+        cityId: this.detail.city_id,
         houseId: this.detail.id,
         articleId: id,
         type: 4
@@ -799,7 +814,7 @@ export default {
 
   i {
     position: absolute;
-    right: -20px;
+    right: -39rpx;
     top: 0;
     width: 0;
     height: 0;
@@ -1077,7 +1092,7 @@ export default {
         margin-bottom: 7px;
 
         p.addr {
-          width: 270px;
+          width: 254px;
           line-height: 20px;
           font-size: 14px;
           color: #5C5A5A;

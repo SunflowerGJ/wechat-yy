@@ -39,8 +39,7 @@ export default {
   },
   async mounted () {
     const data = await postHouseType({
-      house_id: this.$route.query.id,
-      token: this.globalData.token
+      house_id: this.$route.query.id
     })
     this.list = data
   },
