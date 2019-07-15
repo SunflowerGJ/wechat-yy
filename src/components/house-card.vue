@@ -2,8 +2,14 @@
   <div class="main_item" @click="goHomePage(hData)">
     <div class="item-header">
       <h3>{{hData.name}}</h3>
-      <span class="price-wrap">
+      <span class="price-wrap" v-if="hData.dis_price=== '2'&& hData.price!=='0'" >
+        <i class="price">{{hData.price}}</i>万/套
+      </span>
+      <span class="price-wrap" v-if="hData.dis_price=== '1'&& hData.price!=='0'" >
         <i class="price">{{hData.price}}</i>元/m²
+      </span>
+      <span class="price-wrap" v-if="hData.price==='0'">
+        暂空
       </span>
     </div>
     <div class="item-addr">

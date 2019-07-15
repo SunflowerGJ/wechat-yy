@@ -5,10 +5,10 @@
         <img src="/static/images/forward.png">
         <span>转发</span>
       </button>
-      <a class="item" @click="getShareImgNew(detail)">
+      <button open-type="getUserInfo" @getuserinfo="getUserInfo" class="item item--button" @click="getShareImgNew(detail)">
         <img src="/static/images/fileback.png">
         <span>生成海报</span>
-      </a>
+      </button>
       <a class="item" @click="onAddCollection(detail,type)">
         <img v-if="detail.is_collect === 0" class="collection" src="/static/images/collection.png">
         <span v-if="detail.is_collect === 0">收藏</span>
@@ -34,11 +34,17 @@
             <div class='main-title'>
               <h4>保存后分享图片</h4>
             </div>
-            <div class="main-content">
+            <!-- <div class="main-content">
             <div class="canvas-box">
               <canvas canvas-id="shareCanvas" style="width:220px;height:320px;"></canvas>
             </div>
               <img :src="imagePath" alt="">
+            </div> -->
+            <div class="main-content">
+            <div class="canvas-box">
+              <canvas canvas-id="shareCanvas" style="width:340px;height:500px;"></canvas>
+            </div>
+              <img v-if='showSharePic' :src="imagePath" alt="">
             </div>
             <div class="main-footer">
               <span @click="modalConfirm">保存到手机</span>
@@ -66,7 +72,7 @@ export default {
       showModal: false,
       imagePath: '',
       isPhone: '',
-      acti: false
+      showSharePic: false
     }
   },
   created () {
@@ -154,9 +160,78 @@ export default {
           type: 5
         })
       }
-      const posterUrl = this.type === '2' ? detail.housetype_hposter_url : detail.poster_url
-      this.showModal = true
-      this.imagePath = posterUrl
+    },
+    saveShareImg (posterUrl, avatarUrl) {
+      if (this.imagePath) {
+        this.showSharePic = true
+        return
+      }
+      wx.showLoading({
+        title: '海报生成中…'
+      })
+      let _that = this
+      // 缓存海报图片
+      wx.getImageInfo({
+        src: posterUrl,
+        success: (res) => {
+          _that.posterUrl = res.path
+          // 缓存二维码图片
+          wx.getImageInfo({
+            src: avatarUrl,
+            success: (res) => {
+              wx.hideLoading()
+              _that.avatarUrl = res.path
+              _that.drawSharePic(_that.posterUrl, _that.avatarUrl)
+            },
+            fail: (e) => {
+              wx.hideLoading()
+            }
+          })
+        },
+        fail: (e) => {
+          wx.hideLoading()
+        }
+      })
+    },
+    // 2-绘制分享图片
+    drawSharePic (posterUrl, avatarUrl) {
+      let _that = this
+      const canvasCtx = wx.createCanvasContext('shareCanvas')
+      // 在位置 220 创建蓝线  是下面例子中定义的所有文本的锚点
+      canvasCtx.setStrokeStyle()
+      canvasCtx.moveTo(220, 0)
+      canvasCtx.lineTo(220, 0)
+      canvasCtx.stroke()
+      // 绘制背景
+      canvasCtx.setFillStyle('white')
+      canvasCtx.fillRect(0, 0, 340, 500)
+      // 绘制海报图片
+      canvasCtx.drawImage(posterUrl, 0, 0, 340, 500)
+      canvasCtx.save() // 对当前区域保存
+      canvasCtx.beginPath() // 开始新的区域
+      canvasCtx.arc(42, 458, 32, 0, 2 * Math.PI)
+      canvasCtx.closePath()
+      canvasCtx.clip() // 从画布上裁剪出这个圆形
+      canvasCtx.drawImage(avatarUrl, 10, 426, 64, 64)
+      canvasCtx.restore() // 恢复
+      // 绘制图片 绘制之后加一个延时去生成图片，如果直接生成可能没有绘制完成，导出图片会有问题。
+      canvasCtx.draw(false, setTimeout(function () {
+        wx.canvasToTempFilePath({
+          x: 0,
+          y: 0,
+          width: 340,
+          height: 500,
+          canvasId: 'shareCanvas',
+          success: function (res) {
+            _that.imagePath = res.tempFilePath
+            _that.showSharePic = true
+          },
+          fail: function (res) {
+            wx.showToast({title: '生成海报失败', icon: 'success', duration: 1500})
+          }
+        })
+      }, 200)
+      )
     },
     modalConfirm () {
       const _that = this
@@ -219,6 +294,18 @@ export default {
         })
         this.$set(this.detail, 'is_collect', 0)
       }
+    },
+    // 获取用户头像
+    getUserInfo () {
+      const _that = this
+      const posterUrl = this.type === '2' ? this.detail.housetype_hposter_url : this.detail.poster_url
+      this.showModal = true
+      wx.getUserInfo({
+        success: function (res) {
+          var userInfo = res.userInfo
+          _that.saveShareImg(posterUrl, userInfo.avatarUrl)
+        }
+      })
     }
   }
 }
@@ -243,6 +330,11 @@ export default {
     width: 200px;
     display: flex;
     justify-content: space-between;
+
+    .item--button {
+      padding-left:0;
+      padding-right:0;
+    }
 
     .item {
       display: flex;
