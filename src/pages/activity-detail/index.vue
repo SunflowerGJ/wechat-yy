@@ -12,7 +12,13 @@
 <script>
 import {postArticleDetail} from '../../http/api.js'
 export default {
-
+  // 右上角分享功能
+  onShareAppMessage: function (res) {
+    return {
+      title: '置业远洋欢迎您',
+      path: 'pages/activity-detail/main?id=' + this.$route.query.id
+    }
+  },
   data () {
     return {
       detail: null

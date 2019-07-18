@@ -99,7 +99,7 @@ import houseFooter from '../../components/house-footer'
 export default {
   onShareAppMessage: function (res) {
     return {
-      title: '远洋置业欢迎您',
+      title: '置业远洋欢迎您',
       path: 'pages/door-details/main?id=' + this.housetype_id
     }
   },

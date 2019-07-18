@@ -1,6 +1,6 @@
 # wechat-yy
 
-> 远洋置业小程序
+> 置业远洋小程序
 
 ## Build Setup
 
