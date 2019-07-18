@@ -1,6 +1,6 @@
 <template>
   <div class="container" v-if="detail">
-
+    <tips></tips>
     <div class="panl_swiper">
       <img :src="detail.photo"  @click="handleGoPhoto('样板间')"/>
     </div>
@@ -23,14 +23,17 @@
       </div>
       <div class="price_panl">
         <div class="price_name">
-          <p>
-            约
-            <span>{{detail.total_price}}万元</span>/套
+          <p v-if="detail.total_price">
+            约<span>{{detail.total_price}}万元</span>/套
+          </p>
+          <p v-else>
+            暂空
           </p>
           <p>参考总价</p>
         </div>
         <div class="price_name">
-          <p>{{detail.average_price}}元/m²</p>
+          <p v-if='detail.average_price'>{{detail.average_price}}元/m²</p>
+          <p v-else>暂空</p>
           <p>参考均价</p>
         </div>
         <div class="price_name">
@@ -106,13 +109,21 @@
                 <label>【 朝 向 】</label>
                 {{item.orientation}}
               </li>
-              <li>
+              <li v-if="item.total_price">
                 <label>【 总 价 】</label>
                 约<span>{{item.total_price}}万元</span>/套
               </li>
-              <li>
+              <li v-else>
+                <label>【 总 价 】</label>
+                暂空
+              </li>
+              <li v-if="item.unit_price">
                 <label>【 单 价 】</label>
                 {{item.unit_price}}元/m²
+              </li>
+              <li v-else>
+                <label>【 单 价 】</label>
+                暂空
               </li>
             </ul>
           </div>
@@ -327,6 +338,7 @@
 <script>
 import { postHousesDetail, POINTAlbums, POINTHouseClick, POINTHouseType, POINTArticleClick } from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
+import tips from '../../components/tips'
 var QQMapWX = require('qqmap-wx-jssdk')
 export default {
   /**
@@ -334,12 +346,13 @@ export default {
    */
   onShareAppMessage: function (res) {
     return {
-      title: '置业远洋欢迎您',
+      title: this.detail.share_title || '置业远洋欢迎您',
       path: 'pages/home-page/main?id=' + this.house_id
     }
   },
   components: {
-    houseFooter
+    houseFooter,
+    tips
   },
   data () {
     return {
@@ -351,7 +364,6 @@ export default {
       overScrollFlag: false,
       scaleStyle: `scale(${1.78})`,
       timer: null,
-
       searchMAP: {
         '交通': '1',
         '教育': '2',
@@ -397,7 +409,8 @@ export default {
       'create_time': '0',
       'update_time': '0'
     })
-    this.$wx.setNavigationBarTitle({
+
+    wx.setNavigationBarTitle({
       title: data.name
     })
     this.handleSearch()

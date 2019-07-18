@@ -27,10 +27,12 @@
               <span class="title">{{item.name}}</span>
             </div>
             <div class="info-section__item-info">
-              <span class="total-price">
+              <span class="total-price" v-if="item.total_price">
                 <i class="total-price--red">{{item.total_price}}万元</i>/套起
               </span>
-              <span class="price">{{item.average_price}}元/m²</span>
+              <span class="total-price" v-else>暂空/套起</span> 
+              <span class="price" v-if="item.average_price">{{item.average_price}}元/m²</span>
+              <span class="price" v-else>暂空/m²</span>
             </div>
           </view>
         </scroll-view>
@@ -59,10 +61,12 @@
               <span class="area">建积{{item.inside_space}}m²</span>
             </div>
             <div class="info-section__item-info">
-              <span class="total-price">
+              <span class="total-price" v-if="item.total_price">
                 <i class="total-price--red">{{item.total_price}}万元</i>/套起
               </span>
-              <span class="price">{{item.unit_price}}元/m²</span>
+              <span class="total-price" v-else>暂空/套起</span> 
+              <span class="price" v-if="item.average_price">{{item.average_price}}元/m²</span>
+              <span class="price" v-else>暂空/m²</span>
             </div>
           </view>
         </scroll-view>
@@ -89,10 +93,12 @@
               <span class="title">{{item.name}}</span>
             </div>
             <div class="info-section__item-info">
-              <span class="total-price">
+              <span class="total-price" v-if="item.total_price">
                 <i class="total-price--red">{{item.total_price}}万元</i>/套起
               </span>
-              <span class="price">{{item.average_price}}元/m²</span>
+              <span class="total-price" v-else>暂空/套起</span> 
+              <span class="price" v-if="item.average_price">{{item.average_price}}元/m²</span>
+              <span class="price" v-else>暂空/m²</span>
             </div>
           </view>
         </scroll-view>

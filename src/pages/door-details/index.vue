@@ -1,5 +1,6 @@
 <template>
   <div class="container" v-if="detail">
+    <tips></tips>
     <div class="panl_swiper">
       <!-- <img :src="detail.photo" @click="handleGoPhoto('样板间')"/> -->
       <swiper
@@ -28,11 +29,13 @@
     </div>
     <div class="price_panl">
       <div class="price_name">
-        <p>约<span>{{detail.total_price}}万元</span>/套</p>
+        <p v-if="detail.total_price">约<span>{{detail.total_price}}万元</span>/套</p>
+        <p v-else>暂空</p>
         <p>参考总价</p>
       </div>
       <div class="price_name">
-        <p>{{detail.unit_price}}元/m²</p>
+        <p v-if="detail.unit_price">{{detail.unit_price}}元/m²</p>
+        <p v-else>暂空</p>
         <p>参考均价</p>
       </div>
       <div class="price_name">
@@ -96,19 +99,21 @@
 <script>
 import {postHouseTypeDetail, POINTHouseType} from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
+import tips from '../../components/tips'
 export default {
   onShareAppMessage: function (res) {
     return {
-      title: '置业远洋欢迎您',
+      title: this.detail.share_title || '置业远洋欢迎您',
       path: 'pages/door-details/main?id=' + this.housetype_id
     }
   },
-
   components: {
-    houseFooter
+    houseFooter,
+    tips
   },
   data () {
     return {
+
       detail: null,
       indicatorDots: true,
       autoplay: true,
@@ -134,7 +139,7 @@ export default {
     this.detail.tags = data.tags ? data.tags.split('|') : []
     // this.detail.intro = data.intro.split('|')
     this.detail.intro = data.intro
-    this.$wx.setNavigationBarTitle({
+    wx.setNavigationBarTitle({
       title: data.name
     })
   },

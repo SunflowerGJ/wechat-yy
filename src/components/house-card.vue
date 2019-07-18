@@ -8,7 +8,7 @@
       <span class="price-wrap" v-if="hData.dis_price=== '1'&& hData.price!=='0'&& hData.price" >
         <i class="price">{{hData.price}}</i>元/m²
       </span>
-      <span class="price-wrap" v-if="hData.price==='0'|| !hData.price">
+      <span class="price-wrap no-price" v-if="hData.price==='0'|| !hData.price">
         暂空
       </span>
     </div>
@@ -67,6 +67,9 @@ export default {
         font-family: PingFangSC-Semibold
         font-size: 18px
         color: #3F3B3A
+      .no-price
+        color: #3f3b3a;
+        font-size: 16px 
       .price-wrap
         display flex
         align-items center

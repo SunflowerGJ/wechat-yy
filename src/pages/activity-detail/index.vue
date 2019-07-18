@@ -1,5 +1,6 @@
 <template>
   <div class="container" v-if="detail">
+    <tips></tips>
     <h2 class="title">{{detail.title}}</h2>
     <p class="time">{{detail.create_time}}</p>
     <!-- <img class="banner" :src="detail.photo" alt=""> -->
@@ -11,6 +12,7 @@
 
 <script>
 import {postArticleDetail} from '../../http/api.js'
+import tips from '../../components/tips'
 export default {
   // 右上角分享功能
   onShareAppMessage: function (res) {
@@ -18,6 +20,9 @@ export default {
       title: '置业远洋欢迎您',
       path: 'pages/activity-detail/main?id=' + this.$route.query.id
     }
+  },
+  components: {
+    tips
   },
   data () {
     return {

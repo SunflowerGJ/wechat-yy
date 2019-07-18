@@ -304,6 +304,10 @@ export default {
         success: function (res) {
           var userInfo = res.userInfo
           _that.saveShareImg(posterUrl, userInfo.avatarUrl)
+        },
+        fail: function (e) {
+          _that.imagePath = posterUrl
+          _that.showSharePic = true
         }
       })
     }
