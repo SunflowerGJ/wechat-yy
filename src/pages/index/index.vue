@@ -93,7 +93,9 @@ export default {
     goBanner (item) {
       // 广告类型 1外链公众号 2楼盘 3资讯
       if (item.type === '1') {
-        this.$router.push({ path: '/pages/web-view/main', query: {src: item.url} })
+        const src = item.url ? encodeURIComponent(item.url) : ''
+        const title = item.title
+        this.$router.push({ path: '/pages/web-view/main', query: {src, title} })
       }
       if (item.type === '2') {
         this.$router.push({ path: '/pages/home-page/main', query: {id: item.url} })

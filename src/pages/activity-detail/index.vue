@@ -17,7 +17,7 @@ export default {
   // 右上角分享功能
   onShareAppMessage: function (res) {
     return {
-      title: '置业远洋欢迎您',
+      title: this.detail.title,
       path: 'pages/activity-detail/main?id=' + this.$route.query.id
     }
   },
@@ -36,6 +36,9 @@ export default {
     this.detail = data
     const regex = new RegExp('<img', 'gi')
     this.detail.content = this.detail.content.replace(regex, `<img style="max-width: 100%;"`)
+    wx.setNavigationBarTitle({
+      title: data.title
+    })
   }
 }
 </script>

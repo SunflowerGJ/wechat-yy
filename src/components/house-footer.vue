@@ -34,18 +34,18 @@
             <div class='main-title'>
               <h4>保存后分享图片</h4>
             </div>
-            <!-- <div class="main-content">
-            <div class="canvas-box">
-              <canvas canvas-id="shareCanvas" style="width:220px;height:320px;"></canvas>
-            </div>
-              <img :src="imagePath" alt="">
-            </div> -->
             <div class="main-content">
+              <div class="canvas-box">
+                <canvas canvas-id="shareCanvas" style="width:220px;height:320px;"></canvas>
+              </div>
+                <img :src="imagePath" alt="">
+            </div>
+            <!-- <div class="main-content">
             <div class="canvas-box">
               <canvas canvas-id="shareCanvas" style="width:340px;height:500px;"></canvas>
             </div>
               <img v-if='showSharePic' :src="imagePath" alt="">
-            </div>
+            </div> -->
             <div class="main-footer">
               <span @click="modalConfirm">保存到手机</span>
             </div>
@@ -76,11 +76,19 @@ export default {
     }
   },
   created () {
+    this.showModal = false
+    this.imagePath = ''
+    this.isPhone = ''
+    this.showSharePic = false
     if (this.globalData.userinfo) {
       this.isPhone = this.globalData.userinfo.mobile || ''
     }
   },
   onShow () {
+    this.showModal = false
+    this.imagePath = ''
+    this.isPhone = ''
+    this.showSharePic = false
     if (this.globalData.userinfo) {
       this.isPhone = this.globalData.userinfo.mobile || ''
     }
@@ -297,19 +305,21 @@ export default {
     },
     // 获取用户头像
     getUserInfo () {
-      const _that = this
+      // const _that = this
       const posterUrl = this.type === '2' ? this.detail.housetype_hposter_url : this.detail.poster_url
       this.showModal = true
-      wx.getUserInfo({
-        success: function (res) {
-          var userInfo = res.userInfo
-          _that.saveShareImg(posterUrl, userInfo.avatarUrl)
-        },
-        fail: function (e) {
-          _that.imagePath = posterUrl
-          _that.showSharePic = true
-        }
-      })
+      this.imagePath = posterUrl
+      this.showSharePic = true
+      // wx.getUserInfo({
+      //   success: function (res) {
+      //     var userInfo = res.userInfo
+      //     _that.saveShareImg(posterUrl, userInfo.avatarUrl)
+      //   },
+      //   fail: function (e) {
+      //     _that.imagePath = posterUrl
+      //     _that.showSharePic = true
+      //   }
+      // })
     }
   }
 }

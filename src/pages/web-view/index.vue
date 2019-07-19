@@ -7,14 +7,23 @@
 <script>
 
 export default {
-
+  // 右上角分享功能
+  onShareAppMessage: function (res) {
+    return {
+      title: this.$route.query.title,
+      path: 'pages/web-view/main?id=' + decodeURIComponent(this.$route.query.src) + '&title=' + this.$route.query.title
+    }
+  },
   data () {
     return {
       src: ''
     }
   },
   mounted () {
-    this.src = this.$route.query.src
+    this.src = this.$route.query.src ? decodeURIComponent(this.$route.query.src) : ''
+    wx.setNavigationBarTitle({
+      title: this.$route.query.title || ''
+    })
   },
 
   methods: {

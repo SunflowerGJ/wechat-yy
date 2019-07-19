@@ -12,7 +12,7 @@
         >
           <view
             class="info-section__item"
-            @click="goActivityDetail(item.id,item.house_id,1)"
+            @click="goActivityDetail(item.id,item.house_id,1,item.url,item.title)"
             v-for="(item,index) in  groupList"
             :key="index"
           >
@@ -34,7 +34,7 @@
         >
           <view
             class="info-section__item"
-            @click="goActivityDetail(item.id,item.house_id,2)"
+            @click="goActivityDetail(item.id,item.house_id,2,item.url,item.title)"
             v-for="(item,index) in cityList"
             :key="index"
           >
@@ -56,7 +56,7 @@
         >
           <view
             class="info-section__item"
-            @click="goActivityDetail(item.id,item.house_id,3)"
+            @click="goActivityDetail(item.id,item.house_id,3,item.url,item.title)"
             v-for="(item,index) in projectList"
             :key="index"
           >
@@ -119,6 +119,19 @@ export default {
       address: ''
     }
   },
+  async onShow () {
+    if (!this.globalData.address) {
+      const city = await _getUserAddress()
+      this.address = city
+      this.globalData.address = city
+    } else {
+      this.address = this.globalData.address
+    }
+    const { group, city, project } = this.params
+    this.fetchArticleList(group, 'group')
+    this.fetchArticleList(city, 'city')
+    this.fetchArticleList(project, 'project')
+  },
   async mounted () {
     if (!this.globalData.address) {
       const city = await _getUserAddress()
@@ -172,14 +185,19 @@ export default {
         this.fetchArticleList(this.params.project, 'project')
       }
     },
-    goActivityDetail (id, houseId, type) {
+    goActivityDetail (id, houseId, type, url, title) {
       POINTArticleClick({
         cityId: this.globalData.address,
         houseId: houseId,
         articleId: id,
         type: type
       })
-      this.$router.push({ path: '/pages/activity-detail/main', query: { id } })
+      if (url) {
+        const src = encodeURIComponent(url)
+        this.$router.push({ path: '/pages/web-view/main', query: {src, title} })
+      } else {
+        this.$router.push({ path: '/pages/activity-detail/main', query: { id } })
+      }
     }
   }
 }
