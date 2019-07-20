@@ -12,7 +12,7 @@
         >
           <view
             class="info-section__item"
-            @click="goActivityDetail(item.id,item.house_id,1,item.url,item.title)"
+            @click="goActivityDetail(item.id,item.house_id,1,item.url,item.title,item.photo)"
             v-for="(item,index) in  groupList"
             :key="index"
           >
@@ -34,7 +34,7 @@
         >
           <view
             class="info-section__item"
-            @click="goActivityDetail(item.id,item.house_id,2,item.url,item.title)"
+            @click="goActivityDetail(item.id,item.house_id,2,item.url,item.title,item.photo)"
             v-for="(item,index) in cityList"
             :key="index"
           >
@@ -56,7 +56,7 @@
         >
           <view
             class="info-section__item"
-            @click="goActivityDetail(item.id,item.house_id,3,item.url,item.title)"
+            @click="goActivityDetail(item.id,item.house_id,3,item.url,item.title,item.photo)"
             v-for="(item,index) in projectList"
             :key="index"
           >
@@ -185,7 +185,7 @@ export default {
         this.fetchArticleList(this.params.project, 'project')
       }
     },
-    goActivityDetail (id, houseId, type, url, title) {
+    goActivityDetail (id, houseId, type, url, title, photo) {
       POINTArticleClick({
         cityId: this.globalData.address,
         houseId: houseId,
@@ -194,7 +194,8 @@ export default {
       })
       if (url) {
         const src = encodeURIComponent(url)
-        this.$router.push({ path: '/pages/web-view/main', query: {src, title} })
+        photo = photo ? encodeURIComponent(photo) : ''
+        this.$router.push({ path: '/pages/web-view/main', query: {src, title, photo} })
       } else {
         this.$router.push({ path: '/pages/activity-detail/main', query: { id } })
       }

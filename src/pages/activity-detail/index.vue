@@ -17,8 +17,9 @@ export default {
   // 右上角分享功能
   onShareAppMessage: function (res) {
     return {
-      title: this.detail.title,
-      path: 'pages/activity-detail/main?id=' + this.$route.query.id
+      title: this.detail.title || '',
+      path: 'pages/activity-detail/main?id=' + this.$route.query.id,
+      imageUrl: this.detail.photo || ''
     }
   },
   components: {
@@ -34,8 +35,7 @@ export default {
       article_id: this.$route.query.id
     })
     this.detail = data
-    const regex = new RegExp('<img', 'gi')
-    this.detail.content = this.detail.content.replace(regex, `<img style="max-width: 100%;"`)
+    this.detail.content = this.detail.content.replace(/<img/gi, '<img style="max-width:100%;height:auto;display:block;margin:4px auto;" ')
     wx.setNavigationBarTitle({
       title: data.title
     })
@@ -48,7 +48,7 @@ export default {
   .container
     background #fff
     padding 20px
-    height 100vh
+    min-height 100vh
     box-sizing border-box
     .title
       font-family: PingFangSC-Medium
@@ -68,6 +68,10 @@ export default {
     .rich-text
       font-size: 14px !important
       color: #595757 !important
+      image
+        display block
+        width 100%
+        height 200px       
       img 
         display block
         width 100%

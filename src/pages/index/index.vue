@@ -95,7 +95,8 @@ export default {
       if (item.type === '1') {
         const src = item.url ? encodeURIComponent(item.url) : ''
         const title = item.title
-        this.$router.push({ path: '/pages/web-view/main', query: {src, title} })
+        const photo = item.photo ? encodeURIComponent(item.photo) : ''
+        this.$router.push({ path: '/pages/web-view/main', query: {src, title, photo} })
       }
       if (item.type === '2') {
         this.$router.push({ path: '/pages/home-page/main', query: {id: item.url} })
