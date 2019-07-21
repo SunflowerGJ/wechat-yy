@@ -68,6 +68,8 @@ export default {
     .rich-text
       font-size: 14px !important
       color: #595757 !important
+      line-height: 2;
+      letter-spacing: 1px;
       image
         display block
         width 100%
