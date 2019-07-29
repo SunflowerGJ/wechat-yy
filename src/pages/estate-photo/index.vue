@@ -77,6 +77,7 @@ export default {
       this.itemTitle = itemTitle
       this.active = this.$route.query.tabName
       this.imgMap = map
+      this.imgUrls = this.imgMap[this.active]
     },
     handlePreviewImage () {
       const photos = this.imgUrls.map(item => item.photo)
@@ -84,6 +85,11 @@ export default {
         current: photos[0],
         urls: photos
       })
+    },
+    initData () {
+      this.current = Number(this.$route.query.current)
+      this.imgUrls = []
+      this.itemTitle = []
     }
   },
 
@@ -91,13 +97,18 @@ export default {
     'active': {
       handler (value) {
         this.imgUrls = this.imgMap[value]
-        this.current = 0
+        this.current = Number(this.$route.query.current) || 0
       },
       deep: true
     }
   },
 
   async mounted () {
+    this.initData()
+    this._postAlbums()
+  },
+  onShow () {
+    this.initData()
     this._postAlbums()
   }
 }

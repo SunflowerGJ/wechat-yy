@@ -230,7 +230,7 @@
           </div>
           <div class="imgBox">
             <scroll-view :scroll-x="true" style="white-space: nowrap; display: flex;" >
-              <a style="margin-right:13px" v-for="(tItem,tIndex) in item.photos" :key="tIndex" @click="handleGoPhoto(item.name,index)">
+              <a style="margin-right:13px" v-for="(tItem,tIndex) in item.photos" :key="tIndex" @click="handleGoPhoto(item.name,tIndex)">
                 <img :src="tItem.photo">
               </a>
           </scroll-view>
@@ -503,7 +503,7 @@ export default {
       const query = { ...detail, ...this.searchMap }
       this.$router.push({path: '/pages/around-map/main', query: query})
     },
-    handleGoPhoto (name) {
+    handleGoPhoto (name, current = 0) {
       const tyepMap = {
         样板间: 1,
         实景图: 2,
@@ -517,7 +517,7 @@ export default {
         houseId: this.detail.id,
         type: tyepMap[name]
       })
-      this.$router.push({path: '/pages/estate-photo/main', query: {...this.detail, tabName: name}})
+      this.$router.push({path: '/pages/estate-photo/main', query: {...this.detail, tabName: name, current}})
     },
     goActivityDetail (id) {
       POINTArticleClick({

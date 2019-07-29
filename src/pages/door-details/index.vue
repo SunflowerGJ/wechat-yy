@@ -150,8 +150,8 @@ export default {
         urls: photos
       })
     },
-    handleGoPhoto (name) {
-      this.$router.push({path: '/pages/estate-photo/main', query: {...this.detail, tabName: name}})
+    handleGoPhoto (name, current = 0) {
+      this.$router.push({path: '/pages/estate-photo/main', query: {...this.detail, tabName: name, current}})
     },
     // 跳转计算器
     goCalculator () {
