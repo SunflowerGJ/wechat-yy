@@ -151,7 +151,9 @@ export default {
       })
     },
     handleGoPhoto (name, current = 0) {
-      this.$router.push({path: '/pages/estate-photo/main', query: {...this.detail, tabName: name, current}})
+      const id = this.detail.id
+      const cityName = this.detail.city_name
+      this.$router.push({path: '/pages/estate-photo/main', query: {id, city_name: cityName, tabName: name, current}})
     },
     // 跳转计算器
     goCalculator () {

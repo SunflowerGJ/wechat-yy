@@ -154,7 +154,7 @@ export const postAlbums = (params = {}) => {
     method: 'post',
     url: `/api/houses/albums`,
     params: params
-  })
+  }, false)
 }
 // 生成小程序图片
 export const postEWM = (params = {}) => {

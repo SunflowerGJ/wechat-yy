@@ -446,7 +446,7 @@ export default {
       Object.keys(this.searchMAP).forEach((keyword, index) => {
         qqmapsdk.search({
           keyword, // 搜索关键词
-          auto_extend: '0',
+          auto_extend: '1',
           location: `${this.detail.latitude},${this.detail.longitude}`, // 设置周边搜索中心点
           success: (res) => { // 搜索成功后的回调
             copyMap[keyword] = res.count
@@ -517,7 +517,9 @@ export default {
         houseId: this.detail.id,
         type: tyepMap[name]
       })
-      this.$router.push({path: '/pages/estate-photo/main', query: {...this.detail, tabName: name, current}})
+      const id = this.detail.id
+      const cityName = this.detail.city_name
+      this.$router.push({path: '/pages/estate-photo/main', query: {id, city_name: cityName, tabName: name, current}})
     },
     goActivityDetail (id) {
       POINTArticleClick({
