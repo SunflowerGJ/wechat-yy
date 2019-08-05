@@ -134,9 +134,9 @@
           <span>楼盘详情</span>
         </div>
         <ul class="floor_details">
-          <li v-if="detail.address">
+          <li v-if="detail.office_address">
             <label>售楼地址：</label>
-            <span>{{detail.address}}</span>
+            <span>{{detail.office_address}}</span>
           </li>
           <li v-if="detail.alias">
             <label>楼盘别名：</label>
@@ -447,9 +447,10 @@ export default {
         qqmapsdk.search({
           keyword, // 搜索关键词
           auto_extend: '1',
+          page_size: 10,
           location: `${this.detail.latitude},${this.detail.longitude}`, // 设置周边搜索中心点
           success: (res) => { // 搜索成功后的回调
-            copyMap[keyword] = res.count
+            copyMap[keyword] = res.count >= 25 ? 25 : res.count
             let key = this.searchMAP[keyword]
             if (!key) return
             for (var i = 0; i < res.data.length; i++) {

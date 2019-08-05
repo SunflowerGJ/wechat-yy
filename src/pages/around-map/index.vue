@@ -86,9 +86,10 @@ export default {
       this.qqmapsdk.search({
         keyword: this.tabCheck, // 搜索关键词
         location: `${this.detail.latitude},${this.detail.longitude}`, // 设置周边搜索中心点
-        auto_extend: '0',
+        auto_extend: '1',
+        page_size: 5,
         success: (res) => { // 搜索成功后的回调
-          _that.searchMap[_that.tabCheck] = res.count
+          _that.searchMap[_that.tabCheck] = res.count >= 25 ? 25 : res.count
           var mks = []
           for (var i = 0; i < res.data.length; i++) {
             mks.push({ // 获取返回结果，放到mks数组中
