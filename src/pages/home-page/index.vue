@@ -54,7 +54,8 @@
               :key="index"
               :style="{zIndex:index,left:(index*30)+'px'}"
             >
-              <img v-if="item.headimgurl" :src="item.headimgurl">
+              <img v-if="!item.headimgurl" src="/static/images/default-avatar.png" alt="">
+              <img v-else :src="item.headimgurl"/>
             </div>
           </div>
         </div>
@@ -711,6 +712,7 @@ export default {
         border-radius: 100%;
         overflow: hidden;
         position: absolute;
+        // background:#d8d8d8;
 
         img {
           width: 100%;

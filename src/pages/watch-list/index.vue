@@ -41,6 +41,13 @@ export default {
     this.list = data.list
     this.total_page = data.total_page
   },
+  onUnload () {
+    this.list = []
+    this.page = 1
+    this.pagesize = 10
+    this.total_page = 0
+    this.falg = true
+  },
   methods: {
     async scrolltolower (e) {
       if (this.falg) {

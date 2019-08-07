@@ -22,6 +22,8 @@ const reLogin = () => {
         var ROOT_API = process.env.ROOT_API
         loginFly.post(`${ROOT_API}/api/member/login`, {code: res.code})
           .then(result => {
+            // console.log('4、重新请求得到的token：')
+            // console.log(result.data.data.token)
             wx.setStorage({key: 'token', data: result.data.data.token})
             wx.setStorage({key: 'userinfo', data: result.data.data.userinfo})
             resolve(result.data.data)
@@ -40,6 +42,8 @@ const reLogin = () => {
 // 添加拦截器
 fly.interceptors.request.use((request, promise) => {
   if (wx.getStorageSync('token')) { // 检查本地缓存是否有token存在没有则重新获取
+    // console.log(`1、请求${request.url}携带的token：`)
+    // console.log(wx.getStorageSync('token'))
     request.body.token = wx.getStorageSync('token')
     return request
   } else {
@@ -47,6 +51,7 @@ fly.interceptors.request.use((request, promise) => {
     // 发起网络请求
     return reLogin().then(res => {
       fly.unlock()
+      request.body.token = wx.getStorageSync('token')
       return request
     }).catch(() => {
       fly.unlock()
@@ -58,13 +63,16 @@ fly.interceptors.request.use((request, promise) => {
 fly.interceptors.response.use(
   (response) => {
     if (response.data && ['50001', '50002', '50003'].includes(response.data.code)) {
+      // console.log(`2、解析错误：返回码${response.data.code}`)
       wx.removeStorage({key: 'token'})
       wx.setStorage({key: 'reject', data: false})
       fly.lock()// 锁住请求
+      // console.log(`3、重新请求token`)
       // 发起网络请求
       return reLogin().then(res => {
         fly.unlock()
         // 重新请求
+        // console.log('5、重发请求：' + response.request.url)
         return fly.request(response.request)
       }).catch(() => {
         fly.unlock()

@@ -5,16 +5,16 @@
         <img src="/static/images/forward.png">
         <span>转发</span>
       </button>
-      <button open-type="getUserInfo" @getuserinfo="getUserInfo" class="item item--button" @click="getShareImgNew(detail)">
+      <button class="item item--button" @click="getShareImgNew(detail)">
         <img src="/static/images/fileback.png">
         <span>生成海报</span>
       </button>
-      <a class="item" @click="onAddCollection(detail,type)">
+      <button open-type="getUserInfo" @getuserinfo="getUserInfo" class="item item--button" @click="onAddCollection(detail,type)">
         <img v-if="detail.is_collect === 0" class="collection" src="/static/images/collection.png">
         <span v-if="detail.is_collect === 0">收藏</span>
         <img v-if="detail.is_collect === 1" class="collection" src="/static/images/is-collection.png">
         <span v-if="detail.is_collect === 1">收藏</span>
-      </a>
+      </button>
     </div>
     <!-- // 已经有电话 -->
     <div class="fixed_right" v-if="isPhone">
@@ -62,7 +62,8 @@ import {
   postAddCollection,
   postRemoveCollection,
   POINTHouseClick,
-  POINTHouseType
+  POINTHouseType,
+  postUserInfoSave
 } from '../http/api.js'
 
 export default {
@@ -130,8 +131,8 @@ export default {
       if (e.mp.detail.errMsg === 'getPhoneNumber:ok') {
         wx.makePhoneCall({phoneNumber: this.detail.sales_mobile})
         // 授权成功
-        const { encryptedData, iv } = e.mp.detail
-        await postMobileSave({ encryptedData, iv })
+        let { encryptedData, iv } = e.mp.detail
+        await postMobileSave({encryptedData, iv})
       }
     },
     makePhoneCall () {
@@ -168,6 +169,10 @@ export default {
           type: 5
         })
       }
+      const posterUrl = this.type === '2' ? this.detail.housetype_hposter_url : this.detail.poster_url
+      this.showModal = true
+      this.imagePath = posterUrl
+      this.showSharePic = true
     },
     saveShareImg (posterUrl, avatarUrl) {
       if (this.imagePath) {
@@ -304,22 +309,25 @@ export default {
       }
     },
     // 获取用户头像
-    getUserInfo () {
-      // const _that = this
-      const posterUrl = this.type === '2' ? this.detail.housetype_hposter_url : this.detail.poster_url
-      this.showModal = true
-      this.imagePath = posterUrl
-      this.showSharePic = true
-      // wx.getUserInfo({
-      //   success: function (res) {
-      //     var userInfo = res.userInfo
-      //     _that.saveShareImg(posterUrl, userInfo.avatarUrl)
-      //   },
-      //   fail: function (e) {
-      //     _that.imagePath = posterUrl
-      //     _that.showSharePic = true
-      //   }
-      // })
+    getUserInfo (e) {
+      console.log(e)
+      let resp = e.mp.detail
+      if (resp.errMsg === 'getUserInfo:ok') {
+        const { userInfo } = resp
+        const userinfo = {
+          nickname: userInfo.nickName,
+          headimgurl: userInfo.avatarUrl,
+          sex: userInfo.gender,
+          country: userInfo.country,
+          province: userInfo.province,
+          city: userInfo.city
+        }
+        // postMobileSave({ encryptedData, iv })
+        postUserInfoSave({...userinfo}).then(res => {
+          wx.setStorage({key: 'userinfo', data: userinfo})
+          this.globalData.userinfo = userinfo
+        })
+      }
     }
   }
 }
