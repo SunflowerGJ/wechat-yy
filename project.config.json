@@ -34,7 +34,7 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": 13,
+			"current": 14,
 			"list": [
 				{
 					"id": -1,
@@ -43,10 +43,11 @@
 					"query": ""
 				},
 				{
-					"id": -1,
+					"id": 1,
 					"name": "资讯",
 					"pathName": "pages/activity/main",
-					"query": ""
+					"query": "article_id=705",
+					"scene": null
 				},
 				{
 					"id": -1,
@@ -88,10 +89,10 @@
 					"query": ""
 				},
 				{
-					"id": -1,
+					"id": 8,
 					"name": "楼盘主页",
 					"pathName": "pages/home-page/main",
-					"query": "id=6",
+					"query": "id=57",
 					"scene": null
 				},
 				{
@@ -127,6 +128,13 @@
 					"name": "户型详情",
 					"pathName": "pages/door-details/main",
 					"query": "id=6",
+					"scene": null
+				},
+				{
+					"id": 14,
+					"name": "pages/activity-detail/main",
+					"pathName": "pages/activity-detail/main",
+					"query": "id=705",
 					"scene": null
 				}
 			]
