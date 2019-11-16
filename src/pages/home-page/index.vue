@@ -558,8 +558,8 @@ export default {
 @import '../../stylus/mixin.styl';
 .coupon_photo {
   width: 100%;
-  height: 240rpx;
-  border-bottom: 8px solid #fefefe;
+  height: 120px;
+  border-bottom: 4px solid #fefefe;
 }
 
 .coupon_photo img {
