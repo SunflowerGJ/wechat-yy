@@ -18,7 +18,8 @@
     "pages/door-list/main",
     "pages/estate-photo/main",
     "pages/around-map/main",
-    "pages/go-address/main"
+    "pages/go-address/main",
+    "pages/coupon-list/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

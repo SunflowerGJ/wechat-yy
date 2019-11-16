@@ -222,3 +222,45 @@ export const POINTArticleClick = (params = {}) => {
     params: params
   })
 }
+
+// 优惠券列表
+export const postCouponsList = (params = {}) => {
+  return fly({
+    method: 'post',
+    url: `/api/Coupons/getCouponsList`,
+    params: params
+  })
+}
+// 领取优惠券
+
+export const postGetCoupons = (params = {}) => {
+  return fly({
+    method: 'post',
+    url: `/api/Coupons/memberGetCoupons`,
+    params: params
+  })
+}
+// 5. 会员已领取优惠券详情接口
+export const postMemberCouponsDetail = (params = {}) => {
+  return fly({
+    method: 'post',
+    url: `/api/Coupons/getMemberCouponsDetail`,
+    params: params
+  })
+}
+// 获取会员已领取优惠券列表
+export const postMemberCouponsList = (params = {}) => {
+  return fly({
+    method: 'post',
+    url: `/api/Coupons/getMemberCouponsList`,
+    params: params
+  })
+}
+// 7.优惠券点击次数接口
+export const POINTBtnClickNum = (params = {}) => {
+  return fly({
+    method: 'get',
+    url: `/api/Coupons/btnClickNum`,
+    params: params
+  })
+}

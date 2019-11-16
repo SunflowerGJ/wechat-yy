@@ -8,6 +8,33 @@
     </div>
     <div class="info-section">
       <div class="info-section__title">
+        <h3>我的礼券</h3>
+      </div>
+      <div class="info-section__main memberCouponsList">
+        <scroll-view
+          :scroll-x="true"
+          style="white-space: nowrap; display: flex;"
+          @scrolltolower="onSscrolltolowerCoupons"
+        >
+          <view
+            class="info-section__item "
+            @click="onMemberCouponsDetail(item.id)"
+            v-for="(item,index) in memberCouponsList"
+            :key="index"
+          >
+            <img class="info-section__item-img" :src="item.photo" alt>
+            <div class="info-section__item-info">
+              <span class="title overflow-ellipsis">{{item.name}}</span>
+            </div>
+            <div class="info-section__item-info">
+              <span class="overflow-ellipsis">{{item.remark}}</span> 
+            </div>
+          </view>
+        </scroll-view>
+      </div>
+    </div>
+    <div class="info-section">
+      <div class="info-section__title">
         <h3>我收藏的楼盘</h3>
       </div>
       <div class="info-section__main">
@@ -38,7 +65,6 @@
         </scroll-view>
       </div>
     </div>
-
     <div class="info-section">
       <div class="info-section__title">
         <h3>我收藏的户型</h3>
@@ -104,11 +130,30 @@
         </scroll-view>
       </div>
     </div>
+    <van-popup
+      :show="show"
+      closeable
+      close-on-click-overlay
+      position="bottom"
+      :close="onClose">
+      <div class="popup-wrap">
+        <div class="close" @click="show = false">
+          <img class="close-img" src='/static/images/icon-closed.png' />
+        </div>
+        <img class="review-img" :src="getCouponsDetail.photo" alt="">
+        <div class="review-remark">
+          <div class="is-suc">
+            <div class="is-suc-title">{{getCouponsDetail.name}}</div>
+            <div>{{getCouponsDetail.remark}}</div>
+          </div>
+        </div>
+      </div>
+    </van-popup>
   </div>
 </template>
 
 <script>
-import { postSearchCollection, postShowMemberAccess, POINTHouseClick, POINTHouseType } from '../../http/api.js'
+import { postSearchCollection, postShowMemberAccess, POINTHouseClick, POINTHouseType, postMemberCouponsList, postMemberCouponsDetail } from '../../http/api.js'
 export default {
   data () {
     return {
@@ -156,24 +201,56 @@ export default {
         current_page: 0,
         next_page: 0
       },
+      memberCouponsCon: {
+        // 礼券
+        page: 1,
+        pagesize: 5,
+        total_page: 0,
+        current_page: 0,
+        next_page: 0
+      },
       houseList: [],
       houseHisList: [],
-      doorList: []
+      doorList: [],
+      memberCouponsList: [],
+      show: false,
+      getCouponsDetail: {
+
+      }
+
     }
   },
   onShow () {
     this.fetchCollection(this.house)
     this.fetchCollection(this.door)
     this.fetchHousesAccess(this.houseHis)
+    this.fetchMemberCouponsList(this.memberCouponsCon)
   },
   methods: {
+    onClose () {
+      this.show = false
+    },
+    // 查看礼券详情
+    async onMemberCouponsDetail (id) {
+      const data = await postMemberCouponsDetail({id})
+      this.show = true
+      this.getCouponsDetail = data
+    },
+    // 我的礼券
+    async fetchMemberCouponsList (options) {
+      const data = await postMemberCouponsList(options)
+      this.memberCouponsList = [...this.memberCouponsList, ...data.list]
+      this.memberCouponsCon.next_page = data.next_page
+    },
     // 查询用户收藏
     async fetchCollection (options) {
       const data = await postSearchCollection(options)
       if (options.type === 1) {
-        this.houseList = data.list
+        this.houseList = [...this.houseList, ...data.list]
+        this.house = data.next_page
       } else {
-        this.doorList = data.list
+        this.doorList = [...this.doorList, ...data.list]
+        this.door = data.next_page
       }
     },
     // 获取楼盘访问记录
@@ -197,6 +274,12 @@ export default {
       if (this.houseHis.next_page) {
         this.houseHis.page = this.houseHis.next_page
         this.fetchHousesAccess(this.houseHis)
+      }
+    },
+    onSscrolltolowerCoupons () {
+      if (this.memberCouponsCon.next_page) {
+        this.memberCouponsCon.page = this.memberCouponsCon.next_page
+        this.fetchMemberCouponsList(this.memberCouponsCon)
       }
     },
     goHomePage (id) {
@@ -264,9 +347,7 @@ export default {
 
   .info-section {
     margin-bottom: 10px;
-    // height 230px
     background-color: #fff;
-
     .info-section__title {
       height: 50px;
       line-height: 50px;
@@ -280,10 +361,7 @@ export default {
     }
 
     .info-section__main {
-      // height 160px
       padding: 0 20px 30px 20px;
-
-      // box-sizing border-box
       .info-section__item {
         width: 160px;
         overflow: hidden;
@@ -294,7 +372,6 @@ export default {
         &:first-child {
           margin-left: 0;
         }
-
         .info-section__item-img {
           display: block;
           width: 100%;
@@ -336,6 +413,93 @@ export default {
         }
       }
     }
+
+    .memberCouponsList {
+      padding: 0 20px 10px 20px;
+      .info-section__item{
+        width 100px;
+        margin-left 10px;
+        .info-section__item-img {
+          width 100px;
+          height:70px;
+          margin-bottom 6px;
+        }
+        .info-section__item-info {
+          margin-top 0;
+          height:14px;
+          font-size:10px;
+          font-family:PingFangSC-Regular,PingFang SC;
+          font-weight:400;
+          color:rgba(137,137,137,1);
+          line-height:14px;
+          overflow:hidden;
+          white-space:nowrap;
+          text-overflow:ellipsis
+          .title {
+            height:17px;
+            font-size:12px;
+            font-family:PingFangSC-Regular,PingFang SC;
+            font-weight:400;
+            color:rgba(63,59,58,1);
+            line-height:17px;
+            width 100%;
+          }
+          .overflow-ellipsis {
+            width 100%
+          }
+        }
+      }
+    }
+  }
+}
+.overflow-ellipsis {
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis
+}
+.popup-wrap {
+  padding 27px 20px 14px 20px;
+  box-sizing border-box;
+  height 300px;
+  .review-img {
+    display block;
+    width:336px;
+    height:210px;
+    margin 0 auto;
+    background:rgba(249,249,249,1);
+  }
+  .review-remark {
+    font-size:10px;
+    font-family:PingFangSC-Regular,PingFang SC;
+    font-weight:400;
+    color:rgba(137,137,137,1);
+    line-height:14px;
+    text-align center;
+    .is-suc-title {
+      font-size:20px;
+      font-family:PingFangSC-Semibold,PingFang SC;
+      font-weight:600;
+      color:rgba(255,76,100,1);
+      line-height:28px;
+      margin-top 4px;
+    }
+    .is-fail {
+      margin-top 13px
+    }
+  }
+}
+.close {
+  position absolute
+  width 20px
+  height 20px
+  top 5px
+  right 5px
+  z-index 1
+  .close-img {
+    display block;
+    width 14px;
+    height 14px;
+    margin 3px auto;
   }
 }
 </style>

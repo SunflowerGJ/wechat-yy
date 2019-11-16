@@ -1,6 +1,5 @@
 <template>
   <div class="container" v-if="detail">
-    <tips></tips>
     <div class="panl_swiper">
       <img :src="detail.photo"  @click="handleGoPhoto('样板间')"/>
     </div>
@@ -63,6 +62,9 @@
           <img src="/static/images/cpument.png">
           <span>房贷计算器</span>
         </div>
+      </div>
+      <div class="coupon_photo" v-if="detail.coupon_flag==1" @click="goCouponList">
+        <img :src="detail.coupon_photo" alt="">
       </div>
       <div class="estate_news_panl">
         <div class="estate_title">
@@ -417,6 +419,16 @@ export default {
     this.handleSearch()
   },
   methods: {
+    goCouponList () {
+      let query = {
+        city_id: this.detail.city_id,
+        house_id: this.detail.id,
+        city_name: this.detail.city_name,
+        name: this.detail.name,
+        photo: this.detail.photo
+      }
+      this.$router.push({ path: '/pages/coupon-list/main', query: query })
+    },
     handleGoAddress () {
       POINTHouseClick({
         cityId: this.detail.city_id,
@@ -544,6 +556,17 @@ export default {
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 @import '../../stylus/mixin.styl';
+.coupon_photo {
+  width: 100%;
+  height: 240rpx;
+  border-bottom: 8px solid #fefefe;
+}
+
+.coupon_photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
 
 .container {
   background: #f2f2f2;

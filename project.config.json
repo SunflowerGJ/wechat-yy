@@ -33,6 +33,10 @@
 			"currentL": -1,
 			"list": []
 		},
+		"gamePlugin": {
+			"current": -1,
+			"list": []
+		},
 		"miniprogram": {
 			"current": 14,
 			"list": [
@@ -135,6 +139,13 @@
 					"name": "pages/activity-detail/main",
 					"pathName": "pages/activity-detail/main",
 					"query": "id=705",
+					"scene": null
+				},
+				{
+					"id": 15,
+					"name": "优惠券列表",
+					"pathName": "pages/coupon-list/main",
+					"query": "house_id=5&city_id=1",
 					"scene": null
 				}
 			]
