@@ -111,20 +111,26 @@ export default {
   methods: {
     async onOpenModel (couponsid, img) {
       POINTBtnClickNum({couponsid})
-      postGetCoupons({couponsid})
-        .then(res => {
-          this.getCoupons = {
-            status: 1,
-            url: img
-          }
-          this.show = true
-        }).catch(() => {
-          this.getCoupons = {
-            status: 0,
-            url: img
-          }
-          this.show = true
+      const data = await postGetCoupons({couponsid})
+      if (data.code === 10000) {
+        this.getCoupons = {
+          status: 1,
+          url: img
+        }
+        this.show = true
+      } else if (data.code === 10002) {
+        wx.showToast({
+          title: data.msg,
+          icon: 'none',
+          duration: 2000
         })
+      } else {
+        this.getCoupons = {
+          status: 0,
+          url: img
+        }
+        this.show = true
+      }
     },
     onClose () {
       this.show = false
