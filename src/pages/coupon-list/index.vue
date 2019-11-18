@@ -111,6 +111,7 @@ export default {
   methods: {
     async onOpenModel (couponsid, img) {
       POINTBtnClickNum({couponsid})
+      // 外部的都是10000  里面的码 10000  领取成功 10001 已领完   10002已领券  10003 未找到优惠券  10004 优惠券已下架  10005 活动未开始  10006 已过领取时间   10007 已领完  10008  已领完 10009 网络故障 10010 网络故障 10011 网络故障
       const data = await postGetCoupons({couponsid})
       if (data.code === 10000) {
         this.getCoupons = {
@@ -118,18 +119,18 @@ export default {
           url: img
         }
         this.show = true
-      } else if (data.code === 10002) {
-        wx.showToast({
-          title: data.msg,
-          icon: 'none',
-          duration: 2000
-        })
-      } else {
+      } else if (data.code === 10001) {
         this.getCoupons = {
           status: 0,
           url: img
         }
         this.show = true
+      } else {
+        wx.showToast({
+          title: data.msg,
+          icon: 'none',
+          duration: 2000
+        })
       }
     },
     onClose () {
