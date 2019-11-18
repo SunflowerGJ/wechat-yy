@@ -238,7 +238,7 @@ export const postGetCoupons = (params = {}) => {
     method: 'post',
     url: `/api/Coupons/memberGetCoupons`,
     params: params
-  })
+  }, false)
 }
 // 5. 会员已领取优惠券详情接口
 export const postMemberCouponsDetail = (params = {}) => {
@@ -254,7 +254,7 @@ export const postMemberCouponsList = (params = {}) => {
     method: 'post',
     url: `/api/Coupons/getMemberCouponsList`,
     params: params
-  })
+  }, false)
 }
 // 7.优惠券点击次数接口
 export const POINTBtnClickNum = (params = {}) => {
@@ -262,5 +262,5 @@ export const POINTBtnClickNum = (params = {}) => {
     method: 'get',
     url: `/api/Coupons/btnClickNum`,
     params: params
-  })
+  }, false)
 }

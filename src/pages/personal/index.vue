@@ -143,7 +143,7 @@
         <img class="review-img" :src="getCouponsDetail.photo" alt="">
         <div class="review-remark">
           <div class="is-suc">
-            <div class="is-suc-title">{{getCouponsDetail.name}}</div>
+            <div class="is-suc-title">{{getCouponsDetail.code}}</div>
             <div>{{getCouponsDetail.remark}}</div>
           </div>
         </div>
