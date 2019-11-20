@@ -26,7 +26,9 @@
           </div>
           <div class="coupon-item__foot">
             <div class="date">有效期：{{item.endtime}}</div>
-            <div class="button" @click="onOpenModel(item.id,item.photo)">抢券</div>
+            <div class="button" @click="isAuth?onOpenModel(item.id,item.photo):''">
+              抢券            
+              <button v-if="!isAuth" open-type="getUserInfo" @getuserinfo="getUserInfo" class="open-type-btn"></button></div>
           </div>
         </div>
         <div v-if="next_page==0" class="no-data">没有其他礼券了，稍后再来看看吧</div>
@@ -57,8 +59,8 @@
   </div>
 </template>
 <script>
-import { postCouponsList, postGetCoupons, POINTBtnClickNum } from '../../http/api.js'
-
+import { postCouponsList, postGetCoupons, POINTBtnClickNum, postUserInfoSave } from '../../http/api.js'
+let app = getApp()
 export default {
   /**
    * 用户点击右上角分享
@@ -83,12 +85,14 @@ export default {
         url: '',
         status: 1
       },
-      query: {}
+      query: {},
+      isAuth: false
     }
   },
   onLoad: function (options) {
     this.query = this.$route.query
   },
+
   async mounted () {
     const data = await postCouponsList({
       house_id: this.$route.query.house_id,
@@ -99,6 +103,7 @@ export default {
     this.list = data.list
     this.total_page = data.total_page
     this.next_page = data.next_page
+    this.isAuth = wx.getStorageSync('userinfo') || false
   },
   onUnload () {
     this.list = []
@@ -109,6 +114,25 @@ export default {
     this.next_page = 1
   },
   methods: {
+    // 获取用户头像
+    async getUserInfo (e) {
+      let resp = e.mp.detail
+      if (resp.errMsg === 'getUserInfo:ok') {
+        const { userInfo } = resp
+        const userinfo = {
+          nickname: userInfo.nickName,
+          headimgurl: userInfo.avatarUrl,
+          sex: userInfo.gender,
+          country: userInfo.country,
+          province: userInfo.province,
+          city: userInfo.city
+        }
+        await postUserInfoSave({...userinfo})
+        wx.setStorageSync('userinfo', userinfo)
+        this.isAuth = userinfo
+        app.globalData.userinfo = userinfo
+      }
+    },
     async onOpenModel (couponsid, img) {
       POINTBtnClickNum({couponsid})
       // 外部的都是10000  里面的码 10000  领取成功 10001 已领完   10002已领券  10003 未找到优惠券  10004 优惠券已下架  10005 活动未开始  10006 已过领取时间   10007 已领完  10008  已领完 10009 网络故障 10010 网络故障 10011 网络故障
@@ -297,6 +321,7 @@ export default {
         color: #fff;
         line-height: 21px;
         text-align: center;
+        position relative
       }
     }
   }

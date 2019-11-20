@@ -170,7 +170,7 @@ export const postUserInfoSave = (params = {}) => {
     method: 'post',
     url: `/api/member/userInfoSave`,
     params: params
-  })
+  }, false)
 }
 
 // 城市统计

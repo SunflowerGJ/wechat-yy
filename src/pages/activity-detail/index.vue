@@ -36,25 +36,7 @@ export default {
     })
     this.detail = data
     this.detail.content = this.detail.content.replace(/<img/gi, '<img style="max-width:100%;height:auto;display:block;margin:4px auto;" ')
-    // this.detail.content = this.detail.content.replace(/article/gi, 'div')
-    // this.detail.content = this.detail.content.replace(/section/gi, 'div')
-    console.log(this.detail.content)
-    //     this.detail.content = `
 
-    // <section style="margin:0px 0px 10px;padding:0px;max-width:100%;color:#333333;font-family:-apple-system-font, BlinkMacSystemFont; font-size:17px;letter-spacing:0.544px;white-space:normal;background-color:#ffffff;text-align:center;box-sizing:border-box !important;word-wrap:break-word !important;">
-    //   <span style="margin:0px;padding:0px;max-width:100%;box-sizing:border-box !important;word-wrap:break-word !important;color:#D92142;">
-    //   <strong style="margin:0px;padding:0px;max-width:100%;box-sizing:border-box !important;word-wrap:break-word !important;">
-    //   <span style="margin:0px;padding:0px;max-width:100%;box-sizing:border-box !important;word-wrap:break-word !important;font-size:14px;">
-    //   2019年，11号线征收补偿方案或将出炉！
-    //   </span>
-    //   </strong>
-    // </span>
-
-    //   <span style="margin:0px;padding:0px;max-width:100%;box-sizing:border-box !important;word-wrap:break-word !important;font-size:14px;text-align:justify;">
-    //   </span>
-    // </section>
-
-    //     `
     wx.setNavigationBarTitle({
       title: data.title
     })

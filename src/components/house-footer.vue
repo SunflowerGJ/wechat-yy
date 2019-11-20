@@ -310,7 +310,6 @@ export default {
     },
     // 获取用户头像
     getUserInfo (e) {
-      console.log(e)
       let resp = e.mp.detail
       if (resp.errMsg === 'getUserInfo:ok') {
         const { userInfo } = resp
@@ -324,7 +323,7 @@ export default {
         }
         // postMobileSave({ encryptedData, iv })
         postUserInfoSave({...userinfo}).then(res => {
-          wx.setStorage({key: 'userinfo', data: userinfo})
+          wx.setStorageSync('userinfo', userinfo)
           this.globalData.userinfo = userinfo
         })
       }

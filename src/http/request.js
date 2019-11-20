@@ -23,9 +23,8 @@ const reLogin = () => {
         loginFly.post(`${ROOT_API}/api/member/login`, {code: res.code})
           .then(result => {
             // console.log('4、重新请求得到的token：')
-            // console.log(result.data.data.token)
-            wx.setStorage({key: 'token', data: result.data.data.token})
-            wx.setStorage({key: 'userinfo', data: result.data.data.userinfo})
+            wx.setStorageSync('token', result.data.data.token)
+            wx.setStorageSync('userinfo', result.data.data.userinfo)
             resolve(result.data.data)
           })
           .catch(error => {
@@ -64,8 +63,8 @@ fly.interceptors.response.use(
   (response) => {
     if (response.data && ['50001', '50002', '50003'].includes(response.data.code)) {
       // console.log(`2、解析错误：返回码${response.data.code}`)
-      wx.removeStorage({key: 'token'})
-      wx.setStorage({key: 'reject', data: false})
+      wx.removeStorageSync('token')
+      wx.setStorageSync('reject', 0)
       fly.lock()// 锁住请求
       // console.log(`3、重新请求token`)
       // 发起网络请求

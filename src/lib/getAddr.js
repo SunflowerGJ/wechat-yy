@@ -11,22 +11,7 @@ export const _getUserAddress = () => {
         let location = addressComponent.city.length === 0
           ? addressComponent.province
           : addressComponent.city
-        const shortName = location.replace(/市$/,'')
-        // wx.showModal({
-        //   title: '定位城市',
-        //   content:JSON.stringify(addressComponent),
-        //   success(res) {
-        //     if (res.confirm) {
-        //       wx.showToast({
-        //         title: `${addressComponent.province}+${addressComponent.city[0]}`,
-        //         icon: 'success',
-        //         duration: 2000
-        //       })
-        //     } else if (res.cancel) {
-        //       console.log('用户点击取消')
-        //     }
-        //   }
-        // })
+        const shortName = location.replace(/市$/, '')
         resolve(shortName)
       },
       fail: function (info) {

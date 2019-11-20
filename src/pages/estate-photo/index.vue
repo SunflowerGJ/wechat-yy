@@ -46,7 +46,6 @@ export default {
 
   methods: {
     getIndex (e) {
-      console.log(e)
       this.active = e
       const tyepMap = {
         样板间: 1,
