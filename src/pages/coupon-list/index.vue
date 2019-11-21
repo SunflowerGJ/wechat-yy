@@ -44,7 +44,10 @@
           <div class="close" @click="show = false">
             <img class="close-img" src='/static/images/icon-closed.png' />
           </div>
-          <img class="review-img" :src="getCoupons.url" alt="">
+          <img class="review-img" v-if="getCoupons.status === 1" :src="getCoupons.url" alt="">
+          <div class="review-img" v-else >
+            <img class="coupon-search-null" src="../../../static/images/coupon-search-null.png" alt="">
+          </div>
           <div class="review-remark">
             <div class="is-fail" v-if="getCoupons.status === 0">
               已经领完了，下次再来试试吧 
@@ -346,6 +349,13 @@ export default {
     height:210px;
     margin 0 auto;
     background:rgba(249,249,249,1);
+    overflow hidden
+    .coupon-search-null {
+      display block;
+      width 152px
+      height 165px;
+      margin 20px auto 0 auto
+    }
   }
   .review-remark {
     font-size:10px;
