@@ -22,7 +22,7 @@
         </view>
         <view class="form-item">
             <text class="form-item__label">选择日期</text>
-            <picker class="picker" mode="date" :value="orderDate" start="2019-11-01" end="2025-09-01" @change="bindDateChange">
+            <picker class="picker" mode="date" :value="orderDate" :start="startTime" end="2025-09-01" @change="bindDateChange">
               <div class="form-item__value picker-con">
                 {{orderDate}}
               </div>
@@ -41,10 +41,12 @@
 
 <script>
 import { sendSeeInfo } from '../http/api.js'
+import {formatDay} from '../utils/index.js'
 export default {
   props: ['cityId', 'houseId'],
   data () {
     return {
+      startTime: formatDay(new Date()),
       orderDate: '',
       name: '',
       phone: '',

@@ -336,6 +336,16 @@
       </div>
     </div>
       <house-footer :detail='detail' @addCID='addCID' type='1'/>
+      <van-popup  :show="showNoticeModal" position="top" >
+        <div class="notice-model">
+          <div class="notice-model__main">
+            <img mode="widthFix" src="/static/images/icon-addr.png" alt="">
+          </div>
+          <div class="notice-model__close">
+            <img class="notice-model__close-img" src='/static/images/icon-closed.png' />
+          </div>
+        </div>
+      </van-popup>
   </div>
 </template>
 <script>
@@ -359,6 +369,7 @@ export default {
   },
   data () {
     return {
+      showNoticeModal: false,
       house_id: '',
       show: false,
       detail: null,
@@ -553,9 +564,16 @@ export default {
   }
 }
 </script>
-
+<style style lang="stylus" rel="stylesheet/stylus">
+.container {
+  .van-popup {
+    background: transparent!important;
+  }
+}
+</style>
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 @import '../../stylus/mixin.styl';
+
 .coupon_photo {
   width: 100%;
   height: 120px;
@@ -1170,68 +1188,6 @@ export default {
     }
   }
 }
-
-// .footer_fixed {
-//   box-sizing: border-box;
-//   width: 100%;
-//   position: fixed;
-//   z-index: 10;
-//   left: 0;
-//   bottom: 0;
-//   background-color: #ffffff;
-//   padding: 15px 12px;
-//   display: flex;
-//   justify-content: space-between;
-
-//   .fixed_left {
-//     width: 200px;
-//     display: flex;
-//     justify-content: space-between;
-
-//     a {
-//       display: flex;
-//       flex-direction: column;
-//       text-align: center;
-//       justify-content: center;
-//       align-items: center;
-//       width: 33%;
-
-//       img {
-//         width: 13px;
-//         height: 15px;
-//       }
-
-//       img.collection {
-//         width: 17px;
-//         height: 15px;
-//       }
-
-//       span {
-//         font-size: 14px;
-//         color: #9FA0A0;
-//         margin-top: 2px;
-//       }
-//     }
-//   }
-// }
-
-.fixed_right {
-  flex: 1;
-  font-size: 14px;
-  line-height: 30px;
-  background: #E60113;
-  border-radius: 6px;
-  text-align: center;
-  color: #ffffff;
-
-  img {
-    width: 15px;
-    height: 15px;
-    margin-right: 10px;
-    margin-bottom: -3px;
-  }
-}
-
 .rich-text {
   font-size: 12px !important;
   line-height 1.5 !important;
@@ -1245,5 +1201,22 @@ export default {
 .space-1 {
   display inline-block
   width 15rpx
+}
+
+.notice-model__close {
+  width 20px
+  height 20px
+  margin 0 auto
+  .notice-model__close-img {
+    display block;
+    width 20px
+    height 20px
+  }
+}
+.notice-model__main {
+  .notice-model__main-img {
+    margin 0 auto;
+    width 100%
+  }
 }
 </style>
