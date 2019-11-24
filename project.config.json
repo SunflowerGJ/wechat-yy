@@ -96,7 +96,7 @@
 					"id": 8,
 					"name": "楼盘主页",
 					"pathName": "pages/home-page/main",
-					"query": "id=57",
+					"query": "id=5",
 					"scene": null
 				},
 				{

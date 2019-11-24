@@ -264,3 +264,12 @@ export const POINTBtnClickNum = (params = {}) => {
     params: params
   }, false)
 }
+
+// 7.预约看房接口
+export const sendSeeInfo = (params = {}) => {
+  return fly({
+    method: 'post',
+    url: `/api/MemberSee/sendSeeinfo`,
+    params: params
+  }, false)
+}
