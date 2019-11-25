@@ -40,12 +40,22 @@
       </block>
     </div>
     <get-user-info></get-user-info>
+      <van-popup  :show="showNoticeModal" position="center" >
+        <div class="notice-model">
+          <div class="notice-model__main">
+            <img @click="jumpByNoticeModal" class="notice-model__main-img" mode="widthFix" :src="alertAd.photo" alt=""/>
+          </div>
+          <div class="notice-model__close" @click="showNoticeModal=false">
+            <img class="notice-model__close-img" src='/static/images/icon-closed.png' />
+          </div>
+        </div>
+      </van-popup>
   </div>
 </template>
 
 <script>
 import GetUserInfo from '../../components/get-userinfo'
-import {postIndex, POINTCity, POINTAd} from '../../http/api.js'
+import {postIndex, POINTCity, POINTAd, getCityAlertAd} from '../../http/api.js'
 import HouseCard from '../../components/house-card'
 import {_getUserAddress} from '../../lib/getAddr.js'
 export default {
@@ -65,6 +75,8 @@ export default {
   },
   data () {
     return {
+      showNoticeModal: false,
+      alertAd: {},
       houseClick: {
         type: 1
       },
@@ -89,6 +101,33 @@ export default {
     }
   },
   methods: {
+    fetchCityAlertAd (city) {
+      getCityAlertAd({city}).then(res => {
+        console.log(res)
+        this.alertAd = res
+        this.showNoticeModal = res.status === '1'
+      })
+    },
+    // 优惠券弹窗跳转
+    jumpByNoticeModal () {
+      let alertAd = this.alertAd
+      // type =1是外链=2是楼盘=3是资讯=4是优惠券
+      switch (alertAd.type) {
+        case '1':
+          this.$router.push({ path: '/pages/web-view/main', query: {src: alertAd.url} })
+          break
+        case '2':
+          this.$router.push({path: '/pages/home-page/main', query: { id: alertAd.url }})
+          break
+        case '3':
+          this.$router.push({ path: '/pages/activity-detail/main', query: { id: alertAd.url } })
+          break
+        case '4':
+          this.goCouponList()
+          break
+        default:
+      }
+    },
     // 广告跳转
     goBanner (item) {
       // 广告类型 1外链公众号 2楼盘 3资讯
@@ -182,11 +221,14 @@ export default {
       this.address = city
       this.globalData.address = city
       this.fetchIndexData({city: this.address})
+      this.fetchCityAlertAd(city)
     } else {
       this.address = adr
       this.globalData.address = adr
       this.fetchIndexData({city: this.address})
+      this.fetchCityAlertAd(adr)
     }
+
     POINTCity({
       cityId: this.address,
       type: 'index'
@@ -194,7 +236,13 @@ export default {
   }
 }
 </script>
-
+<style style lang="stylus" rel="stylesheet/stylus">
+.container {
+  .van-popup {
+    background: transparent!important;
+  }
+}
+</style>
 <style lang="stylus" scoped rel="stylesheet/stylus">
 @import "../../stylus/mixin.styl"
 .container
@@ -263,4 +311,21 @@ export default {
         color: #121111
   .main
     background-color #f2f2f2
+.notice-model__close {
+  width 20px
+  height 20px
+  margin 30px auto
+  .notice-model__close-img {
+    display block;
+    width 20px
+    height 20px
+  }
+}
+.notice-model__main {
+  .notice-model__main-img {
+    margin 0 auto;
+    width 320px;
+    display block;
+  }
+}
 </style>

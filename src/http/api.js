@@ -273,3 +273,20 @@ export const sendSeeInfo = (params = {}) => {
     params: params
   }, false)
 }
+// 获取首页主页弹窗
+export const getCityAlertAd = (params = {}) => {
+  return fly({
+    method: 'post',
+    url: `/api/houses/getCityAlertAd`,
+    params: params
+  }, false)
+}
+// 获取资讯分享海报参数接口
+
+export const getArticleShareData = (params = {}) => {
+  return fly({
+    method: 'post',
+    url: `/api/Article/getArticleShareData`,
+    params: params
+  }, false)
+}

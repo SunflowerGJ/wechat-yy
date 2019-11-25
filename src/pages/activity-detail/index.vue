@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import {postArticleDetail} from '../../http/api.js'
+import {postArticleDetail, getArticleShareData} from '../../http/api.js'
 import tips from '../../components/tips'
 export default {
   // 右上角分享功能
@@ -27,7 +27,8 @@ export default {
   },
   data () {
     return {
-      detail: null
+      detail: null,
+      saveInfo: null
     }
   },
   async mounted () {
@@ -36,10 +37,14 @@ export default {
     })
     this.detail = data
     this.detail.content = this.detail.content.replace(/<img/gi, '<img style="max-width:100%;height:auto;display:block;margin:4px auto;" ')
-
     wx.setNavigationBarTitle({
       title: data.title
     })
+    const res = await getArticleShareData({
+      article_id: this.$route.query.id
+    })
+    console.log(res)
+    this.saveInfo = res
   }
 }
 </script>

@@ -336,12 +336,12 @@
       </div>
     </div>
       <house-footer :detail='detail' @addCID='addCID' type='1'/>
-      <van-popup  :show="showNoticeModal" position="top" >
+      <van-popup  :show="showNoticeModal" position="center" >
         <div class="notice-model">
           <div class="notice-model__main">
-            <img mode="widthFix" src="/static/images/icon-addr.png" alt="">
+            <img @click="jumpByNoticeModal" class="notice-model__main-img" mode="widthFix" :src="detail.alert_ad.photo" alt=""/>
           </div>
-          <div class="notice-model__close">
+          <div class="notice-model__close" @click="showNoticeModal=false">
             <img class="notice-model__close-img" src='/static/images/icon-closed.png' />
           </div>
         </div>
@@ -410,6 +410,9 @@ export default {
     const data = await postHousesDetail({
       house_id: this.house_id
     })
+    wx.setNavigationBarTitle({
+      title: data.name
+    })
     this.detail = data
     this.detail.albums = Object.keys(data.albums).map(key => data.albums[key])
     this.detail.strong_point = JSON.parse(data.strong_point)
@@ -423,13 +426,30 @@ export default {
       'create_time': '0',
       'update_time': '0'
     })
-
-    wx.setNavigationBarTitle({
-      title: data.name
-    })
+    this.showNoticeModal = this.detail.alert_ad.status === '1'
     this.handleSearch()
   },
   methods: {
+    // 优惠券弹窗跳转
+    jumpByNoticeModal () {
+      let alertAd = this.detail.alert_ad
+      // type =1是外链=2是楼盘=3是资讯=4是优惠券
+      switch (alertAd.type) {
+        case '1':
+          this.$router.push({ path: '/pages/web-view/main', query: {src: alertAd.url} })
+          break
+        case '2':
+          this.$router.push({path: '/pages/home-page/main', query: { id: alertAd.url }})
+          break
+        case '3':
+          this.$router.push({ path: '/pages/activity-detail/main', query: { id: alertAd.url } })
+          break
+        case '4':
+          this.goCouponList()
+          break
+        default:
+      }
+    },
     goCouponList () {
       let query = {
         city_id: this.detail.city_id,
@@ -1206,7 +1226,7 @@ export default {
 .notice-model__close {
   width 20px
   height 20px
-  margin 0 auto
+  margin 30px auto
   .notice-model__close-img {
     display block;
     width 20px
@@ -1216,7 +1236,8 @@ export default {
 .notice-model__main {
   .notice-model__main-img {
     margin 0 auto;
-    width 100%
+    width 320px;
+    display block;
   }
 }
 </style>
