@@ -11,7 +11,7 @@ export default {
   onShareAppMessage: function (res) {
     return {
       title: this.$route.query.title,
-      path: `pages/web-view/main?src=${this.$route.query.src}&title=${this.$route.query.title}&photo=${this.$route.query.photo}`,
+      path: `pages/web-view/main?src=${this.$route.query.src}&title=${this.$route.query.title}&photo=${this.$route.query.photo}&id=${this.$route.query.id}`,
       imageUrl: decodeURIComponent(this.$route.query.photo) || ''
     }
   },

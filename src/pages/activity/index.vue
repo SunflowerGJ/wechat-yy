@@ -195,7 +195,7 @@ export default {
       if (url) {
         const src = encodeURIComponent(url)
         photo = photo ? encodeURIComponent(photo) : ''
-        this.$router.push({ path: '/pages/web-view/main', query: {src, title, photo} })
+        this.$router.push({ path: '/pages/web-view/main', query: {src, title, photo, id} })
       } else {
         this.$router.push({ path: '/pages/activity-detail/main', query: { id } })
       }

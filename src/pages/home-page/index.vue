@@ -436,7 +436,7 @@ export default {
       // type =1是外链=2是楼盘=3是资讯=4是优惠券
       switch (alertAd.type) {
         case '1':
-          this.$router.push({ path: '/pages/web-view/main', query: {src: alertAd.url} })
+          this.$router.push({ path: '/pages/web-view/main', query: {src: alertAd.url, id: alertAd.id} })
           break
         case '2':
           this.$router.push({path: '/pages/home-page/main', query: { id: alertAd.url }})
