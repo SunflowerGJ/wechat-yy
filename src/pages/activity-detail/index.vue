@@ -18,7 +18,7 @@
             </div>
             <div class="main">
               <div class='main-title'>
-                <img src="" alt="">
+                <img src="/static/images/logo.jpg" alt="">
               </div>
               <div class="main-content">
               <div class="canvas-box">
@@ -63,9 +63,8 @@ export default {
     }
   },
   async mounted () {
-    const data = await postArticleDetail({
-      article_id: this.$route.query.id
-    })
+    this.onReset()
+    const data = await postArticleDetail({ article_id: this.$route.query.id })
     this.detail = data
     this.detail.content = this.detail.content.replace(/<img/gi, '<img style="max-width:100%;height:auto;display:block;margin:4px auto;" ')
     wx.setNavigationBarTitle({
@@ -77,6 +76,15 @@ export default {
     this.saveInfo = res
   },
   methods: {
+    onReset () {
+      this.detail = null
+      this.saveInfo = null
+      this.showModal = false
+      this.modalImg = ''
+      this.imagePath = ''
+      this.showSharePic = false
+      this.hiddenShareCanvas = true
+    },
     // 点击生产海报按钮
     async getShareImg () {
       // 获取小程序码和海报图片
@@ -355,7 +363,7 @@ export default {
     display block;
     width 102px;
     height:63px;
-    background #000;
+    // background #000;
     margin-left 23px;
     margin-top 3px
   }
