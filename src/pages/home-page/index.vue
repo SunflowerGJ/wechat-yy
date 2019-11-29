@@ -449,6 +449,7 @@ export default {
           break
         default:
       }
+      this.showNoticeModal = false
     },
     goCouponList () {
       let query = {

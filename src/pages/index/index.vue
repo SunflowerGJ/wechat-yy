@@ -58,6 +58,7 @@ import GetUserInfo from '../../components/get-userinfo'
 import {postIndex, POINTCity, POINTAd, getCityAlertAd} from '../../http/api.js'
 import HouseCard from '../../components/house-card'
 import {_getUserAddress} from '../../lib/getAddr.js'
+// import { getCache, setCache } from '../../utils/cache.js'
 export default {
 
 // 右上角分享功能
@@ -103,7 +104,6 @@ export default {
   methods: {
     fetchCityAlertAd (city) {
       getCityAlertAd({city}).then(res => {
-        console.log(res)
         this.alertAd = res
         this.showNoticeModal = res.status === '1'
       })
@@ -127,6 +127,7 @@ export default {
           break
         default:
       }
+      this.showNoticeModal = false
     },
     // 广告跳转
     goBanner (item) {
@@ -210,24 +211,14 @@ export default {
   async mounted () { // 地址筛选待调整
     console.log('indexOnload')
     const adr = this.$route.query.addr
-    const obj = this.$route.query.params
-    if (obj) {
-      // 条件筛选后跳转
-      const params = JSON.parse(obj)
-      params.city = this.address
-      this.fetchIndexData(params)
-      return
-    }
     if (!adr) {
       const city = await _getUserAddress()
       this.address = city
       this.globalData.address = city
-      this.fetchIndexData({city: this.address})
       this.fetchCityAlertAd(city)
     } else {
       this.address = adr
       this.globalData.address = adr
-      this.fetchIndexData({city: this.address})
       this.fetchCityAlertAd(adr)
     }
 
