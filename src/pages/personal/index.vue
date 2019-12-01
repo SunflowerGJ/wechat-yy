@@ -239,18 +239,29 @@ export default {
     // 我的礼券
     async fetchMemberCouponsList (options) {
       const data = await postMemberCouponsList(options)
-      this.memberCouponsList = [...this.memberCouponsList, ...data.list]
+      if (+options.page === 1) {
+        this.memberCouponsList = data.list
+      } else {
+        this.memberCouponsList = [...this.memberCouponsList, ...data.list]
+      }
       this.memberCouponsCon.next_page = data.next_page
     },
     // 查询用户收藏
     async fetchCollection (options) {
       const data = await postSearchCollection(options)
       if (options.type === 1) {
-        this.houseList = [...this.houseList, ...data.list]
-        this.house = data.next_page
+        if (+options.page === 1) {
+        } else {
+          this.houseList = data.list
+        }
+        this.house.next_page = data.next_page
       } else {
-        this.doorList = [...this.doorList, ...data.list]
-        this.door = data.next_page
+        if (+options.page === 1) {
+          this.doorList = data.list
+        } else {
+          this.doorList = [...this.doorList, ...data.list]
+        }
+        this.door.next_page = data.next_page
       }
     },
     // 获取楼盘访问记录
