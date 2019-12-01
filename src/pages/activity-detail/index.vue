@@ -44,7 +44,7 @@ export default {
   onShareAppMessage: function (res) {
     return {
       title: this.detail.title || '',
-      path: 'pages/activity-detail/main?id=' + this.$route.query.id,
+      path: 'pages/activity-detail/main?id=' + this.article_id,
       imageUrl: this.detail.photo || ''
     }
   },
@@ -59,19 +59,32 @@ export default {
       modalImg: '',
       imagePath: '',
       showSharePic: false,
-      hiddenShareCanvas: true
+      hiddenShareCanvas: true,
+      article_id: ''
     }
+  },
+  onLoad: function (options) {
+    if (options.q || options.scene) {
+      const parmas = options.q || options.scene
+      // 获取二维码的携带的链接信息
+      this.article_id = decodeURIComponent(parmas)
+    }
+    console.log(this.article_id)
   },
   async mounted () {
     this.onReset()
-    const data = await postArticleDetail({ article_id: this.$route.query.id })
+    if (this.$route.query.id) {
+      this.article_id = this.$route.query.id
+    }
+    console.log(this.article_id)
+    const data = await postArticleDetail({ article_id: this.article_id })
     this.detail = data
     this.detail.content = this.detail.content.replace(/<img/gi, '<img style="max-width:100%;height:auto;display:block;margin:4px auto;" ')
     wx.setNavigationBarTitle({
       title: data.title
     })
     const res = await getArticleShareData({
-      article_id: this.$route.query.id
+      article_id: this.article_id
     })
     this.saveInfo = res
   },
@@ -90,7 +103,7 @@ export default {
       // 获取小程序码和海报图片
       const data = await postEWM({
         route: 'pages/activity-detail/main',
-        params: this.$route.query.id,
+        params: this.article_id,
         token: this.globalData.token
       })
       this.showModal = true
