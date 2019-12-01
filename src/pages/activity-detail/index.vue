@@ -201,6 +201,8 @@ export default {
           y: 0,
           width: 260,
           height: 400,
+          destWidth: 520,
+          destHeight: 800,
           canvasId: 'shareCanvas',
           success: function (res) {
             _that.imagePath = res.tempFilePath

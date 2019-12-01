@@ -76,6 +76,7 @@ export default {
   },
   data () {
     return {
+      cityInfo: {},
       showNoticeModal: false,
       alertAd: {},
       houseClick: {
@@ -123,21 +124,13 @@ export default {
           this.$router.push({ path: '/pages/activity-detail/main', query: { id: alertAd.url } })
           break
         case '4':
-          this.goCouponList(alertAd)
+          // this.goCouponList(alertAd)
+          alertAd.city_name = this.cityInfo.name
+          this.$router.push({ path: '/pages/coupon-list/main', query: alertAd })
           break
         default:
       }
       this.showNoticeModal = false
-    },
-    goCouponList (alertAd) {
-      // let query = {
-      //   city_id: this.detail.city_id,
-      //   house_id: this.detail.id,
-      //   city_name: this.detail.city_name,
-      //   name: this.detail.name,
-      //   photo: this.detail.photo
-      // }
-      this.$router.push({ path: '/pages/coupon-list/main', query: alertAd })
     },
     // 广告跳转
     goBanner (item) {
@@ -188,6 +181,7 @@ export default {
       try {
         const data = await postIndex(params)
         this.bannerList = data.ads
+        this.cityInfo = data.cityInfo
         this.houses = data.houses.map(item => {
           if (item.tags) {
             return {...item, tags: item.tags.split('|')}

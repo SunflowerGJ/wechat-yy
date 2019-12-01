@@ -336,10 +336,10 @@
       </div>
     </div>
       <house-footer :detail='detail' @addCID='addCID' type='1'/>
-      <van-popup  :show="showNoticeModal" position="center" >
+      <van-popup  :show="showNoticeModal"  position="center" >
         <div class="notice-model">
           <div class="notice-model__main">
-            <img @click="jumpByNoticeModal" class="notice-model__main-img" mode="widthFix" :src="detail.alert_ad.photo" alt=""/>
+            <img @click="jumpByNoticeModal" class="notice-model__main-img" mode="widthFix" v-if="detail.alert_ad" :src="detail.alert_ad.photo" alt=""/>
           </div>
           <div class="notice-model__close" @click="showNoticeModal=false">
             <img class="notice-model__close-img" src='/static/images/icon-closed.png' />
@@ -445,6 +445,7 @@ export default {
           this.$router.push({ path: '/pages/activity-detail/main', query: { id: alertAd.url } })
           break
         case '4':
+          alertAd.city_name = this.detail.city_name
           this.$router.push({ path: '/pages/coupon-list/main', query: alertAd })
           break
         default:
@@ -456,9 +457,10 @@ export default {
         city_id: this.detail.city_id,
         house_id: this.detail.id,
         city_name: this.detail.city_name,
-        name: this.detail.name,
-        photo: this.detail.photo
+        house_name: this.detail.name,
+        house_photo: this.detail.photo
       }
+      console.log(query)
       this.$router.push({ path: '/pages/coupon-list/main', query: query })
     },
     handleGoAddress () {

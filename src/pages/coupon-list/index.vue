@@ -4,9 +4,8 @@
       <div class="header">
         <img :src="query.house_photo" alt="">
         <div class="header-title">
-          <!-- <text class="header-title__address">{{query.city_name}}</text>
-          <text>{{query.house_name}}</text> -->
-          <text class="header-title__address">{{query.city_name}}</text>
+          <text class="header-title__address">{{query.house_name}}</text>
+          <!-- <text>{{query.house_name}}</text> -->
         </div>
       </div>
       <div class="desc">
