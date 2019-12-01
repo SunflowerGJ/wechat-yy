@@ -2,10 +2,11 @@
   <div class="container coupon-list">
     <scroll-view scroll-y style="height: 100vh;" @scrolltolower="scrolltolower">
       <div class="header">
-        <img :src="query.photo" alt="">
+        <img :src="query.house_photo" alt="">
         <div class="header-title">
+          <!-- <text class="header-title__address">{{query.city_name}}</text>
+          <text>{{query.house_name}}</text> -->
           <text class="header-title__address">{{query.city_name}}</text>
-          <text>{{query.name}}</text>
         </div>
       </div>
       <div class="desc">
@@ -96,7 +97,19 @@ export default {
     this.query = this.$route.query
   },
 
-  async mounted () {
+  // async mounted () {
+  //   const data = await postCouponsList({
+  //     house_id: this.$route.query.house_id,
+  //     city_id: this.$route.query.city_id,
+  //     page: this.page,
+  //     pagesize: this.pagesize
+  //   })
+  //   this.list = data.list
+  //   this.total_page = data.total_page
+  //   this.next_page = data.next_page
+  //   this.isAuth = wx.getStorageSync('userinfo') || false
+  // },
+  async onShow () {
     const data = await postCouponsList({
       house_id: this.$route.query.house_id,
       city_id: this.$route.query.city_id,

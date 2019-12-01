@@ -445,7 +445,7 @@ export default {
           this.$router.push({ path: '/pages/activity-detail/main', query: { id: alertAd.url } })
           break
         case '4':
-          this.goCouponList()
+          this.$router.push({ path: '/pages/coupon-list/main', query: alertAd })
           break
         default:
       }

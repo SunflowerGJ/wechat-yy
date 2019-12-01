@@ -123,11 +123,21 @@ export default {
           this.$router.push({ path: '/pages/activity-detail/main', query: { id: alertAd.url } })
           break
         case '4':
-          this.goCouponList()
+          this.goCouponList(alertAd)
           break
         default:
       }
       this.showNoticeModal = false
+    },
+    goCouponList (alertAd) {
+      // let query = {
+      //   city_id: this.detail.city_id,
+      //   house_id: this.detail.id,
+      //   city_name: this.detail.city_name,
+      //   name: this.detail.name,
+      //   photo: this.detail.photo
+      // }
+      this.$router.push({ path: '/pages/coupon-list/main', query: alertAd })
     },
     // 广告跳转
     goBanner (item) {
@@ -143,6 +153,9 @@ export default {
       }
       if (item.type === '3') {
         this.$router.push({ path: '/pages/activity-detail/main', query: {id: item.url} })
+      }
+      if (item.type === '4') {
+        this.goCouponList()
       }
       POINTCity({
         cityId: this.address,
