@@ -54,7 +54,7 @@
             </div>
             <div class="is-suc" v-if="getCoupons.status === 1">
               <div class="is-suc-title">领取成功</div>
-              <div>使用时【我的】-【我的礼券】中找到并点开该礼券即可</div>
+              <div>使用时在【我的】页面-【我的礼券】中找到并点击该礼券，向工作人员出示即可</div>
             </div>
           </div>
         </div>
