@@ -72,7 +72,7 @@
         </div>
         <div class="estate_panl">
           <scroll-view class="scroll-view_H" scroll-x="true" style="white-space: nowrap; display: flex;">
-            <div class="swiper-item scroll_item" @click="goActivityDetail(item.id)" v-for="(item,index) in detail.article" :key="index">
+            <div class="swiper-item scroll_item" @click="goActivityDetail(item)" v-for="(item,index) in detail.article" :key="index">
               <div class="item-main_tag" v-if="item.is_top === '1'">
                 <i></i>
                 <div class="lawyerType-bgImg"></div>
@@ -403,6 +403,7 @@ export default {
       this.house_id = decodeURIComponent(parmas)
     }
   },
+
   async mounted () {
     if (this.$route.query.id) {
       this.house_id = this.$route.query.id
@@ -436,7 +437,10 @@ export default {
       // type =1是外链=2是楼盘=3是资讯=4是优惠券
       switch (alertAd.type) {
         case '1':
-          this.$router.push({ path: '/pages/web-view/main', query: {src: alertAd.url, id: alertAd.id} })
+          const src = alertAd.url ? encodeURIComponent(alertAd.url) : ''
+          const title = alertAd.name
+          const photo = alertAd.photo ? encodeURIComponent(alertAd.photo) : ''
+          this.$router.push({ path: '/pages/web-view/main', query: {src, title, photo, id: alertAd.id} })
           break
         case '2':
           this.$router.push({path: '/pages/home-page/main', query: { id: alertAd.url }})
@@ -569,14 +573,20 @@ export default {
       const cityName = this.detail.city_name
       this.$router.push({path: '/pages/estate-photo/main', query: {id, city_name: cityName, tabName: name, current}})
     },
-    goActivityDetail (id) {
+    goActivityDetail (item) {
       POINTArticleClick({
         cityId: this.detail.city_id,
         houseId: this.detail.id,
-        articleId: id,
+        articleId: item.id,
         type: 4
       })
-      this.$router.push({ path: '/pages/activity-detail/main', query: { id } })
+      if (item.url) {
+        const src = encodeURIComponent(item.url)
+        const photo = item.photo ? encodeURIComponent(item.photo) : ''
+        this.$router.push({ path: '/pages/web-view/main', query: {src, title: item.title, photo, id: item.id} })
+      } else {
+        this.$router.push({ path: '/pages/activity-detail/main', query: { id: item.id } })
+      }
     },
     goWatchList (id) {
       this.$router.push({ path: '/pages/watch-list/main', query: { id } })

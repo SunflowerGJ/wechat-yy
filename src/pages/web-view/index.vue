@@ -21,6 +21,7 @@ export default {
     }
   },
   mounted () {
+    console.log(decodeURIComponent(this.$route.query.photo))
     this.src = this.$route.query.src ? decodeURIComponent(this.$route.query.src) : ''
     wx.setNavigationBarTitle({
       title: this.$route.query.title || ''

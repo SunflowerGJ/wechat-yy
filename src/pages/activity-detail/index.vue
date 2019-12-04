@@ -69,7 +69,6 @@ export default {
       // 获取二维码的携带的链接信息
       this.article_id = decodeURIComponent(parmas)
     }
-    console.log(this.article_id)
   },
   async mounted () {
     this.onReset()
