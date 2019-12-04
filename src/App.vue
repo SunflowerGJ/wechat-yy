@@ -3,11 +3,7 @@
 export default {
   onLaunch (options) {
     console.log('onLaunch')
-  },
-  onShow () {
-    console.log('onshowapp')
   }
-
 }
 </script>
 

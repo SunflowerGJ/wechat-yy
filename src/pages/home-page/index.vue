@@ -352,6 +352,7 @@
 import { postHousesDetail, POINTAlbums, POINTHouseClick, POINTHouseType, POINTArticleClick } from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
 import tips from '../../components/tips'
+import {setCache, getCache} from '../../utils/cache.js'
 var QQMapWX = require('qqmap-wx-jssdk')
 export default {
   /**
@@ -427,8 +428,23 @@ export default {
       'create_time': '0',
       'update_time': '0'
     })
-    this.showNoticeModal = this.detail.alert_ad.status === '1'
+    let alertAdCache = getCache(`alert_ad${this.house_id}`)
+    let hasAlertAd = this.detail.alert_ad && this.detail.alert_ad.status === '1'
+    if (hasAlertAd) {
+      if (this.detail.alert_ad.photo === alertAdCache) {
+        this.showNoticeModal = false
+      } else {
+        setCache(`alert_ad${this.house_id}`, this.detail.alert_ad.photo, 300)
+        this.showNoticeModal = true
+      }
+    } else {
+      this.showNoticeModal = false
+    }
     this.handleSearch()
+  },
+  onReady: function () {
+    // 页面首次渲染完毕时执行
+    console.log('ready==============')
   },
   methods: {
     // 优惠券弹窗跳转
