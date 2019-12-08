@@ -197,7 +197,6 @@ export default {
     }
   },
   async onShow () {
-    console.log('indexShow')
     const adr = this.$route.query.addr
     const obj = this.$route.query.params
     if (obj) {
@@ -219,7 +218,6 @@ export default {
     }
   },
   async mounted () { // 地址筛选待调整
-    console.log('indexOnload')
     const adr = this.$route.query.addr
     if (!adr) {
       const city = await _getUserAddress()

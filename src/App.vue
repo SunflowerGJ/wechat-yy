@@ -1,9 +1,7 @@
 <script>
 
 export default {
-  onLaunch (options) {
-    console.log('onLaunch')
-  }
+
 }
 </script>
 

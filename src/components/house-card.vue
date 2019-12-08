@@ -2,6 +2,10 @@
   <div class="main_item" @click="goHomePage(hData)">
     <div class="item-header">
       <h3>{{hData.name}}</h3>
+      <div class="price_extime" v-if="hData.price_extime">有效期至：{{hData.price_extime}}</div>
+    </div>
+    <div class="item-addr">
+      <div class="item-addr-main">地址：{{hData.address}}</div>
       <span class="price-wrap" v-if="hData.dis_price=== '2'&& hData.price!=='0'&& hData.price" >
         <i class="price">{{hData.price}}</i>万/套
       </span>
@@ -11,9 +15,6 @@
       <span class="price-wrap no-price" v-if="hData.price==='0'|| !hData.price">
         暂空
       </span>
-    </div>
-    <div class="item-addr">
-      地址：{{hData.address}}
     </div>
     <div class="item-main">
       <div class='item-main_tag'>
@@ -74,15 +75,38 @@ export default {
         display flex
         align-items center
         justify-content center
+                
       .price
         color #E60113 
         font-weight 500
+      .price_extime 
+        font-family: PingFangSC-Regular;
+        font-size: 10px;
+        color: #9fa0a0;
     .item-addr
       font-family: PingFangSC-Regular
       font-size: 12px
       line-height 16px
-      color: #9FA0A0 
-      no-wrap()
+      color: #9FA0A0
+      display flex
+      justify-content space-between
+      align-items center
+      .item-addr-main
+        width 210px
+        no-wrap()
+      .no-price
+        color: #3f3b3a;
+        font-size: 16px ;
+      .price-wrap
+        display flex
+        align-items center
+        justify-content center
+        color: #3f3b3a;
+        font-size: 16px 
+      .price
+        color #E60113 
+        font-weight 500
+        font-size: 16px 
     .item-main
       margin 3px 0
       width 335px

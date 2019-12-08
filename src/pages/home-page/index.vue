@@ -1,7 +1,7 @@
 <template>
   <div class="container" v-if="detail">
     <div class="panl_swiper">
-      <img :src="detail.photo"  @click="handleGoPhoto('样板间')"/>
+      <img :src="detail.photo"  @click="onBanner"/>
     </div>
     <div class="sroll_container" id="sroll_container">
       <div class="delta_panl">
@@ -137,6 +137,10 @@
           <span>楼盘详情</span>
         </div>
         <ul class="floor_details">
+          <li v-if="detail.presale_code">
+            <label>预售证：</label>
+            <span>{{detail.presale_code}}</span>
+          </li>
           <li v-if="detail.office_address">
             <label>售楼地址：</label>
             <span>{{detail.office_address}}</span>
@@ -152,6 +156,10 @@
           <li v-if="detail.total_price">
             <label>参考总价：</label>
             <span>{{detail.total_price}}万/套起</span>
+          </li>
+          <li v-if="detail.price_extime">
+            <label>价格有效期：</label>
+            <span>{{detail.price_extime}}</span>
           </li>
           <li v-if="detail.property_type">
             <label>物业类型：</label>
@@ -447,6 +455,19 @@ export default {
     console.log('ready==============')
   },
   methods: {
+    onBanner () {
+      console.log(this.detail.type)
+      // 楼盘详情加了 type 和url字段  type 1链接 4优惠券 5相册  , 跳优惠券和相册的时候 url是空的 用楼盘id
+      if (this.detail.type === '4') {
+        this.goCouponList()
+      }
+      if (this.detail.type === '5') {
+        this.handleGoPhoto('样板间')
+      }
+      if (this.detail.type === '1') {
+        this.$router.push({ path: '/pages/web-view/main', query: {src: this.detail.url} })
+      }
+    },
     // 优惠券弹窗跳转
     jumpByNoticeModal () {
       let alertAd = this.detail.alert_ad
