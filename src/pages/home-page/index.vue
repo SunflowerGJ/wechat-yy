@@ -465,7 +465,7 @@ export default {
         this.handleGoPhoto('样板间')
       }
       if (this.detail.type === '1') {
-        this.$router.push({ path: '/pages/web-view/main', query: {src: this.detail.url} })
+        this.$router.push({ path: '/pages/web-view/main', query: {src: this.detail.url, title: this.detail.url_title, photo: this.detail.url_photo} })
       }
     },
     // 优惠券弹窗跳转
