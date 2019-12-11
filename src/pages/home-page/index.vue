@@ -360,7 +360,7 @@
 import { postHousesDetail, POINTAlbums, POINTHouseClick, POINTHouseType, POINTArticleClick } from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
 import tips from '../../components/tips'
-import {setCache, getCache} from '../../utils/cache.js'
+
 var QQMapWX = require('qqmap-wx-jssdk')
 export default {
   /**
@@ -436,13 +436,12 @@ export default {
       'create_time': '0',
       'update_time': '0'
     })
-    let alertAdCache = getCache(`alert_ad${this.house_id}`)
+    let alertAdCache = wx.getStorageSync(`alert_ad${this.house_id}`)
     let hasAlertAd = this.detail.alert_ad && this.detail.alert_ad.status === '1'
     if (hasAlertAd) {
       if (this.detail.alert_ad.photo === alertAdCache) {
         this.showNoticeModal = false
       } else {
-        setCache(`alert_ad${this.house_id}`, this.detail.alert_ad.photo, 300)
         this.showNoticeModal = true
       }
     } else {
@@ -450,13 +449,8 @@ export default {
     }
     this.handleSearch()
   },
-  onReady: function () {
-    // 页面首次渲染完毕时执行
-    console.log('ready==============')
-  },
   methods: {
     onBanner () {
-      console.log(this.detail.type)
       // 楼盘详情加了 type 和url字段  type 1链接 4优惠券 5相册  , 跳优惠券和相册的时候 url是空的 用楼盘id
       if (this.detail.type === '4') {
         this.goCouponList()
@@ -471,6 +465,7 @@ export default {
     // 优惠券弹窗跳转
     jumpByNoticeModal () {
       let alertAd = this.detail.alert_ad
+      wx.setStorageSync(`alert_ad${this.house_id}`, alertAd.photo)
       // type =1是外链=2是楼盘=3是资讯=4是优惠券
       switch (alertAd.type) {
         case '1':
@@ -501,7 +496,6 @@ export default {
         house_name: this.detail.name,
         house_photo: this.detail.photo
       }
-      console.log(query)
       this.$router.push({ path: '/pages/coupon-list/main', query: query })
     },
     handleGoAddress () {

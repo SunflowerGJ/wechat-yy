@@ -106,13 +106,24 @@ export default {
     fetchCityAlertAd (city) {
       getCityAlertAd({city}).then(res => {
         this.alertAd = res
-        this.showNoticeModal = res.status === '1'
+        let alertAdCache = wx.getStorageSync(`alert_ad${this.cityInfo.id}`)
+        let hasAlertAd = res && res.status === '1'
+        if (hasAlertAd) {
+          if (res.photo === alertAdCache) {
+            this.showNoticeModal = false
+          } else {
+            this.showNoticeModal = true
+          }
+        } else {
+          this.showNoticeModal = false
+        }
       })
     },
     // 优惠券弹窗跳转
     jumpByNoticeModal () {
       let alertAd = this.alertAd
       // type =1是外链=2是楼盘=3是资讯=4是优惠券
+      wx.setStorageSync(`alert_ad${this.cityInfo.id}`, alertAd.photo)
       switch (alertAd.type) {
         case '1':
           const src = alertAd.url ? encodeURIComponent(alertAd.url) : ''
@@ -193,6 +204,7 @@ export default {
           }
         })
         this.houseClick.cityId = data.cityInfo.shortname
+        this.fetchCityAlertAd(params.city)
       } catch (err) {}
     }
   },
@@ -223,11 +235,9 @@ export default {
       const city = await _getUserAddress()
       this.address = city
       this.globalData.address = city
-      this.fetchCityAlertAd(city)
     } else {
       this.address = adr
       this.globalData.address = adr
-      this.fetchCityAlertAd(adr)
     }
 
     POINTCity({
