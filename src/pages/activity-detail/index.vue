@@ -192,8 +192,8 @@ export default {
       })
       // 绘制二维码
       yOffset += 20 + 120
-      canvasCtx.drawImage(qrCodePath, 20, yOffset, 64, 64)
-      yOffset += 12
+      canvasCtx.drawImage(qrCodePath, 20, yOffset, 82, 82)
+      yOffset += 26
       // 绘制项目介绍
       this.drawTxt({
         fillStyle: '#818181',
@@ -201,7 +201,7 @@ export default {
         context: canvasCtx,
         scale: 1,
         text: desc,
-        x: 100,
+        x: 116,
         y: yOffset,
         maxWidth: 120
       })
