@@ -250,9 +250,11 @@ export default {
     async fetchCollection (options) {
       const data = await postSearchCollection(options)
       if (options.type === 1) {
+        console.log(data)
         if (+options.page === 1) {
-        } else {
           this.houseList = data.list
+        } else {
+          this.houseList = [...this.houseList, ...data.list]
         }
         this.house.next_page = data.next_page
       } else {
