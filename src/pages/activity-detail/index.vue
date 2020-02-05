@@ -96,9 +96,9 @@ export default {
   methods: {
     typeMap (cateId) {
       if (Number(cateId) === 1) { return 4 }
-      if (Number(cateId) === 1) { return 1 }
-      if (Number(cateId) === 1) { return 2 }
-      if (Number(cateId) === 1) { return 3 }
+      if (Number(cateId) === 2) { return 1 }
+      if (Number(cateId) === 3) { return 2 }
+      if (Number(cateId) === 4) { return 3 }
     },
     onReset () {
       this.detail = null
