@@ -191,9 +191,15 @@ export default {
     goHousesSearch () {
       this.$router.push({path: '/pages/houses-search/main'})
     },
-    async  fetchIndexData (params) {
+    async  fetchIndexData (params, isFirst = false) {
       try {
         const data = await postIndex(params)
+        // if(data.houses.length)
+        if (isFirst && data.houses.length === 0) {
+          this.address = '北京'
+          this.globalData.address = '北京'
+          this.fetchIndexData({city: '北京'})
+        }
         this.bannerList = data.ads
         this.cityInfo = data.cityInfo
         this.houses = data.houses.map(item => {
@@ -222,7 +228,7 @@ export default {
       const city = await _getUserAddress()
       this.address = city
       this.globalData.address = city
-      this.fetchIndexData({city: this.address})
+      this.fetchIndexData({city: this.address}, true)
     } else {
       this.address = adr
       this.globalData.address = adr

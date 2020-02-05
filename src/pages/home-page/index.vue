@@ -151,7 +151,7 @@
           </li>
           <li v-if="detail.average_price">
             <label>参考均价：</label>
-            <span>{{detail.average_price}}/m²</span>
+            <span>{{detail.average_price}}元/m²</span>
           </li>
           <li v-if="detail.total_price">
             <label>参考总价：</label>
@@ -357,10 +357,10 @@
   </div>
 </template>
 <script>
-import { postHousesDetail, POINTAlbums, POINTHouseClick, POINTHouseType, POINTArticleClick } from '../../http/api.js'
+import { postHousesDetail, POINTAlbums, POINTHouseClick } from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
 import tips from '../../components/tips'
-
+import { reLogin } from '../../http/request.js'
 var QQMapWX = require('qqmap-wx-jssdk')
 export default {
   /**
@@ -448,6 +448,17 @@ export default {
       this.showNoticeModal = false
     }
     this.handleSearch()
+    POINTHouseClick({
+      cityId: this.detail.city_id,
+      houseId: this.detail.id,
+      type: 1
+    })
+    wx.checkSession({
+      success () {},
+      fail () {
+        reLogin()
+      }
+    })
   },
   methods: {
     onBanner () {
@@ -574,12 +585,6 @@ export default {
       this.$router.push({path: '/pages/door-list/main', query: {id}})
     },
     goHousesDetail (item) {
-      POINTHouseType({
-        cityId: this.detail.city_id,
-        houseId: item.house_id,
-        housetypeId: item.id,
-        type: 1
-      })
       this.$router.push({path: '/pages/door-details/main', query: {id: item.id}})
     },
     goAroundMap (detail) {
@@ -605,12 +610,12 @@ export default {
       this.$router.push({path: '/pages/estate-photo/main', query: {id, city_name: cityName, tabName: name, current}})
     },
     goActivityDetail (item) {
-      POINTArticleClick({
-        cityId: this.detail.city_id,
-        houseId: this.detail.id,
-        articleId: item.id,
-        type: 4
-      })
+      // POINTArticleClick({
+      //   cityId: this.detail.city_id,
+      //   houseId: this.detail.id,
+      //   articleId: item.id,
+      //   type: 4
+      // })
       if (item.url) {
         const src = encodeURIComponent(item.url)
         const photo = item.photo ? encodeURIComponent(item.photo) : ''

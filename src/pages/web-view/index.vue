@@ -5,7 +5,7 @@
 </template>
 
 <script>
-
+import {postArticleDetail, POINTArticleClick} from '../../http/api.js'
 export default {
   // 右上角分享功能
   onShareAppMessage: function (res) {
@@ -20,12 +20,20 @@ export default {
       src: ''
     }
   },
-  mounted () {
-    console.log(decodeURIComponent(this.$route.query.photo))
+  async mounted () {
     this.src = this.$route.query.src ? decodeURIComponent(this.$route.query.src) : ''
     wx.setNavigationBarTitle({
       title: this.$route.query.title || ''
     })
+    if (this.$route.query.id) {
+      const data = await postArticleDetail({ article_id: this.$route.query.id })
+      POINTArticleClick({
+        cityId: data.city_id,
+        houseId: data.house_id,
+        articleId: data.id,
+        type: data.cate_id
+      })
+    }
   }
 }
 </script>

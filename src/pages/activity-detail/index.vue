@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import {postArticleDetail, getArticleShareData, postEWM} from '../../http/api.js'
+import {postArticleDetail, getArticleShareData, postEWM, POINTArticleClick} from '../../http/api.js'
 import base64src from '../../lib/base64src.js'
 import tips from '../../components/tips'
 export default {
@@ -75,10 +75,15 @@ export default {
     if (this.$route.query.id) {
       this.article_id = this.$route.query.id
     }
-    console.log(this.article_id)
     const data = await postArticleDetail({ article_id: this.article_id })
     this.detail = data
     this.detail.content = this.detail.content.replace(/<img/gi, '<img style="max-width:100%;height:auto;display:block;margin:4px auto;" ')
+    POINTArticleClick({
+      cityId: data.city_id,
+      houseId: data.house_id,
+      articleId: data.id,
+      type: data.cate_id
+    })
     wx.setNavigationBarTitle({
       title: data.title
     })

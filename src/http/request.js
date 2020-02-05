@@ -15,7 +15,7 @@ fly.config = {
 }
 loginFly.config = fly.config
 
-const reLogin = () => {
+export const reLogin = () => {
   return new Promise((resolve, reject) => {
     wx.login({
       success: res => {

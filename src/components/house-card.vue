@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import {POINTHouseClick} from '../http/api.js'
+// import {POINTHouseClick} from '../http/api.js'
 export default {
   props: ['hData', 'houseClick'],
 
@@ -41,12 +41,12 @@ export default {
         path: '/pages/home-page/main',
         query: {id: data.id}
       })
-      if (!this.houseClick) return
-      POINTHouseClick({
-        cityId: this.globalData.address,
-        houseId: data.id,
-        type: this.houseClick.type
-      })
+      // if (!this.houseClick) return
+      // POINTHouseClick({
+      //   cityId: this.globalData.address,
+      //   houseId: data.id,
+      //   type: this.houseClick.type
+      // })
     }
   }
 }
