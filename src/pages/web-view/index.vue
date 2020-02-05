@@ -20,6 +20,14 @@ export default {
       src: ''
     }
   },
+  methods: {
+    typeMap (cateId) {
+      if (Number(cateId) === 1) { return 4 }
+      if (Number(cateId) === 1) { return 1 }
+      if (Number(cateId) === 1) { return 2 }
+      if (Number(cateId) === 1) { return 3 }
+    }
+  },
   async mounted () {
     this.src = this.$route.query.src ? decodeURIComponent(this.$route.query.src) : ''
     wx.setNavigationBarTitle({
@@ -27,11 +35,12 @@ export default {
     })
     if (this.$route.query.id) {
       const data = await postArticleDetail({ article_id: this.$route.query.id })
+      let type = this.typeMap(data.cate_id)
       POINTArticleClick({
         cityId: data.city_id,
         houseId: data.house_id,
         articleId: data.id,
-        type: data.cate_id
+        type: type
       })
     }
   }

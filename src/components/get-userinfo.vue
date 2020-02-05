@@ -18,8 +18,7 @@
 
 <script>
 import {
-  postUserInfoSave,
-  postMobileSave
+  postUserInfoSave
 } from '../http/api.js'
 export default {
 
@@ -47,7 +46,7 @@ export default {
         success: async (res) => {
         // 可以将 res 发送给后台解码出 unionId
           _that.hidden = false
-          const { encryptedData, iv, userInfo } = res
+          const { userInfo } = res
           const userinfo = {
             nickname: userInfo.nickName,
             headimgurl: userInfo.avatarUrl,
@@ -56,7 +55,6 @@ export default {
             province: userInfo.province,
             city: userInfo.city
           }
-          postMobileSave({ encryptedData, iv })
           postUserInfoSave({...userinfo}).then(res => {
             wx.setStorageSync('userinfo', userinfo)
             this.globalData.userinfo = userinfo

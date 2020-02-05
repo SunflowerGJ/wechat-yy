@@ -354,12 +354,14 @@
           </div>
         </div>
       </van-popup>
+      <getUserinfo></getUserinfo>
   </div>
 </template>
 <script>
 import { postHousesDetail, POINTAlbums, POINTHouseClick } from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
 import tips from '../../components/tips'
+import getUserinfo from '../../components/get-userinfo'
 import { reLogin } from '../../http/request.js'
 var QQMapWX = require('qqmap-wx-jssdk')
 export default {
@@ -374,7 +376,8 @@ export default {
   },
   components: {
     houseFooter,
-    tips
+    tips,
+    getUserinfo
   },
   data () {
     return {

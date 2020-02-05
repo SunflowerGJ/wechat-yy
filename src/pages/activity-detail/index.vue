@@ -78,11 +78,12 @@ export default {
     const data = await postArticleDetail({ article_id: this.article_id })
     this.detail = data
     this.detail.content = this.detail.content.replace(/<img/gi, '<img style="max-width:100%;height:auto;display:block;margin:4px auto;" ')
+    let type = this.typeMap(data.cate_id)
     POINTArticleClick({
       cityId: data.city_id,
       houseId: data.house_id,
       articleId: data.id,
-      type: data.cate_id
+      type: type
     })
     wx.setNavigationBarTitle({
       title: data.title
@@ -93,6 +94,12 @@ export default {
     this.saveInfo = res
   },
   methods: {
+    typeMap (cateId) {
+      if (Number(cateId) === 1) { return 4 }
+      if (Number(cateId) === 1) { return 1 }
+      if (Number(cateId) === 1) { return 2 }
+      if (Number(cateId) === 1) { return 3 }
+    },
     onReset () {
       this.detail = null
       this.saveInfo = null
