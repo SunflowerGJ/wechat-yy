@@ -354,7 +354,7 @@
           </div>
         </div>
       </van-popup>
-      <getUserinfo></getUserinfo>
+      <getUserinfo v-if="showGetUserInfoModel"></getUserinfo>
   </div>
 </template>
 <script>
@@ -381,6 +381,7 @@ export default {
   },
   data () {
     return {
+      showGetUserInfoModel: false,
       showNoticeModal: false,
       house_id: '',
       show: false,
@@ -423,9 +424,8 @@ export default {
     const data = await postHousesDetail({
       house_id: this.house_id
     })
-    wx.setNavigationBarTitle({
-      title: data.name
-    })
+    wx.setNavigationBarTitle({title: data.name})
+    this.showGetUserInfoModel = true
     this.detail = data
     this.detail.albums = Object.keys(data.albums).map(key => data.albums[key])
     this.detail.strong_point = JSON.parse(data.strong_point)

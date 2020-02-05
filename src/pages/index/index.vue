@@ -191,11 +191,11 @@ export default {
     goHousesSearch () {
       this.$router.push({path: '/pages/houses-search/main'})
     },
-    async  fetchIndexData (params, isFirst = false) {
+    async  fetchIndexData (params) {
       try {
         const data = await postIndex(params)
         // if(data.houses.length)
-        if (isFirst && data.houses.length === 0) {
+        if (data.houses.length === 0) {
           this.address = '北京'
           this.globalData.address = '北京'
           this.fetchIndexData({city: '北京'})
@@ -224,33 +224,39 @@ export default {
       this.fetchIndexData(params)
       return
     }
+
     if (!adr) {
       const city = await _getUserAddress()
       this.address = city
       this.globalData.address = city
-      this.fetchIndexData({city: this.address}, true)
+      this.fetchIndexData({city: this.address})
     } else {
       this.address = adr
       this.globalData.address = adr
       this.fetchIndexData({city: this.address})
     }
-  },
-  async mounted () { // 地址筛选待调整
-    const adr = this.$route.query.addr
-    if (!adr) {
-      const city = await _getUserAddress()
-      this.address = city
-      this.globalData.address = city
-    } else {
-      this.address = adr
-      this.globalData.address = adr
-    }
-
     POINTCity({
       cityId: this.address,
       type: 'index'
     })
   }
+  // async mounted () { // 地址筛选待调整
+  //   const adr = this.$route.query.addr
+  //   if (!adr) {
+  //     const city = await _getUserAddress()
+  //     this.address = city
+  //     this.globalData.address = city
+  //   } else {
+  //     this.address = adr
+  //     this.globalData.address = adr
+  //   }
+  //   console.log(this.address)
+  //   console.log(adr)
+  //   POINTCity({
+  //     cityId: this.address,
+  //     type: 'index'
+  //   })
+  // }
 }
 </script>
 <style style lang="stylus" rel="stylesheet/stylus">
