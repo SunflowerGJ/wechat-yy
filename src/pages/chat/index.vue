@@ -25,21 +25,20 @@
   <!--底部输入框  -->
     <div class='chatinput-wrapper' >
       <div class='chatinput-content'>
-        <input style='margin-bottom: 20rpx;' v-if="sendType == 0" :value='inputValue' :focus='focusFlag' @input='inputChange' @focus='inputFocus' @blur='inputBlur' @confirm='inputSend' class='chatinput-input'  placeholder="输入文字" confirm-type='send'></input>
+        <input style='margin-bottom: 20rpx;' v-if="sendType == 0" :value='inputValue' :focus='focusFlag' @input='inputChange' @focus='inputFocus' @blur='inputBlur' @confirm='inputSend' class='chatinput-input'  placeholder="输入文字" confirm-type='send'/>
         <img src='/static/images/icon-input-more.png' @click='toggleMore' class='chatinput-img fr'/>
       </div>
+      {{moreFlag}}
       <div v-if="moreFlag" class='more-subcontent'>
-        <div style='display:flex;justify-content: space-between;'>
+        <div style='display:flex;'>
           <div class='more-subcontent-item' @click.stop='chooseImageToSend'>
-            <img src="" class='image'/>
-            <text class='text'>相册</text>
+            <img src="/static/images/icon-zhaox.png" class='image'/>
+            <text class='text'>照片</text>
           </div>
           <div class='more-subcontent-item' @click.stop='chooseImageOrVideo'>
-            <img src="" class='image'/>
+            <img src="/static/images/icon-ph.png" class='image'/>
             <text class='text'>拍摄</text>
           </div>
-          <div class='more-subcontent-item'><div class='image' style='background-color: transparent;'></div><text class='text'></text></div>
-          <div class='more-subcontent-item'><div class='image' style='background-color: transparent;'></div><text class='text'></text></div>
         </div>
       </div>
     </div>
@@ -104,6 +103,13 @@ export default {
     })
   },
   methods: {
+    /**
+   * 切出更多
+   */
+    toggleMore () {
+      this.moreFlag = true
+      console.log(this.moreFlag)
+    },
     /**
    * 原始消息列表转化为适用于渲染的消息列表
    * {unixtime1: {flow,from,fromNick,idServer,scene,sessionId,text,target,to,time...}, unixtime2: {}}
@@ -323,9 +329,9 @@ export default {
     chooseImageToSend (e) {
       // let type = e.currentTarget.dataset.type
       let self = this
-      self.setData({
-        moreFlag: false
-      })
+      // self.setData({
+      //   moreFlag: false
+      // })
       wx.chooseImage({
         sourceType: ['album'],
         success: function (res) {
@@ -338,9 +344,9 @@ export default {
    */
     chooseImageOrVideo () {
       let self = this
-      self.setData({
-        moreFlag: false
-      })
+      // self.setData({
+      //   moreFlag: false
+      // })
       wx.showActionSheet({
         itemList: ['照相', '视频'],
         success: function (res) {
@@ -377,20 +383,14 @@ export default {
         duration: 100
       })
     },
-    /**
-   * 切出更多
-   */
-    toggleMore () {
-      this.moreFlag = true
-      console.log(this.moreFlag)
-    },
+
     /**
    * 收起键盘
    */
     foldInputArea () {
       this.focusFlag = false
-      this.moreFlag = false
-      this.tipFlag = false
+      // this.moreFlag = false
+      // this.tipFlag = false
     },
     /**
    * 阻止事件冒泡空函数
@@ -493,7 +493,7 @@ export default {
     },
     onSyncDone () {
       console.log('同步完成')
-      this.inputSend('23434')
+      // this.inputSend('23434')
     }
   }
 }
@@ -543,20 +543,24 @@ export default {
 .chatinput-wrapper {
   width: 100%;
   background-color: #fff;
-  border: 2rpx solid #ccc;
+  // border: 2rpx solid #ccc;
   position: fixed;
   bottom: 0;
   left: 0;
+  
+
 }
 .chatinput-content {
   width: 100%;
-  height: 100rpx;
+  height:83px;
+  box-sizing:border-box;
+  padding:0 0 0 20rpx
 }
 .chatinput-img{
   width: 60rpx;
   height: 60rpx;
   border-radius: 100%;
-  margin: 20rpx 20rpx;
+  margin: 15px 20px 0 0;
   display: inline-block;
 }
 .chatinput-img.emoji{
@@ -566,16 +570,21 @@ export default {
   opacity: .6;
 }
  .chatinput-input {
-  width: 466rpx;
+
   min-height: 72rpx;
   border-radius: 12rpx;
   border: 1px solid #ccc;
-  margin-top: 15rpx;
+  margin-top: 15px;
   display: inline-block;
   vertical-align:top;
   box-sizing:border-box;
   padding-left: 20rpx;
   font-size: 30rpx;
+  width:298px;
+  height:38px;
+  background:rgba(250,250,251,1);
+  border-radius:19px;
+  border:1px solid rgba(232,232,232,1);
 }
 .chatinput-voice-mask {
   width: 466rpx;
@@ -610,23 +619,26 @@ export default {
 /* more-subcontent */
 .more-subcontent {
   padding: 40rpx 30rpx;
-  border:2rpx solid #ccc;
+  // border:2rpx solid #ccc;
 }
 .more-subcontent .more-subcontent-item {
   display:flex;
+  justify-content flex-start;
   flex-direction:column;
-  margin-bottom: 30rpx;
 }
 .more-subcontent .more-subcontent-item .image {
-  width:112rpx;
-  height:112rpx;
-  border-radius:50%;
-  margin-bottom: 12rpx;
+  width:28px;
+  height:23px;
+  margin-bottom: 9px;
+  margin-right 40px;
 }
 .more-subcontent .more-subcontent-item .text {
-  font-size: 24rpx;
-  text-align:center;
-  color: #6C7074;
+  font-size:14px;
+  font-family:PingFangSC-Regular,PingFang SC;
+  font-weight:400;
+  color:rgba(69,69,69,1);
+  line-height:20px;
+  
 }
 /*聊天记录  */
 .record-wrapper {
