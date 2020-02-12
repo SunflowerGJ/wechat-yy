@@ -156,9 +156,9 @@
 					"scene": null
 				},
 				{
-					"id": -1,
-					"name": "pages/chating/main",
-					"pathName": "pages/chating/main",
+					"id": 16,
+					"name": "pages/chat/main",
+					"pathName": "pages/chat/main",
 					"query": "",
 					"scene": null
 				}

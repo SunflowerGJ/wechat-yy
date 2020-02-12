@@ -20,7 +20,7 @@
     "pages/around-map/main",
     "pages/go-address/main",
     "pages/coupon-list/main",
-    "pages/chating/main"
+    "pages/chat/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

@@ -3,55 +3,48 @@
 
       <!-- 消息记录 -->
    <div class='record-wrapper' id="recordWrapper">
-    <div v-for="(message,index) in messageArr" :key="message.time">
+    <div v-for="message in messageArr" :key="message.time">
       <div class='record-item-time-wrapper' v-if="message.displayTimeHeader != ''">
         <text class='record-item-time'>{{message.displayTimeHeader}}</text>
       </div>
-      <!-- <div v-if="message.sendOrReceive == 'send'" :class='message.sendOrReceive == "send" ? "record-chatting-item self" : ""' style='justify-content: {{message.type === "tip" || message.type === "notification" ? "center" : "flex-end"}}' data-message="{{message}}" bindlongpress='showEditorMenu'>
+      <div v-if="message.sendOrReceive == 'send'" :class='message.sendOrReceive == "send" ? "record-chatting-item self" : ""' style='justify-content: flex-end' :data-message="message" @longpress='showEditorMenu'>
         <rich-text v-if="message.type === 'image'" class='record-chatting-item-text nobg' :nodes="message.nodes" ></rich-text>
         <rich-text v-if="message.type === '猜拳' || message.type === '贴图表情'" class='record-chatting-item-text nobg' :nodes="message.nodes" ></rich-text>
         <rich-text v-if="message.type === 'text' || message.type === 'file' || message.type === '白板消息' || message.type === '阅后即焚' || message.type === 'robot'" class='record-chatting-item-text' :nodes="message.nodes"></rich-text>        
         <rich-text v-if="message.type === 'tip' || message.type === 'notification'" class='tip-rich-text' :nodes="message.nodes"></rich-text>
         <text v-if="message.type !== 'tip' && message.type !== 'notification' && message.type !== 'image' && message.type !== 'video' && message.type !== 'geo' && message.type !== '猜拳' && message.type !== '贴图表情' " class='right-triangle'></text>
-        <image v-if="message.type !== 'tip' && message.type !== 'notification'" :src='loginAccountLogo' @click='switchToMyTab' class='record-chatting-item-img'></image>
+        <img v-if="message.type !== 'tip' && message.type !== 'notification'" :src='loginAccountLogo' @click='switchToMyTab' class='record-chatting-item-img'/>
       </div>
-      <div v-if="message.sendOrReceive == 'receive'" :class='message.sendOrReceive == "receive" ? "record-chatting-item other" : ""' style='justify-content: {{message.type === "tip" || message.type === "notification" ? "center" : "flex-start"}}' data-message="{{message}}"  bindlongpress='showEditorMenu'>
-        <image v-if="message.type !== 'tip' && message.type !== 'notification'" catchtap='switchPersonCard' data-account='{{message.from}}' src='{{personList[message.from] && personList[message.from].avatar || defaultUserLogo}}' class='record-chatting-item-img'></image>
+      <div v-if="message.sendOrReceive == 'receive'" :class='message.sendOrReceive == "receive" ? "record-chatting-item other" : ""' style='justify-content: flex-start' :data-message="message"  @longpress='showEditorMenu'>
         <text v-if="message.type !== 'tip' && message.type !== 'notification' && message.type !== 'image' && message.type !== 'video' && message.type !== 'geo' && message.type !== '猜拳' && message.type !== '贴图表情' " class='left-triangle'></text>
         <rich-text v-if="message.type === 'image'" class='record-chatting-item-text nobg' :nodes="message.nodes"></rich-text>
         <rich-text v-if="message.type === '猜拳' || message.type === '贴图表情'" class='record-chatting-item-text nobg' :nodes="message.nodes"></rich-text>
         <rich-text v-if="message.type === 'text' || message.type === 'file' || message.type === '白板消息' || message.type === '阅后即焚' || message.type === 'robot'|| message.type === 'custom'" class='record-chatting-item-text' style='color:#000;background-color:#fff;'  :nodes="message.nodes"></rich-text>
         <rich-text v-if="message.type === 'tip' || message.type === 'notification'" class='tip-rich-text' :nodes="message.nodes"></rich-text>
-      </div> -->
+      </div>
     </div>
    </div>
   <!--底部输入框  -->
-  <div v-if="chatType === 'p2p' || !currentGroup.isCurrentNotIn" class='chatinput-wrapper' :style="{'margin-bottom': focusFlag ? 20 : 0+'rpx'}" @click='stopEventPropagation'>
-    <div class='chatinput-content'>
-      <!-- <image src='{{sendType == 0 ? "../../images/voice.png" : "../../images/keyboard.png"}}' class='chatinput-img' catchtap='switchSendType'></image> -->
-      <input style='margin-bottom: 20rpx;' v-if="sendType == 0" :value='inputValue' :focus='focusFlag' @input='inputChange' @focus='inputFocus' @blur='inputBlur' @confirm='inputSend' class='chatinput-input'  placeholder="输入文字" confirm-type='send'></input>
-      <!-- <button v-if="{{sendType == 1}}" class="{{ isLongPress ? 'chatinput-voice-mask chatinput-voice-mask-hover' : 'chatinput-voice-mask' }}" hover-class="none" catchtouchstart='longPressStart' catchlongpress='voiceBtnLongTap' catchtouchend='longPressEnd'>按住说话</button> -->
-      <!-- <button v-if="{{sendType == 1}}" class="{{ isLongPress ? 'chatinput-voice-mask chatinput-voice-mask-hover' : 'chatinput-voice-mask' }}" hover-class="none" catchtouchstart='longPressStart' catchtouchend='longPressEnd'>
-        {{isLongPress ? '松开结束' : '按住说话'}}
-      </button> -->
-      <img src='../../images/more.png' @click='toggleMore' class='chatinput-img fr'/>
-      <!-- <image src='../../images/emoji.png' @click='toggleEmoji' class='chatinput-img fr emoji'></image> -->
-    </div>
-    <div v-if="moreFlag" class='more-subcontent'>
-      <div style='display:flex;justify-content: space-between;'>
-        <div class='more-subcontent-item' @click='chooseImageToSend'>
-          <img src="../../images/photo.png" class='image'/>
-          <text class='text'>相册</text>
-        </div>
-        <div class='more-subcontent-item' @click='chooseImageOrVideo'>
-          <img src="../../images/shoot.png" class='image'/>
-          <text class='text'>拍摄</text>
-        </div>
-        <div class='more-subcontent-item'><div class='image' style='background-color: transparent;'></div><text class='text'></text></div>
-        <div class='more-subcontent-item'><div class='image' style='background-color: transparent;'></div><text class='text'></text></div>
+    <!-- <div class='chatinput-wrapper' :style="{'margin-bottom': focusFlag ? 20 : 0+'rpx'}" @click='stopEventPropagation'>
+      <div class='chatinput-content'>
+        <input style='margin-bottom: 20rpx;' v-if="sendType == 0" :value='inputValue' :focus='focusFlag' @input='inputChange' @focus='inputFocus' @blur='inputBlur' @confirm='inputSend' class='chatinput-input'  placeholder="输入文字" confirm-type='send'></input>
+        <img src='../../images/more.png' @click='toggleMore' class='chatinput-img fr'/>
       </div>
-    </div>
-  </div>
+      <div v-if="moreFlag" class='more-subcontent'>
+        <div style='display:flex;justify-content: space-between;'>
+          <div class='more-subcontent-item' @click='chooseImageToSend'>
+            <img src="../../images/photo.png" class='image'/>
+            <text class='text'>相册</text>
+          </div>
+          <div class='more-subcontent-item' @click='chooseImageOrVideo'>
+            <img src="../../images/shoot.png" class='image'/>
+            <text class='text'>拍摄</text>
+          </div>
+          <div class='more-subcontent-item'><div class='image' style='background-color: transparent;'></div><text class='text'></text></div>
+          <div class='more-subcontent-item'><div class='image' style='background-color: transparent;'></div><text class='text'></text></div>
+        </div>
+      </div>
+    </div> -->
   </div>
 </template>
 
@@ -62,7 +55,27 @@ export default {
   data () {
     return {
       nim: null,
-      nimData: {}
+      nimData: {},
+      videoContext: null, // 视频操纵对象
+      isVideoFullScreen: false, // 视频全屏控制标准
+      videoSrc: '', // 视频源
+      recorderManager: null, // 微信录音管理对象
+      recordClicked: false, // 判断手指是否触摸录音按钮
+      iconBase64Map: {}, // 发送栏base64图标集合
+      isLongPress: false, // 录音按钮是否正在长按
+      chatWrapperMaxHeight: 0, // 聊天界面最大高度
+      chatTo: '', // 聊天对象account
+      chatType: '', // 聊天类型 advanced 高级群聊 normal 讨论组群聊 p2p 点对点聊天
+      loginAccountLogo: '', // 登录账户对象头像
+      focusFlag: false, // 控制输入框失去焦点与否
+      emojiFlag: false, // emoji键盘标志位
+      moreFlag: false, // 更多功能标志
+      tipFlag: false, // tip消息标志
+      tipInputValue: '', // tip消息文本框内容
+      sendType: 0, // 发送消息类型，0 文本 1 语音
+      messageArr: [], // [{text, time, sendOrReceive: 'send', displayTimeHeader, nodes: []},{type: 'geo',geo: {lat,lng,title}}]
+      inputValue: '', // 文本框输入内容
+      from: ''
     }
   },
   mounted () {
