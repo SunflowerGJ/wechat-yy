@@ -269,6 +269,27 @@
           </ul>
         </div>
       </div>
+      <div class="chat_panl" id="test">
+        <div class="title_marig">
+          <div class="titles_panl">
+            <span>置业顾问</span>
+          </div>
+        </div>
+        <div class="chat_main">
+          <div class="chat_main_item">
+            <div class="chat_left">
+            <img src="" alt="">
+              <div class="chat_name">name</div>
+            </div>
+            <div class="chat_right">
+              <img src="/static/images/icon-call.png" @click="onCall(13718017323)" alt="">
+              <img src="/static/images/icon-chat.png" @click="goChat" alt="">
+            </div>
+          </div>
+        </div>
+
+
+      </div>
       <div class="match_panl" id="test">
         <div class="title_marig">
           <div class="titles_panl">
@@ -464,6 +485,14 @@ export default {
     })
   },
   methods: {
+    onCall (phoneNumber) {
+      wx.makePhoneCall({
+        phoneNumber: phoneNumber + ''
+      })
+    },
+    goChat () {
+      this.$router.push({ path: '/pages/chating/main', query: {} })
+    },
     onBanner () {
       // 楼盘详情加了 type 和url字段  type 1链接 4优惠券 5相册  , 跳优惠券和相册的时候 url是空的 用楼盘id
       if (this.detail.type === '4') {
@@ -1145,7 +1174,55 @@ export default {
     }
   }
 }
+.chat_panl{
+  background-color: #ffffff;
+  margin-top: 10px;
 
+  .title_marig {
+    padding: 20px;
+  }
+  .chat_main_item {
+    display:flex ;
+    justify-content space-between;
+    width 100%;
+    height 80px;
+    box-sizing:border-box;
+    padding 0 14px 0 30px;
+
+    .chat_left {
+      display:flex ;
+      align-items center;
+      justify-content flex-start;
+      img {
+        display block;
+        height 50px;
+        width 50px;
+        border-radius 50%;
+        margin-right 22px;
+        background #d8d8d8
+      }
+      .chat_name {
+        font-size:14px;
+        font-weight:bold;
+        color:rgba(89,87,87,1);
+      }
+    }
+    .chat_right {
+      display:flex ;
+      align-items center;
+      justify-content center;
+      img {
+        display block;
+        height 28px;
+        width 28px;
+        margin 0 6px;
+        // background #d8d8d8
+      }
+
+    }
+  }
+
+}
 .match_panl {
   background-color: #ffffff;
   margin-top: 10px;
