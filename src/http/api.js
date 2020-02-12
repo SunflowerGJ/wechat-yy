@@ -295,7 +295,7 @@ export const getArticleShareData = (params = {}) => {
 export const initInim = (params = {}) => {
   return fly({
     method: 'post',
-    url: `/api/Yuanhui/init`,
+    url: `/api/Yunxin/init`,
     params: params
   }, false)
 }
