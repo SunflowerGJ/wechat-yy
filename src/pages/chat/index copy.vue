@@ -1,9 +1,9 @@
 <template>
-  <div class='chating-wrapper'>
+  <div class='chating-wrapper' catchtap='chatingWrapperClick'>
 
       <!-- 消息记录 -->
    <div class='record-wrapper' id="recordWrapper">
-    <!-- <div v-for="message in messageArr" :key="message.time">
+    <div v-for="message in messageArr" :key="message.time">
       <div class='record-item-time-wrapper' v-if="message.displayTimeHeader != ''">
         <text class='record-item-time'>{{message.displayTimeHeader}}</text>
       </div>
@@ -20,21 +20,21 @@
         <rich-text v-if="message.type === 'text' || message.type === 'file' || message.type === '白板消息' || message.type === '阅后即焚' || message.type === 'robot'|| message.type === 'custom'" class='record-chatting-item-text' style='color:#000;background-color:#fff;'  :nodes="message.nodes"></rich-text>
         <rich-text v-if="message.type === 'tip' || message.type === 'notification'" class='tip-rich-text' :nodes="message.nodes"></rich-text>
       </div>
-    </div> -->
+    </div>
    </div>
   <!--底部输入框  -->
-    <div class='chatinput-wrapper' >
+    <div class='chatinput-wrapper'  @click='stopEventPropagation'>
       <div class='chatinput-content'>
         <input style='margin-bottom: 20rpx;' v-if="sendType == 0" :value='inputValue' :focus='focusFlag' @input='inputChange' @focus='inputFocus' @blur='inputBlur' @confirm='inputSend' class='chatinput-input'  placeholder="输入文字" confirm-type='send'></input>
-        <img src='/static/images/icon-input-more.png' @click='toggleMore' class='chatinput-img fr'/>
+        <img src='' @click='toggleMore' class='chatinput-img fr'/>
       </div>
       <div v-if="moreFlag" class='more-subcontent'>
         <div style='display:flex;justify-content: space-between;'>
-          <div class='more-subcontent-item' @click.stop='chooseImageToSend'>
+          <div class='more-subcontent-item' @click='chooseImageToSend'>
             <img src="" class='image'/>
             <text class='text'>相册</text>
           </div>
-          <div class='more-subcontent-item' @click.stop='chooseImageOrVideo'>
+          <div class='more-subcontent-item' @click='chooseImageOrVideo'>
             <img src="" class='image'/>
             <text class='text'>拍摄</text>
           </div>
@@ -378,19 +378,15 @@ export default {
       })
     },
     /**
-   * 切出更多
-   */
-    toggleMore () {
-      this.moreFlag = true
-      console.log(this.moreFlag)
-    },
-    /**
    * 收起键盘
    */
     foldInputArea () {
-      this.focusFlag = false
-      this.moreFlag = false
-      this.tipFlag = false
+      this.setData({
+        focusFlag: false,
+        emojiFlag: false,
+        tipFlag: false,
+        moreFlag: false
+      })
     },
     /**
    * 阻止事件冒泡空函数

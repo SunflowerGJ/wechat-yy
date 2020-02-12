@@ -932,26 +932,26 @@ export const dealMsg= (msg, store, app)=> {
     })
   }
 }
-module.exports = {
-  calculateMeetingPosition,
-  formatDate,
-  formatTime,
-  formatNumber,
-  post,
-  firstLetterUpper,
-  checkStringLength,
-  validStringType,
-  sortStringArray,
-  calcTimeHeader,
-  showToast,
-  updateMultiPortStatus,
-  correctData,
-  deepClone,
-  clickLogoJumpToCard,
-  generateRichTextNode,
-  generateFingerGuessImageFile,
-  generateBigEmojiImageFile,
-  generateImageNode,
-  getFormatFriendList,
-  dealMsg
-}
+// module.exports = {
+//   calculateMeetingPosition,
+//   formatDate,
+//   formatTime,
+//   formatNumber,
+//   post,
+//   firstLetterUpper,
+//   checkStringLength,
+//   validStringType,
+//   sortStringArray,
+//   calcTimeHeader,
+//   showToast,
+//   updateMultiPortStatus,
+//   correctData,
+//   deepClone,
+//   clickLogoJumpToCard,
+//   generateRichTextNode,
+//   generateFingerGuessImageFile,
+//   generateBigEmojiImageFile,
+//   generateImageNode,
+//   getFormatFriendList,
+//   dealMsg
+// }
