@@ -3,7 +3,7 @@
 
       <!-- 消息记录 -->
    <div class='record-wrapper' id="recordWrapper">
-    <!-- <div v-for="message in messageArr" :key="message.time">
+    <div v-for="message in [{sendOrReceive:'send',type:'text'}]" :key="message.time">
       <div class='record-item-time-wrapper' v-if="message.displayTimeHeader != ''">
         <text class='record-item-time'>{{message.displayTimeHeader}}</text>
       </div>
@@ -12,7 +12,7 @@
         <rich-text v-if="message.type === 'text' || message.type === 'file' || message.type === '白板消息' || message.type === '阅后即焚' || message.type === 'robot'" class='record-chatting-item-text' :nodes="message.nodes"></rich-text>        
         <rich-text v-if="message.type === 'tip' || message.type === 'notification'" class='tip-rich-text' :nodes="message.nodes"></rich-text>
         <text v-if="message.type !== 'tip' && message.type !== 'notification' && message.type !== 'image' && message.type !== 'video' && message.type !== 'geo' && message.type !== '猜拳' && message.type !== '贴图表情' " class='right-triangle'></text>
-        <img v-if="message.type !== 'tip' && message.type !== 'notification'" :src='loginAccountLogo' @click='switchToMyTab' class='record-chatting-item-img'/>
+        <img :src='loginAccountLogo' @click='switchToMyTab' class='record-chatting-item-img'/>
       </div>
       <div v-if="message.sendOrReceive == 'receive'" :class='message.sendOrReceive == "receive" ? "record-chatting-item other" : ""' style='justify-content: flex-start' :data-message="message"  @longpress='showEditorMenu'>
         <text v-if="message.type !== 'tip' && message.type !== 'notification' && message.type !== 'image' && message.type !== 'video' && message.type !== 'geo' && message.type !== '猜拳' && message.type !== '贴图表情' " class='left-triangle'></text>
@@ -20,7 +20,7 @@
         <rich-text v-if="message.type === 'text' || message.type === 'file' || message.type === '白板消息' || message.type === '阅后即焚' || message.type === 'robot'|| message.type === 'custom'" class='record-chatting-item-text' style='color:#000;background-color:#fff;'  :nodes="message.nodes"></rich-text>
         <rich-text v-if="message.type === 'tip' || message.type === 'notification'" class='tip-rich-text' :nodes="message.nodes"></rich-text>
       </div>
-    </div> -->
+    </div>
    </div>
   <!--底部输入框  -->
     <div class='chatinput-wrapper' >
@@ -46,7 +46,7 @@
 </template>
 
 <script>
-// import {postArticleDetail, POINTArticleClick} from '../../http/api.js'
+import {initInim} from '../../http/api.js'
 import NIM from '../../../static/libs/NIM_Web_NIM_weixin_v7.2.0.js'
 import {generateFingerGuessImageFile, generateBigEmojiImageFile, generateRichTextNode, generateImageNode, calcTimeHeader} from '../../../src/utils/util.js'
 export default {
@@ -54,13 +54,7 @@ export default {
     return {
       nim: null,
       nimData: {},
-      videoContext: null, // 视频操纵对象
-      isVideoFullScreen: false, // 视频全屏控制标准
-      videoSrc: '', // 视频源
-      recorderManager: null, // 微信录音管理对象
-      recordClicked: false, // 判断手指是否触摸录音按钮
-      iconBase64Map: {}, // 发送栏base64图标集合
-      isLongPress: false, // 录音按钮是否正在长按
+
       chatWrapperMaxHeight: 0, // 聊天界面最大高度
       chatTo: '', // 聊天对象account
       chatType: '', // 聊天类型 advanced 高级群聊 normal 讨论组群聊 p2p 点对点聊天
@@ -76,8 +70,11 @@ export default {
       from: ''
     }
   },
-  mounted () {
-    this.chatTo = '141a4456b25c42f0872a3759c2f7f01a'
+  async mounted () {
+    console.log(this.$route.query)
+    this.chatTo = this.$route.query.id
+    const data = await initInim()
+    console.log(data)
 
     this.nim = NIM.getInstance({
       // 初始化SDK
@@ -246,63 +243,7 @@ export default {
     inputSend (value) {
       this.sendRequest(value)
     },
-    /**
-   * 发送图片到nos
-   */
-    sendImageToNOS (res) {
-      wx.showLoading({
-        title: '发送中...'
-      })
-      let self = this
-      let tempFilePaths = res.tempFilePaths
-      for (let i = 0; i < tempFilePaths.length; i++) {
-      // 上传文件到nos
-        self.nim.sendFile({
-        // app.globalData.nim.previewFile({
-          type: 'image',
-          scene: 'p2p',
-          to: self.chatTo,
-          wxFilePath: tempFilePaths[i],
-          done: function (err, msg) {
-            wx.hideLoading()
-            // 判断错误类型，并做相应处理
-            if (self.handleErrorAfterSend(err)) {
-              return
-            }
-            // 存储数据到store
-            self.saveChatMessageListToStore(msg)
-            console.log(msg)
 
-            // 滚动到底部
-            self.scrollToBottom()
-          }
-        })
-      }
-    },
-    /**
-   * 发送网络请求：发送文本消息(包括emoji)
-   */
-    sendRequest (text) {
-      let self = this
-      this.nim.sendText({
-        scene: 'p2p',
-        to: this.chatTo,
-        text,
-        done: (err, msg) => {
-          console.log(err)
-          // 判断错误类型，并做相应处理
-          if (self.handleErrorAfterSend(err)) {
-            return
-          }
-          // 存储数据到store
-          // self.saveChatMessageListToStore(msg)
-          console.log(msg)
-
-          // 滚动到底部
-          self.scrollToBottom()
-        }
-      })
-    },
     /**
    * 统一发送消息后打回的错误信息
    * 返回true表示有错误，false表示没错误
@@ -412,7 +353,64 @@ export default {
       }
       return displayTimeHeader
     },
+    /**
+   * 发送图片到nos
+   */
+    sendImageToNOS (res) {
+      wx.showLoading({
+        title: '发送中...'
+      })
+      let self = this
+      let tempFilePaths = res.tempFilePaths
+      for (let i = 0; i < tempFilePaths.length; i++) {
+      // 上传文件到nos
+        self.nim.sendFile({
+        // app.globalData.nim.previewFile({
+          type: 'image',
+          scene: 'p2p',
+          to: self.chatTo,
+          wxFilePath: tempFilePaths[i],
+          done: function (err, msg) {
+            wx.hideLoading()
+            // 判断错误类型，并做相应处理
+            if (self.handleErrorAfterSend(err)) {
+              return
+            }
+            // 存储数据到store
+            self.saveChatMessageListToStore(msg)
+            console.log('发送消息成功')
+            console.log(msg)
 
+            // 滚动到底部
+            self.scrollToBottom()
+          }
+        })
+      }
+    },
+    /**
+   * 发送网络请求：发送文本消息(包括emoji)
+   */
+    sendRequest (text) {
+      let self = this
+      this.nim.sendText({
+        scene: 'p2p',
+        to: this.chatTo,
+        text,
+        done: (err, msg) => {
+          console.log(err)
+          // 判断错误类型，并做相应处理
+          if (self.handleErrorAfterSend(err)) {
+            return
+          }
+          // 存储数据到store
+          // self.saveChatMessageListToStore(msg)
+          console.log('发送消息成功')
+          console.log(msg)
+          // 滚动到底部
+          self.scrollToBottom()
+        }
+      })
+    },
     onConnect () {
       console.log('连接成功')
     },
@@ -442,7 +440,6 @@ export default {
     onError (error, obj) {
       console.log('发生错误', error, obj)
     },
-
     onLoginPortsChange (loginPorts) {
       console.log('当前登录帐号在其它端的状态发生改变了', loginPorts)
       this.nim.kick({
@@ -459,7 +456,6 @@ export default {
       console.log('收到会话列表', sessions)
       this.nimData.sessions = this.nim.mergeSessions(this.nimData.sessions, sessions)
       console.log(this.nimData)
-      this.convertRawMessageListToRenderMessageArr(this.nimData.sessions)
       this.updateSessionsUI()
     },
     onUpdateSession (session) {

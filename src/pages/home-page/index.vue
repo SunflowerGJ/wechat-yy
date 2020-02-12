@@ -276,14 +276,14 @@
           </div>
         </div>
         <div class="chat_main">
-          <div class="chat_main_item">
+          <div class="chat_main_item" v-for="(item,index) in concatList" :key="index">
             <div class="chat_left">
-            <img src="" alt="">
-              <div class="chat_name">name</div>
+            <img :src="item.headPhoto" alt="">
+              <div class="chat_name">{{item.employeeName}}</div>
             </div>
             <div class="chat_right">
-              <img src="/static/images/icon-call.png" @click="onCall(13718017323)" alt="">
-              <img src="/static/images/icon-chat.png" @click="goChat" alt="">
+              <img src="/static/images/icon-call.png" @click="onCall(item.mobile)" alt="">
+              <img src="/static/images/icon-chat.png" @click="goChat(item.id)" alt="">
             </div>
           </div>
         </div>
@@ -379,7 +379,7 @@
   </div>
 </template>
 <script>
-import { postHousesDetail, POINTAlbums, POINTHouseClick } from '../../http/api.js'
+import { postHousesDetail, POINTAlbums, POINTHouseClick, getContactList } from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
 import tips from '../../components/tips'
 import getUserinfo from '../../components/get-userinfo'
@@ -402,6 +402,7 @@ export default {
   },
   data () {
     return {
+      concatList: [],
       showGetUserInfoModel: false,
       showNoticeModal: false,
       house_id: '',
@@ -445,7 +446,13 @@ export default {
     const data = await postHousesDetail({
       house_id: this.house_id
     })
+    console.log(data)
     wx.setNavigationBarTitle({title: data.name})
+    if (data.project_id) {
+      const concatList = await getContactList({projectID: data.project_id})
+      console.log(concatList)
+      this.concatList = concatList
+    }
     this.showGetUserInfoModel = true
     this.detail = data
     this.detail.albums = Object.keys(data.albums).map(key => data.albums[key])
@@ -490,8 +497,8 @@ export default {
         phoneNumber: phoneNumber + ''
       })
     },
-    goChat () {
-      this.$router.push({ path: '/pages/chating/main', query: {} })
+    goChat (id) {
+      this.$router.push({ path: '/pages/chat/main', query: {id} })
     },
     onBanner () {
       // 楼盘详情加了 type 和url字段  type 1链接 4优惠券 5相册  , 跳优惠券和相册的时候 url是空的 用楼盘id
@@ -1199,7 +1206,6 @@ export default {
         width 50px;
         border-radius 50%;
         margin-right 22px;
-        background #d8d8d8
       }
       .chat_name {
         font-size:14px;

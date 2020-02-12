@@ -290,3 +290,21 @@ export const getArticleShareData = (params = {}) => {
     params: params
   }, false)
 }
+
+// 初始化云信
+export const initInim = (params = {}) => {
+  return fly({
+    method: 'post',
+    url: `/api/Yuanhui/init`,
+    params: params
+  }, false)
+}
+// 楼盘客服列表
+
+export const getContactList = (params = {}) => {
+  return fly({
+    method: 'post',
+    url: `/api/Yuanhui/GetCustomerServiceUserList`,
+    params: params
+  }, false)
+}
