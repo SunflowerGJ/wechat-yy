@@ -25,12 +25,12 @@
     </div>
    </div>
   <!--底部输入框  -->
-    <!-- <div class='chatinput-wrapper' :style="{'margin-bottom': focusFlag ? 20 : 0+'rpx'}" @click='stopEventPropagation'>
+    <div class='chatinput-wrapper' :style="{'margin-bottom': focusFlag ? 20 : 0+'rpx'}" @click='stopEventPropagation'>
       <div class='chatinput-content'>
         <input style='margin-bottom: 20rpx;' v-if="sendType == 0" :value='inputValue' :focus='focusFlag' @input='inputChange' @focus='inputFocus' @blur='inputBlur' @confirm='inputSend' class='chatinput-input'  placeholder="输入文字" confirm-type='send'></input>
         <img src='../../images/more.png' @click='toggleMore' class='chatinput-img fr'/>
       </div>
-      <div v-if="moreFlag" class='more-subcontent'>
+      <!-- <div v-if="moreFlag" class='more-subcontent'>
         <div style='display:flex;justify-content: space-between;'>
           <div class='more-subcontent-item' @click='chooseImageToSend'>
             <img src="../../images/photo.png" class='image'/>
@@ -43,14 +43,15 @@
           <div class='more-subcontent-item'><div class='image' style='background-color: transparent;'></div><text class='text'></text></div>
           <div class='more-subcontent-item'><div class='image' style='background-color: transparent;'></div><text class='text'></text></div>
         </div>
-      </div>
-    </div> -->
+      </div> -->
+    </div>
   </div>
 </template>
 
 <script>
 // import {postArticleDetail, POINTArticleClick} from '../../http/api.js'
 import NIM from '../../../static/libs/NIM_Web_NIM_weixin_v7.2.0.js'
+import {generateFingerGuessImageFile, generateBigEmojiImageFile, generateRichTextNode, generateImageNode} from '../../../src/utils/util.js'
 export default {
   data () {
     return {
@@ -79,12 +80,14 @@ export default {
     }
   },
   mounted () {
+    this.chatTo = '141a4456b25c42f0872a3759c2f7f01a'
+
     this.nim = NIM.getInstance({
       // 初始化SDK
-      debug: true,
-      appKey: 'appKey',
-      account: 'account',
-      token: 'token',
+      // debug: true,
+      appKey: 'bd4ea621af735fd6924c38d44ae76eb0',
+      account: '141a4456b25c42f0872a3759c2f7f01a',
+      token: 'e103d5f9405bb4ab2a8f7501ae23e3cf',
       onconnect: this.onConnect,
       onerror: this.onError,
       onwillreconnect: this.onWillReconnect,
@@ -103,13 +106,245 @@ export default {
     })
   },
   methods: {
+    /**
+   * 原始消息列表转化为适用于渲染的消息列表
+   * {unixtime1: {flow,from,fromNick,idServer,scene,sessionId,text,target,to,time...}, unixtime2: {}}
+   * =>
+   * [{text, time, sendOrReceive: 'send', displayTimeHeader, nodes: []},{type: 'geo',geo: {lat,lng,title}}]
+   */
+    convertRawMessageListToRenderMessageArr (rawMsgList) {
+      let messageArr = []
+      for (let time in rawMsgList) {
+        let rawMsg = rawMsgList[time]
+        let msgType = ''
+        if (rawMsg.type === 'custom' && JSON.parse(rawMsg['content'])['type'] === 1) {
+          msgType = '猜拳'
+        } else if (rawMsg.type === 'custom' && JSON.parse(rawMsg['content'])['type'] === 3) {
+          msgType = '贴图表情'
+        } else {
+          msgType = rawMsg.type
+        }
+        let displayTimeHeader = this.judgeOverTwoMinute(rawMsg.time, messageArr)
+        let sendOrReceive = rawMsg.flow === 'in' ? 'receive' : 'send'
+        let specifiedObject = {}
+        switch (msgType) {
+          case 'text': {
+            specifiedObject = {
+              nodes: generateRichTextNode(rawMsg.text)
+            }
+            break
+          }
+          case 'image': {
+            specifiedObject = {
+              nodes: generateImageNode(rawMsg.file)
+            }
+            break
+          }
+          case 'geo': {
+            specifiedObject = {
+              geo: rawMsg.geo
+            }
+            break
+          }
+          case 'audio': {
+            specifiedObject = {
+              audio: rawMsg.file
+            }
+            break
+          }
+          case 'video': {
+            specifiedObject = {
+              video: rawMsg.file
+            }
+            break
+          }
+          case '猜拳': {
+            let value = JSON.parse(rawMsg['content']).data.value
+            specifiedObject = {
+              nodes: generateImageNode(generateFingerGuessImageFile(value))
+            }
+            break
+          }
+          case '贴图表情': {
+            let content = JSON.parse(rawMsg['content'])
+            specifiedObject = {
+              nodes: generateImageNode(generateBigEmojiImageFile(content))
+            }
+            break
+          }
+          case 'tip': {
+            specifiedObject = {
+              text: rawMsg.tip,
+              nodes: [{
+                type: 'text',
+                text: rawMsg.tip
+              }]
+            }
+            break
+          }
+          case '白板消息':
+          case '阅后即焚': {
+            specifiedObject = {
+              nodes: [{
+                type: 'text',
+                text: `[${msgType}],请到手机或电脑客户端查看`
+              }]
+            }
+            break
+          }
+          case 'file':
+          case 'robot': {
+            let text = msgType === 'file' ? '文件消息' : '机器人消息'
+            specifiedObject = {
+              nodes: [{
+                type: 'text',
+                text: `[${text}],请到手机或电脑客户端查看`
+              }]
+            }
+            break
+          }
+          case 'custom':
+            specifiedObject = {
+              nodes: [{
+                type: 'text',
+                text: '自定义消息'
+              }]
+            }
+            break
+          case 'notification':
+            specifiedObject = {
+            // netbill的text为空
+              text: rawMsg.groupNotification || (rawMsg.text.length === 0 ? '通知' : rawMsg.text),
+              nodes: [{
+                type: 'text',
+                text: rawMsg.groupNotification || (rawMsg.text.length === 0 ? '通知' : rawMsg.text)
+              }]
+            }
+            break
+          default: {
+            break
+          }
+        }
+        messageArr.push(Object.assign({}, {
+          from: rawMsg.from,
+          type: msgType,
+          text: rawMsg.text || '',
+          time,
+          sendOrReceive,
+          displayTimeHeader
+        }, specifiedObject))
+      }
+      return messageArr
+    },
+    /**
+   * 键盘单击发送，发送文本
+   */
+    inputSend (value) {
+      this.sendRequest(value)
+    },
+    /**
+   * 发送图片到nos
+   */
+    sendImageToNOS (res) {
+      wx.showLoading({
+        title: '发送中...'
+      })
+      let self = this
+      let tempFilePaths = res.tempFilePaths
+      for (let i = 0; i < tempFilePaths.length; i++) {
+      // 上传文件到nos
+        self.nim.sendFile({
+        // app.globalData.nim.previewFile({
+          type: 'image',
+          scene: 'p2p',
+          to: self.chatTo,
+          wxFilePath: tempFilePaths[i],
+          done: function (err, msg) {
+            wx.hideLoading()
+            // 判断错误类型，并做相应处理
+            if (self.handleErrorAfterSend(err)) {
+              return
+            }
+            // 存储数据到store
+            self.saveChatMessageListToStore(msg)
+            console.log(msg)
 
+            // 滚动到底部
+            self.scrollToBottom()
+          }
+        })
+      }
+    },
+    /**
+   * 发送网络请求：发送文本消息(包括emoji)
+   */
+    sendRequest (text) {
+      let self = this
+      this.nim.sendText({
+        scene: 'p2p',
+        to: this.chatTo,
+        text,
+        done: (err, msg) => {
+          console.log(err)
+          // 判断错误类型，并做相应处理
+          if (self.handleErrorAfterSend(err)) {
+            return
+          }
+          // 存储数据到store
+          // self.saveChatMessageListToStore(msg)
+          console.log(msg)
+
+          // 滚动到底部
+          self.scrollToBottom()
+        }
+      })
+    },
+    /**
+   * 统一发送消息后打回的错误信息
+   * 返回true表示有错误，false表示没错误
+   */
+    handleErrorAfterSend (err) {
+      if (err) {
+        if (err.code === 7101) {
+          console.log('text', '你已被对方拉黑')
+        }
+        console.log(err)
+        return true
+      }
+      return false
+    },
     /**
    * 收起所有输入框
    */
     chatingWrapperClick (e) {
       this.foldInputArea()
     },
+    /**
+   * 滚动页面到底部
+   */
+    scrollToBottom () {
+      wx.pageScrollTo({
+        scrollTop: 999999,
+        duration: 100
+      })
+    },
+    /**
+   * 收起键盘
+   */
+    foldInputArea () {
+      this.setData({
+        focusFlag: false,
+        emojiFlag: false,
+        tipFlag: false,
+        moreFlag: false
+      })
+    },
+    /**
+   * 阻止事件冒泡空函数
+   */
+    stopEventPropagation () {
+    },
+
     onConnect () {
       console.log('连接成功')
     },
@@ -142,10 +377,20 @@ export default {
 
     onLoginPortsChange (loginPorts) {
       console.log('当前登录帐号在其它端的状态发生改变了', loginPorts)
+      this.nim.kick({
+        deviceIds: [loginPorts[0].deviceId],
+        done: this.onKick
+      })
+    },
+    onKick (error, obj) {
+      console.log('踢其它端' + (!error ? '成功' : '失败'))
+      console.log(error)
+      console.log(obj)
     },
     onSessions (sessions) {
       console.log('收到会话列表', sessions)
       this.nimData.sessions = this.nim.mergeSessions(this.nimData.sessions, sessions)
+      console.log(this.nimData)
       this.updateSessionsUI()
     },
     onUpdateSession (session) {
@@ -179,6 +424,7 @@ export default {
     },
     onSyncDone () {
       console.log('同步完成')
+      this.inputSend('23434')
     }
   }
 }
