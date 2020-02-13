@@ -1,8 +1,26 @@
 <template>
   <div class='chating-wrapper'>
-  <!-- 消息记录 -->
-   <div class='record-wrapper' id="recordWrapper">
 
+      <!-- 消息记录 -->
+   <div class='record-wrapper' id="recordWrapper">
+    <div v-for="message in [{sendOrReceive:'send',type:'text'}]" :key="message.time">
+      <div class='record-item-time-wrapper' v-if="message.displayTimeHeader != ''">
+        <text class='record-item-time'>{{message.displayTimeHeader}}</text>
+      </div>
+      <div v-if="message.sendOrReceive == 'send'" :class='message.sendOrReceive == "send" ? "record-chatting-item self" : ""' style='justify-content: flex-end' :data-message="message" @longpress='showEditorMenu'>
+        <rich-text v-if="message.type === 'image'" class='record-chatting-item-text nobg' :nodes="message.nodes" ></rich-text>
+        <rich-text v-if="message.type === 'text' || message.type === 'file' || message.type === '白板消息' || message.type === '阅后即焚' || message.type === 'robot'" class='record-chatting-item-text' :nodes="message.nodes"></rich-text>        
+        <rich-text v-if="message.type === 'tip' || message.type === 'notification'" class='tip-rich-text' :nodes="message.nodes"></rich-text>
+        <text v-if="message.type !== 'tip' && message.type !== 'notification' && message.type !== 'image' && message.type !== 'video' && message.type !== 'geo' && message.type !== '猜拳' && message.type !== '贴图表情' " class='right-triangle'></text>
+        <img :src='loginAccountLogo' @click='switchToMyTab' class='record-chatting-item-img'/>
+      </div>
+      <div v-if="message.sendOrReceive == 'receive'" :class='message.sendOrReceive == "receive" ? "record-chatting-item other" : ""' style='justify-content: flex-start' :data-message="message"  @longpress='showEditorMenu'>
+        <text v-if="message.type !== 'tip' && message.type !== 'notification' && message.type !== 'image' && message.type !== 'video' && message.type !== 'geo' && message.type !== '猜拳' && message.type !== '贴图表情' " class='left-triangle'></text>
+        <rich-text v-if="message.type === 'image'" class='record-chatting-item-text nobg' :nodes="message.nodes"></rich-text>
+        <rich-text v-if="message.type === 'text' || message.type === 'file' || message.type === '白板消息' || message.type === '阅后即焚' || message.type === 'robot'|| message.type === 'custom'" class='record-chatting-item-text' style='color:#000;background-color:#fff;'  :nodes="message.nodes"></rich-text>
+        <rich-text v-if="message.type === 'tip' || message.type === 'notification'" class='tip-rich-text' :nodes="message.nodes"></rich-text>
+      </div>
+    </div>
    </div>
   <!--底部输入框  -->
     <div class='chatinput-wrapper' >
