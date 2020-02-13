@@ -25,7 +25,7 @@
   <!--底部输入框  -->
     <div class='chatinput-wrapper' >
       <div class='chatinput-content'>
-        <input style='margin-bottom: 20rpx;' v-if="sendType == 0" :value='inputValue' :focus='focusFlag' @input='inputChange' @focus='inputFocus' @blur='inputBlur' @confirm='inputSend' class='chatinput-input'  placeholder="输入文字" confirm-type='send'/>
+        <input style='margin-bottom: 20rpx;'  :value='inputValue' :focus='focusFlag' @input='inputChange' @focus='inputFocus' @blur='inputBlur' @confirm='inputSend' class='chatinput-input'  placeholder="输入文字" confirm-type='send'/>
         <img src='/static/images/icon-input-more.png' @click='toggleMore' class='chatinput-img fr'/>
       </div>
       {{moreFlag}}
@@ -47,8 +47,7 @@
 
 <script>
 import {initInim} from '../../http/api.js'
-// import NIM from '../../../static/libs/NIM_Web_NIM_weixin_v7.2.0.js'
-let NIM = require('../../../static/libs/NIM_Web_NIM_weixin_v7.2.0.js')
+let NIM = require('../../../static/libs/NIM_Web_NIM_weixin_v6.8.0')
 // import {generateFingerGuessImageFile, generateBigEmojiImageFile, generateRichTextNode, generateImageNode, calcTimeHeader} from '../../../src/utils/util.js'
 export default {
   data () {
@@ -75,6 +74,7 @@ export default {
     console.log(this.$route.query)
     this.chatTo = this.$route.query.id
     const data = await initInim()
+    console.log(data)
     this.nim = NIM.getInstance({
       // 初始化SDK
       // debug: true,
@@ -140,12 +140,12 @@ export default {
     },
     onSessions (sessions) {
       console.log('收到会话列表', sessions)
-      this.nimData.sessions = this.nim.mergeSessions(this.nimData.sessions, sessions)
+      // this.nimData.sessions = this.nim.mergeSessions(this.nimData.sessions, sessions)
       this.updateSessionsUI()
     },
     onUpdateSession (session) {
       console.log('会话更新了', session)
-      this.nimData.sessions = this.nim.mergeSessions(this.nimData.sessions, session)
+      // this.nimData.sessions = this.nim.mergeSessions(this.nimData.sessions, session)
       this.updateSessionsUI()
     },
     updateSessionsUI () {
@@ -296,8 +296,21 @@ export default {
           self.scrollToBottom()
         }
       })
+    },
+    /**
+   * 统一发送消息后打回的错误信息
+   * 返回true表示有错误，false表示没错误
+   */
+    handleErrorAfterSend (err) {
+      if (err) {
+        if (err.code === 7101) {
+          console.log('text', '你已被对方拉黑')
+        }
+        console.log(err)
+        return true
+      }
+      return false
     }
-
   }
 }
 </script>
