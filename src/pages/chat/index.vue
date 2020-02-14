@@ -11,6 +11,10 @@
         <view v-if="message.type === 'image'" class='record-chatting-item-text img-wrap nobg' ><img mode="widthFix" :src="message.content"/></view>
         <text v-if="message.type === 'text'" class='record-chatting-item-text'>{{message.content}}</text>
         <!-- <text class='right-triangle'></text> -->
+        <view  v-if="message.type === 'audio'" :data-audio="message.audio" @tap='playAudio' class='audio-wrapper'>
+          <img src='/static/images/voice-right.png' class='image'/>
+          <text class='text' style='color:#000;'>{{message.audio.dur / 1000 }}''</text>
+        </view>
         <img :src='loginAccountLogo'  class='record-chatting-item-img' style="margin-left:8px;"/>
       </div>
       <div v-if="message.sendOrReceive == 'receive'" :class='message.sendOrReceive == "receive" ? "record-chatting-item other" : ""' style='justify-content: flex-start' :data-message="message"  @longpress='showEditorMenu'>
@@ -18,13 +22,21 @@
         <!-- <text class='left-triangle'></text> -->
         <view v-if="message.type === 'image'" class='record-chatting-item-text img-wrap nobg' ><img mode="widthFix" :src="message.content"/></view>
         <text v-if="message.type === 'text'" class='record-chatting-item-text fffbg' style='color:#000;background-color:#fff;' >{{message.content}}</text>
+        <view  v-if="message.type === 'audio'" :data-audio="message.audio" @tap='playAudio' class='audio-wrapper'>
+          <img src='/static/images/voice-right.png' class='image'/>
+          <text class='text' style='color:#000;'>{{message.audio.dur / 1000 }}''</text>
+        </view>
       </div>
     </div>
   </div>
   <!--底部输入框  -->
     <div class='chatinput-wrapper' >
       <div class='chatinput-content'>
-        <input style='margin-bottom: 20rpx;'  :value='inputValue' :focus='focusFlag' @input='inputChange' @focus='inputFocus' @blur='inputBlur' @confirm='inputSend' class='chatinput-input'  placeholder="输入文字" placeholder-style="color:#C1C1C1;" confirm-type='send'/>
+        <img :src="sendType == 0 ? '/static/images/voice.png' : '/static/images/keyboard.png'" class='chatinput-img' @tap='switchSendType'/>
+        <input v-if="sendType == 0" style='margin-bottom: 20rpx;'  :value='inputValue' :focus='focusFlag' @input='inputChange' @focus='inputFocus' @blur='inputBlur' @confirm='inputSend' class='chatinput-input'  placeholder="输入文字" placeholder-style="color:#C1C1C1;" confirm-type='send'/>
+        <button  v-if="sendType == 1" class="chatinput-voice-mask"  :class="[{'chatinput-voice-mask chatinput-voice-mask-hover':isLongPress}]" hover-class="none" @touchstart='longPressStart' @touchend='longPressEnd'>
+          {{isLongPress ? '松开结束' : '按住说话'}}
+        </button>
         <img src='/static/images/icon-input-more.png' @click='toggleMore' class='chatinput-img fr'/>
       </div>
       <div v-if="moreFlag" class='more-subcontent'>
@@ -49,6 +61,7 @@ import {initInim} from '../../http/api.js'
  let NIM = require('../../../static/libs/NIM_Web_NIM_weixin_v6.8.0')
   let thisNIM=null
  import {calcTimeHeader} from '../../../src/utils/util.js'
+
 export default {
   data () {
     return {
@@ -68,7 +81,10 @@ export default {
       sendType: 0, // 发送消息类型，0 文本 1 语音
       messageArr: [], // [{text, time, sendOrReceive: 'send', displayTimeHeader, nodes: []},{type: 'geo',geo: {lat,lng,title}}]
       inputValue: '', // 文本框输入内容
-      from: ''
+      from: '',
+      recorderManager: null, // 微信录音管理对象
+      recordClicked: false, // 判断手指是否触摸录音按钮
+      isLongPress: false, // 录音按钮是否正在长按
     }
   },
 //  onLoad (e) {
@@ -203,12 +219,284 @@ export default {
         console.log(obj.msgs);
         this.nimData = obj.msgs
         this.messageArr= this.handleMsgs(this.nimData).reverse()
+        this.reCalcAllMessageTime()
         setTimeout(()=>{
           this.scrollToBottom()
         },400)
       }
     },
+    /**
+    * 切换发送文本类型
+    */
+    switchSendType() {
+      this.sendType = this.sendType == 0 ? 1 : 0
+      this.focusFlag= false
+    },
+      /**
+   * 播放音频
+   */
+  playAudio(e) {
+    // wx.showToast('text', '播放中', {
+    //   duration: 120 * 1000,
+    //   mask: true
+    // })
+    console.log(e)
+    wx.showToast({
+        title: '播放中',
+        icon: 'none',
+        duration: 120 * 1000,
+        mask:true
+      })
+    let audio = e.mp.currentTarget.dataset.audio
+    const audioContext = wx.createInnerAudioContext()
+    this.audioContext = audioContext
+    if (audio.ext === 'mp3') { // 小程序发送的
+      audioContext.src = audio.url
+    } else {
+      audioContext.src = audio.mp3Url
+    }
+    audioContext.play()
+    audioContext.onPlay(() => {
+    })
+    audioContext.onEnded((e) => {
+      console.log(e)
+      wx.hideToast()
+    })
+    audioContext.onError((res) => {
+      // showToast('text', res.errCode)
+        wx.showToast({
+        title: res.errCode,
+        icon: 'none',
+        duration: 120 * 1000,
+        mask:true
+      })
+    })
+  },
+  /**
+   * 微信按钮长按，有bug，有时候不触发
+   */
+  voiceBtnLongTap(e) {
+    let self = this
+    this.isLongPress= true
+    // self.setData({
+    //   isLongPress: true
+    // })
+    wx.getSetting({
+      success: (res) => {
+        let recordAuth = res.authSetting['scope.record']
+        if (recordAuth == false) { //已申请过授权，但是用户拒绝
+          wx.openSetting({
+            success: function (res) {
+              let recordAuth = res.authSetting['scope.record']
+              if (recordAuth == true) {
+                // showToast('success', '授权成功')
+                wx.showToast({
+                  title: '授权成功',
+                  icon: 'success',
+                  duration: 2000
+                })
+              } else {
+                // showToast('text', '请授权录音')
+                  wx.showToast({
+                    title: '请授权录音',
+                    icon: 'none',
+                    duration: 2000
+                  })
+              }
+              self.isLongPress= false
+              // self.setData({
+              //   isLongPress: false
+              // })
+            }
+          })
+        } else if (recordAuth == true) { // 用户已经同意授权
+          self.startRecord()
+        } else { // 第一次进来，未发起授权
+          wx.authorize({
+            scope: 'scope.record',
+            success: () => {//授权成功
+              // showToast('success', '授权成功')
+          wx.showToast({
+            title: '授权成功',
+            icon: 'success',
+            duration: 2000
+          })
+            }
+          })
+        }
+      },
+      fail: function () {
+        // showToast('error', '鉴权失败，请重试')
+        wx.showToast({
+          title: '鉴权失败，请重试',
+          icon: 'error',
+          duration: 2000
+        })
+      }
+    })
+  },
+  /**
+   * 手动模拟按钮长按，
+   */
+  longPressStart() {
+    let self = this
+    // self.setData({
+    //   recordClicked: true
+    // })
+     this.recordClicked =true
+    setTimeout(() => {
+      if (self.recordClicked == true) {
+        self.executeRecord()
+      }
+    }, 350)
+  },
+    /**
+     * 语音按钮长按结束
+     */
+    longPressEnd() {
+      this.recordClicked =false
+      // this.setData({
+      //   recordClicked: false
+      // })
+      // 第一次授权，
+      if (!this.recorderManager) {
+        this.isLongPress =false
+        // this.setData({
+        //   isLongPress: false
+        // })
+        return
+      }
+      if (this.isLongPress === true) {
+        // this.setData({
+        //   isLongPress: false
+        // })
+        this.isLongPress =false
+        wx.hideToast()
+        this.recorderManager.stop()
+      }
+    },
+    /**
+     * 执行录音逻辑
+     */
+    executeRecord() {
+      let self = this
+      this.isLongPress=true
+      // self.setData({
+      //   isLongPress: true
+      // })
+      wx.getSetting({
+        success: (res) => {
+          let recordAuth = res.authSetting['scope.record']
+          if (recordAuth == false) { //已申请过授权，但是用户拒绝
+            wx.openSetting({
+              success: function (res) {
+                let recordAuth = res.authSetting['scope.record']
+                if (recordAuth == true) {
+                  // wx.showToast('success', '授权成功')
+                  wx.showToast({
+                    title: '授权成功',
+                    icon: 'success',
+                    duration: 2000
+                  })
+                } else {
+                  wx.showToast({
+                    title: '请授权',
+                    icon: 'none',
+                    duration: 2000
+                  })
+                }
+                self.isLongPress =true
+                // self.setData({
+                //   isLongPress: false
+                // })
+              }
+            })
+          } else if (recordAuth == true) { // 用户已经同意授权
+            self.startRecord()
+          } else { // 第一次进来，未发起授权
+            wx.authorize({
+              scope: 'scope.record',
+              success: () => {//授权成功
+                  wx.showToast({
+                    title: '授权成功',
+                    icon: 'none',
+                    duration: 2000
+                  })
+              }
+            })
+          }
+        },
+        fail: function () {
+          wx.showToast({
+          title: '授权成功',
+          icon: 'error',
+          duration: 2000
+          })
+          // showToast('error', '鉴权失败，请重试')
+        }
+      })
+    },
+    /**
+     * 开始录音
+     */
+    startRecord() {
+      let self = this
+         wx.showToast({
+          title: '开始录音',
+          icon: 'text',
+          duration: 120000
+          })
+      // showToast('text', '开始录音', { duration: 120000 })
+      const recorderManager = self.recorderManager || wx.getRecorderManager()
+      const options = {
+        duration: 120 * 1000,
+        format: 'mp3'
+      }
+      recorderManager.start(options)
+      self.recorderManager =recorderManager
+      recorderManager.onStop((res) => {
+        console.log(res)
+        if (res.duration < 2000) {
+          // showToast('text', '录音时间太短')
+          wx.showToast({
+          title: '录音时间太短',
+          icon: 'none',
+          duration: 2000
+          })
+        } else {
+          self.sendAudioMsg(res)
+        }
+      })
+    },
+      /**
+   * 发送语音消息
+   */
+  sendAudioMsg(res) {
+    wx.showLoading({
+      title: '发送中...',
+    })
+    let tempFilePath = res.tempFilePath
+    let self = this
+    // console.log(tempFilePath)
+    thisNIM.sendFile({
+      scene: 'p2p',
+      to: self.chatTo,
+      type: 'audio',
+      wxFilePath: tempFilePath,
+      done: function (err, msg) {
+        wx.hideLoading()
+        // 判断错误类型，并做相应处理
+        if (self.handleErrorAfterSend(err)) {
+          return
+        }
+        // // 存储数据到store
+        // self.saveChatMessageListToStore(msg)
 
+        // // 滚动到底部
+        // self.scrollToBottom()
+      }
+    })
+  },
     handleMsgs(arr){
       let messageArr = []
       arr.map(rawMsg => {
@@ -223,6 +511,7 @@ export default {
         let displayTimeHeader = this.judgeOverTwoMinute(rawMsg.time, messageArr)
         let sendOrReceive = rawMsg.flow === 'in' ? 'receive' : 'send'
         let content = ''
+        let specifiedObject = {}
         switch (msgType) {
           case 'text': {
             content = rawMsg.text
@@ -238,7 +527,9 @@ export default {
             break
           }
           case 'audio': {
-
+          specifiedObject = {
+            audio: rawMsg.file
+          }
             break
           }
           case 'video': {
@@ -280,7 +571,7 @@ export default {
           key:(rawMsg.time+Math.random()),
           content,
           displayTimeHeader
-        }))
+        }, specifiedObject))
       })
       return messageArr
     },
@@ -300,6 +591,28 @@ export default {
       }
       return displayTimeHeader
     },
+      /**
+       * 重新计算时间头
+       */
+      reCalcAllMessageTime() {
+        let tempArr = [...this.messageArr]
+        if (tempArr.length == 0) return
+        // 计算时差
+        tempArr.map((msg, index) => {
+          if (index === 0) {
+            msg['displayTimeHeader'] = calcTimeHeader(msg.time)
+          } else {
+            let delta = (msg.time - tempArr[index - 1].time) / (120 * 1000)
+            if (delta > 1) { // 距离上一条，超过两分钟重新计算头部
+              msg['displayTimeHeader'] = calcTimeHeader(msg.time)
+            }
+          }
+        }) 
+        this.messageArr = tempArr
+        // this.setData({
+        //   messageArr: tempArr
+        // })
+      },
     toggleMore () {
       this.moreFlag = !this.moreFlag
       console.log(this.moreFlag)
@@ -480,7 +793,7 @@ export default {
   width: 60rpx;
   height: 60rpx;
   border-radius: 100%;
-  margin: 15px 20px 0 0;
+  margin: 22px 20px 0 0;
   display: inline-block;
 }
 .chatinput-img.emoji{
@@ -500,28 +813,27 @@ export default {
   box-sizing:border-box;
   padding-left: 20rpx;
   font-size: 30rpx;
-  width:298px;
+  width:466rpx;
   height:38px;
   background:rgba(250,250,251,1);
   border-radius:19px;
   border:1px solid rgba(232,232,232,1);
 }
 .chatinput-voice-mask {
-  width: 466rpx;
-  height: 76rpx;
-  line-height: 76rpx;
-  display: inline-block;
+  min-height: 72rpx;
   border-radius: 12rpx;
   border: 1px solid #ccc;
-  margin-top: 12rpx;
+  margin-top: 15px;
+  display: inline-block;
   vertical-align:top;
   box-sizing:border-box;
-  /* padding-left: 20rpx; */
+  padding-left: 20rpx;
   font-size: 30rpx;
-  text-align: center;
-  color: #333336;
-  background-color: #fff;
-  letter-spacing: 4rpx;
+  width:466rpx;
+  height:38px;
+  background:rgba(250,250,251,1);
+  border-radius:19px;
+  border:1px solid rgba(232,232,232,1);
 }
 .chatinput-voice-mask-hover {
   background-color: #cecece;
@@ -738,13 +1050,15 @@ export default {
   margin-left:-2px;
 }
 .audio-wrapper .image {
-  width:70rpx;
-  height:70rpx;
+  width: 24rpx;
+  height: 32rpx;
   align-self:center;
 }
 .audio-wrapper .text {
   align-self:center;
   color:#fff;
 }
-
+.chatinput-voice-mask::after {
+  border:none;
+} 
 </style>
