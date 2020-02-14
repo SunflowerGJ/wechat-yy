@@ -104,10 +104,9 @@
           class="chatinput-img"
           @tap="switchSendType"
         />
+        <!-- :confirm-hold="true" -->
         <input
           v-if="sendType === 0"
-          style="margin-bottom: 20rpx;"
-          :confirm-hold="true"
           :value="inputValue"
           :focus="focusFlag"
           @input="inputChange"
@@ -285,7 +284,8 @@ export default {
     },
     onError (error, obj) {
       console.log('发生错误', error, obj)
-      wx.showToast({ title: '间接发生错误', icon: 'none', duration: 2000 })
+      wx.showToast({ title: '连接发生错误', icon: 'none', duration: 2000 })
+      this.initINM()
     },
     onLoginPortsChange (loginPorts) {
       console.log('当前登录帐号在其它端的状态发生改变了', loginPorts)
