@@ -443,16 +443,20 @@ export default {
     if (this.$route.query.id) {
       this.house_id = this.$route.query.id
     }
+
     const data = await postHousesDetail({
       house_id: this.house_id
     })
-    console.log(data)
     wx.setNavigationBarTitle({title: data.name})
-    if (data.project_id) {
-      const concatList = await getContactList({projectID: data.project_id})
-      console.log(concatList)
-      this.concatList = concatList
+    try {
+      if (data.project_id) {
+        const concatList = await getContactList({projectID: data.project_id})
+        this.concatList = concatList
+      }
+    } catch (error) {
+      console.log(error)
     }
+
     this.showGetUserInfoModel = true
     this.detail = data
     this.detail.albums = Object.keys(data.albums).map(key => data.albums[key])
@@ -498,7 +502,10 @@ export default {
       })
     },
     goChat (item) {
-      this.$router.push({ path: '/pages/chat/main', query: {id: item.id, headPhoto: item.headPhoto} })
+      console.log(item)
+      let id = item.id
+      let headPhoto = item.headPhoto ? encodeURIComponent(item.headPhoto) : ''
+      this.$router.push({ path: '/pages/chat/main', query: {id, headPhoto} })
     },
     onBanner () {
       // 楼盘详情加了 type 和url字段  type 1链接 4优惠券 5相册  , 跳优惠券和相册的时候 url是空的 用楼盘id

@@ -8,7 +8,7 @@
         <text class='record-item-time'>{{message.displayTimeHeader}}</text>
       </view>
       <div v-if="message.sendOrReceive == 'send'" :class='message.sendOrReceive == "send" ? "record-chatting-item self" : ""' style='justify-content: flex-end' :data-message="message" @longpress='showEditorMenu'>
-        <view v-if="message.type === 'image'" class='record-chatting-item-text img-wrap nobg' ><img mode="widthFix" :src="message.content"/></view>
+        <view v-if="message.type === 'image'" :data-url="message.content" @tap="onPreviewImg" class='record-chatting-item-text img-wrap nobg' ><img mode="widthFix" :src="message.content"/></view>
         <text v-if="message.type === 'text'" class='record-chatting-item-text'>{{message.content}}</text>
         <!-- <text class='right-triangle'></text> -->
         <view  v-if="message.type === 'audio'" :data-audio="message.audio" @tap='playAudio' class='audio-wrapper'>
@@ -20,7 +20,7 @@
       <div v-if="message.sendOrReceive == 'receive'" :class='message.sendOrReceive == "receive" ? "record-chatting-item other" : ""' style='justify-content: flex-start' :data-message="message"  @longpress='showEditorMenu'>
         <img :src='chatheadPhoto' @click='switchToMyTab' class='record-chatting-item-img' style="margin-right:8px;"/>
         <!-- <text class='left-triangle'></text> -->
-        <view v-if="message.type === 'image'" class='record-chatting-item-text img-wrap nobg' ><img mode="widthFix" :src="message.content"/></view>
+        <view v-if="message.type === 'image'" :data-url="message.content" @tap="onPreviewImg" class='record-chatting-item-text img-wrap nobg' ><img mode="widthFix" :src="message.content"/></view>
         <text v-if="message.type === 'text'" class='record-chatting-item-text fffbg' style='color:#000;background-color:#fff;' >{{message.content}}</text>
         <view  v-if="message.type === 'audio'" :data-audio="message.audio" @tap='playAudio' class='audio-wrapper'>
           <img src='/static/images/voice-right.png' class='image'/>
@@ -86,6 +86,7 @@ export default {
       recorderManager: null, // 微信录音管理对象
       recordClicked: false, // 判断手指是否触摸录音按钮
       isLongPress: false, // 录音按钮是否正在长按
+      audioContext:null,
     }
   },
 //  onLoad (e) {
@@ -94,7 +95,7 @@ export default {
   async mounted () {
     console.log(this.$route.query)
     this.chatTo = this.$route.query.id
-    this.chatheadPhoto = this.$route.query.headPhoto
+    this.chatheadPhoto = this.$route.query.headPhoto?decodeURIComponent(this.$route.query.headPhoto):''
     this.loginAccountLogo = wx.getStorageSync('userinfo') && wx.getStorageSync('userinfo').headimgurl
     const data = await initInim()
     this.account = data.yx_account
@@ -180,8 +181,8 @@ export default {
       console.log('会话更新了', session)
       if(session.lastMsg && session.lastMsg.status== 'success'){
         if ([this.chatTo,this.account].includes(session.to)){
-          this.nimData.unshift(session.lastMsg)
-          this.messageArr= this.handleMsgs(this.nimData).reverse()
+          this.nimData.push(session.lastMsg)
+          this.messageArr= this.handleMsgs(this.nimData)
           // 滚动到底部
           setTimeout(()=>{
             this.scrollToBottom()
@@ -216,9 +217,8 @@ export default {
     getHistoryMsgsDone(error, obj) {
       console.log('获取云端历史记录' + (!error?'成功':'失败'), error, obj);
       if (!error) {
-        console.log(obj.msgs);
-        this.nimData = obj.msgs
-        this.messageArr= this.handleMsgs(this.nimData).reverse()
+        this.nimData = obj.msgs&&obj.msgs.reverse()
+        this.messageArr= this.handleMsgs(this.nimData)
         this.reCalcAllMessageTime()
         setTimeout(()=>{
           this.scrollToBottom()
@@ -235,13 +235,29 @@ export default {
       /**
    * 播放音频
    */
+  onPreviewImg(e){
+    console.log(e.mp.currentTarget.dataset.url)
+    let url = e.mp.currentTarget.dataset.url
+      wx.previewImage({
+        current: url,
+        urls: [url]
+      })
+    },
   playAudio(e) {
+    if(this.audioContext){
+      console.log(this.audioContext)
+      this.audioContext.pause()
+      this.audioContext=null
+      wx.hideToast()
+       return
+    }
+   
     wx.showToast({
         title: '播放中',
         icon: 'none',
-        duration: 120 * 1000,
-        mask:true
-      })
+        duration: 120 * 1000
+    })
+
     let audio = e.mp.currentTarget.dataset.audio
     const audioContext = wx.createInnerAudioContext()
     this.audioContext = audioContext
@@ -251,11 +267,10 @@ export default {
       audioContext.src = audio.mp3Url
     }
     audioContext.play()
-    audioContext.onPlay(() => {
-    })
+    audioContext.onPlay(() => {})
     audioContext.onEnded(() => {
-
       wx.hideToast()
+      this.audioContext=null
     })
     audioContext.onError((res) => {
         wx.showToast({
@@ -264,6 +279,7 @@ export default {
         duration: 120 * 1000,
         mask:true
       })
+      this.audioContext=null
     })
   },
   /**
@@ -420,7 +436,6 @@ export default {
       recorderManager.start(options)
       self.recorderManager =recorderManager
       recorderManager.onStop((res) => {
-        console.log(res)
         if (res.duration < 2000) {
           // showToast('text', '录音时间太短')
           wx.showToast({
@@ -545,7 +560,7 @@ export default {
       let displayTimeHeader = ''
       let lastMessage = messageArr[messageArr.length - 1]
       if (lastMessage) {//拥有上一条消息
-        let delta = time - lastMessage.time
+        let delta =time - lastMessage.time
         if (delta > 2 * 60 * 1000) {//两分钟以上
           displayTimeHeader = calcTimeHeader(time)
         }
