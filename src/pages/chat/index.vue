@@ -107,6 +107,7 @@
         <input
           v-if="sendType === 0"
           style="margin-bottom: 20rpx;"
+          :confirm-hold="true"
           :value="inputValue"
           :focus="focusFlag"
           @input="inputChange"
@@ -167,6 +168,7 @@ export default {
       chatWrapperMaxHeight: 0, // 聊天界面最大高度
       chatTo: '', // 聊天对象account
       account: '',
+      token: '',
       chatType: '', // 聊天类型 advanced 高级群聊 normal 讨论组群聊 p2p 点对点聊天
       loginAccountLogo: '', // 登录账户对象头像
       chatheadPhoto: '',
@@ -186,71 +188,95 @@ export default {
     }
   },
   async mounted () {
-    // console.log(this.$route.query)
-    this.messageArr = []
+    console.log(this.$route.query)
+    let title = this.$route.query.employeeName
     this.chatTo = this.$route.query.id
-    this.chatheadPhoto = this.$route.query.headPhoto
-      ? decodeURIComponent(this.$route.query.headPhoto)
-      : ''
-    this.loginAccountLogo =
-      wx.getStorageSync('userinfo') && wx.getStorageSync('userinfo').headimgurl
+    this.chatheadPhoto = this.$route.query.headPhoto ? decodeURIComponent(this.$route.query.headPhoto) : ''
+    this.loginAccountLogo = wx.getStorageSync('userinfo') && wx.getStorageSync('userinfo').headimgurl
+    wx.setNavigationBarTitle({ title })
+    this.messageArr = []
     const data = await initInim()
+    console.log(data)
     this.account = data.yx_account
-    // console.log(data)
-    if (thisNIM) {
-      thisNIM.getHistoryMsgs({
-        scene: 'p2p',
-        to: this.chatTo,
-        done: this.getHistoryMsgsDone
-      })
-    }
-    thisNIM = NIM.getInstance({
-      // 初始化SDK
-      // debug: true,
-      //  appKey: 'bd4ea621af735fd6924c38d44ae76eb0', // 开发
-      appKey: '146b62b8b039383f894b04e5aaec3701', // 测试
-      account: data.yx_account,
-      token: data.yx_token,
-      //   account: '14ff0266a382729dd5d159d92f6945ba',
-      //  token: 'b63a5db0e66a146d340855b3302f6e46',
-      onconnect: this.onConnect,
-      onerror: this.onError,
-      onwillreconnect: this.onWillReconnect,
-      ondisconnect: this.onDisconnect,
-      // 多端
-      onloginportschange: this.onLoginPortsChange,
-      // 会话
-      onsessions: this.onSessions,
-      onupdatesession: this.onUpdateSession,
-      // 消息
-      onroamingmsgs: this.onRoamingMsgs,
-      onofflinemsgs: this.onOfflineMsgs,
-      onmsg: this.onMsg,
-      // 同步完成
-      onsyncdone: this.onSyncDone
-    })
+    this.token = data.yx_token
+    this.initINM()
   },
+
   methods: {
+    initINM () {
+      if (thisNIM) {
+        thisNIM.getHistoryMsgs({
+          scene: 'p2p',
+          to: this.chatTo,
+          done: this.getHistoryMsgsDone
+        })
+      }
+      console.log(this.account, this.token)
+      thisNIM = NIM.getInstance({
+      // 初始化SDK
+        // debug: true,
+        //  appKey: 'bd4ea621af735fd6924c38d44ae76eb0', // 开发
+        appKey: '146b62b8b039383f894b04e5aaec3701', // 测试
+        account: this.account,
+        token: this.token,
+        //   account: '14ff0266a382729dd5d159d92f6945ba',
+        //  token: 'b63a5db0e66a146d340855b3302f6e46',
+        onconnect: this.onConnect,
+        onerror: this.onError,
+        onwillreconnect: this.onWillReconnect,
+        ondisconnect: this.onDisconnect,
+        // 多端
+        onloginportschange: this.onLoginPortsChange,
+        // 会话
+        onsessions: this.onSessions,
+        onupdatesession: this.onUpdateSession,
+        // 消息
+        onroamingmsgs: this.onRoamingMsgs,
+        onofflinemsgs: this.onOfflineMsgs,
+        onmsg: this.onMsg,
+        // 同步完成
+        onsyncdone: this.onSyncDone
+      })
+    },
     onConnect () {
       console.log('连接成功')
     },
     onWillReconnect (obj) {
       // 此时说明 `SDK` 已经断开连接, 请开发者在界面上提示用户连接已断开, 而且正在重新建立连接
       console.log('即将重连', obj)
+      wx.showToast({ title: '重连中，请稍后！', icon: 'loading', duration: 3000 })
     },
     onDisconnect (error) {
+      let self = this
       // 此时说明 `SDK` 处于断开状态, 开发者此时应该根据错误码提示相应的错误信息, 并且跳转到登录页面
       console.log('连接断开', error)
       if (error) {
         switch (error.code) {
           // 账号或者密码错误, 请跳转到登录页面并提示错误
           case 302:
+            wx.showToast({ title: '账号或者密码错误', icon: 'none', duration: 2000 })
             break
           // 重复登录, 已经在其它端登录了, 请跳转到登录页面并提示错误
           case 417:
+            wx.showToast({ title: '重复登录, 已经在其它端登录了', icon: 'none', duration: 2000 })
             break
           // 被踢, 请提示错误后跳转到登录页面
           case 'kicked':
+            wx.showModal({
+              title: '用户下线',
+              content: '在其他客户端登录，导致被踢',
+              confirmText: '重新登录',
+              cancelText: '返回',
+              success: (res) => {
+                if (res.confirm) {
+                  self.initINM()
+                } else if (res.cancel) {
+                  wx.navigateBack({
+                    delta: 1
+                  })
+                }
+              }
+            })
             break
           default:
             break
@@ -259,6 +285,7 @@ export default {
     },
     onError (error, obj) {
       console.log('发生错误', error, obj)
+      wx.showToast({ title: '间接发生错误', icon: 'none', duration: 2000 })
     },
     onLoginPortsChange (loginPorts) {
       console.log('当前登录帐号在其它端的状态发生改变了', loginPorts)
@@ -272,7 +299,6 @@ export default {
     },
     onSessions (sessions) {
       console.log('收到会话列表', sessions)
-      // this.updateSessionsUI()
     },
     onUpdateSession (session) {
       console.log('会话更新了', session)
@@ -287,11 +313,6 @@ export default {
         }
       }
     },
-    updateSessionsUI () {
-      // 刷新界面
-      console.log('刷新界面')
-    },
-
     onRoamingMsgs (obj) {
       console.log('漫游消息', obj)
     },
@@ -776,7 +797,7 @@ export default {
           }
           console.log('发送消息成功')
           self.inputValue = ''
-          self.focusFlag = false
+          // self.focusFlag = false
         }
       })
     },

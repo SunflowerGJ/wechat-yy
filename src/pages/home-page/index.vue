@@ -505,7 +505,8 @@ export default {
       console.log(item)
       let id = item.id
       let headPhoto = item.headPhoto ? encodeURIComponent(item.headPhoto) : ''
-      this.$router.push({ path: '/pages/chat/main', query: {id, headPhoto} })
+      let employeeName = item.employeeName || '客服'
+      this.$router.push({ path: '/pages/chat/main', query: {id, headPhoto, employeeName} })
     },
     onBanner () {
       // 楼盘详情加了 type 和url字段  type 1链接 4优惠券 5相册  , 跳优惠券和相册的时候 url是空的 用楼盘id
