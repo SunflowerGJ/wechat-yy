@@ -3,28 +3,28 @@
   <!-- 消息记录 -->
       <!-- 消息记录 -->
   <div class='record-wrapper' id="recordWrapper">
-    <div v-for="(message,index) in messageArr" :key="index">
+    <div v-for="message in messageArr" :key="message.key">
       <view class='record-item-time-wrapper' v-if="message.displayTimeHeader != ''">
         <text class='record-item-time'>{{message.displayTimeHeader}}</text>
       </view>
       <div v-if="message.sendOrReceive == 'send'" :class='message.sendOrReceive == "send" ? "record-chatting-item self" : ""' style='justify-content: flex-end' :data-message="message" @longpress='showEditorMenu'>
-        <view v-if="message.type === 'image'" class='record-chatting-item-text ' ><img :src="message.content"/></view>
+        <view v-if="message.type === 'image'" class='record-chatting-item-text img-wrap nobg' ><img mode="widthFix" :src="message.content"/></view>
         <text v-if="message.type === 'text'" class='record-chatting-item-text'>{{message.content}}</text>
-        <text class='right-triangle'></text>
-        <img :src='loginAccountLogo'  class='record-chatting-item-img'/>
+        <!-- <text class='right-triangle'></text> -->
+        <img :src='loginAccountLogo'  class='record-chatting-item-img' style="margin-left:8px;"/>
       </div>
       <div v-if="message.sendOrReceive == 'receive'" :class='message.sendOrReceive == "receive" ? "record-chatting-item other" : ""' style='justify-content: flex-start' :data-message="message"  @longpress='showEditorMenu'>
-        <img :src='chatheadPhoto' @click='switchToMyTab' class='record-chatting-item-img'/>
-        <text class='left-triangle'></text>
-        <view v-if="message.type === 'image'" class='record-chatting-item-text nobg' ><img :src="message.content"/></view>
-        <text v-if="message.type === 'text'" class='record-chatting-item-text' style='color:#000;background-color:#fff;' >{{message.content}}</text>
+        <img :src='chatheadPhoto' @click='switchToMyTab' class='record-chatting-item-img' style="margin-right:8px;"/>
+        <!-- <text class='left-triangle'></text> -->
+        <view v-if="message.type === 'image'" class='record-chatting-item-text img-wrap nobg' ><img mode="widthFix" :src="message.content"/></view>
+        <text v-if="message.type === 'text'" class='record-chatting-item-text fffbg' style='color:#000;background-color:#fff;' >{{message.content}}</text>
       </div>
     </div>
   </div>
   <!--底部输入框  -->
     <div class='chatinput-wrapper' >
       <div class='chatinput-content'>
-        <input style='margin-bottom: 20rpx;'  :value='inputValue' :focus='focusFlag' @input='inputChange' @focus='inputFocus' @blur='inputBlur' @confirm='inputSend' class='chatinput-input'  placeholder="输入文字" confirm-type='send'/>
+        <input style='margin-bottom: 20rpx;'  :value='inputValue' :focus='focusFlag' @input='inputChange' @focus='inputFocus' @blur='inputBlur' @confirm='inputSend' class='chatinput-input'  placeholder="输入文字" placeholder-style="color:#C1C1C1;" confirm-type='send'/>
         <img src='/static/images/icon-input-more.png' @click='toggleMore' class='chatinput-img fr'/>
       </div>
       <div v-if="moreFlag" class='more-subcontent'>
@@ -35,7 +35,7 @@
           </div>
           <div class='more-subcontent-item' @click.stop='chooseImageOrVideo'>
             <img src="/static/images/icon-ph.png" class='image'/>
-            <text class='text'>拍摄</text>
+            <text class='text'>拍照</text>
           </div>
         </div>
       </div>
@@ -53,7 +53,7 @@ export default {
   data () {
     return {
       nim: null,
-      nimData: {},
+      nimData: [],
       testList: [{sendOrReceive: 'send', type: 'text', text: '谁的风景刘恺家刘恺风景刘恺'}, {sendOrReceive: 'receive', type: 'text', text: '十分艰苦'}],
       chatWrapperMaxHeight: 0, // 聊天界面最大高度
       chatTo: '', // 聊天对象account
@@ -154,12 +154,12 @@ export default {
     },
     onSessions (sessions) {
       console.log('收到会话列表', sessions)
-       this.nimData.sessions = thisNIM.mergeSessions(this.nimData.sessions, sessions)
+      //  this.nimData.sessions = thisNIM.mergeSessions(this.nimData.sessions, sessions)
       this.updateSessionsUI()
     },
     onUpdateSession (session) {
       console.log('会话更新了', session)
-       this.nimData.sessions = thisNIM.mergeSessions(this.nimData.sessions, session)
+      //  this.nimData.sessions = thisNIM.mergeSessions(this.nimData.sessions, session)
        this.updateSessionsUI()
     },
     updateSessionsUI () {
@@ -191,7 +191,8 @@ export default {
       console.log('获取云端历史记录' + (!error?'成功':'失败'), error, obj);
       if (!error) {
         console.log(obj.msgs);
-       this.messageArr= this.handleMsgs(obj.msgs).reverse()
+        this.nimData = obj.msgs
+        this.messageArr= this.handleMsgs(this.nimData).reverse()
         setTimeout(()=>{
           this.scrollToBottom()
         },400)
@@ -218,7 +219,7 @@ export default {
             break
           }
           case 'image': {
-          	console.log(rawMsg.file.url)
+
             content = rawMsg.file.url
             break
           }
@@ -266,6 +267,7 @@ export default {
           from: rawMsg.from,
           time: rawMsg.time,
           sendOrReceive,
+          key:(rawMsg.time+Math.random()),
           content,
           displayTimeHeader
         }))
@@ -280,6 +282,7 @@ export default {
       let lastMessage = messageArr[messageArr.length - 1]
       if (lastMessage) {//拥有上一条消息
         let delta = time - lastMessage.time
+        console.log(delta > 2 * 60 * 1000)
         if (delta > 2 * 60 * 1000) {//两分钟以上
           displayTimeHeader = calcTimeHeader(time)
         }
@@ -295,11 +298,7 @@ export default {
 
     // 选择相册图片
     chooseImageToSend (e) {
-      // let type = e.currentTarget.dataset.type
       let self = this
-      // self.setData({
-      //   moreFlag: false
-      // })
       wx.chooseImage({
         sourceType: ['album'],
         success: function (res) {
@@ -310,35 +309,12 @@ export default {
     // 选择拍摄视频或者照片
     chooseImageOrVideo () {
       let self = this
-      // self.setData({
-      //   moreFlag: false
-      // })
-      wx.showActionSheet({
-        itemList: ['照相', '视频'],
-        success: function (res) {
-          if (res.tapIndex === 0) { // 相片
-            wx.chooseImage({
-              sourceType: ['camera'],
-              success: function (res) {
-                self.sendImageToNOS(res)
-              }
-            })
-          } else if (res.tapIndex === 1) { // 视频
-            wx.chooseVideo({
-              sourceType: ['camera', 'album'],
-              success: function (res) {
-                if (res.duration > 60) {
-                  // showToast('text', '视频时长超过60s，请重新选择')
-                  return
-                }
-                console.log(res)
-                // {duration,errMsg,height,size,tempFilePath,width}
-                self.sendVideoToNos(res)
-              }
-            })
+        wx.chooseImage({
+          sourceType: ['camera'],
+          success: function (res) {
+            self.sendImageToNOS(res)
           }
-        }
-      })
+        })
     },
     // 滚动页面到底部
     scrollToBottom () {
@@ -351,7 +327,6 @@ export default {
     inputChange (e) {
       this.inputValue = e.mp.detail.value
     },
-
     // 键盘单击发送，发送文本
     inputSend () {
       this.sendRequest(this.inputValue)
@@ -377,12 +352,15 @@ export default {
             if (self.handleErrorAfterSend(err)) {
               return
             }
-            // 存储数据到store
-//            self.saveChatMessageListToStore(msg)
             console.log('发送消息成功')
             console.log(msg)
+            self.nimData.unshift(msg)
+            self.messageArr= self.handleMsgs(self.nimData).reverse()
+            self.moreFlag=false
             // 滚动到底部
-            self.scrollToBottom()
+            setTimeout(()=>{
+              self.scrollToBottom()
+            },300)
           }
         })
       }
@@ -403,8 +381,15 @@ export default {
           // self.saveChatMessageListToStore(msg)
           console.log('发送消息成功')
           console.log(msg)
+          self.nimData.unshift(msg)
+          self.messageArr= self.handleMsgs(self.nimData).reverse()
+
+          self.inputValue= ''
+          self.focusFlag= false
           // 滚动到底部
-          self.scrollToBottom()
+          setTimeout(()=>{
+            self.scrollToBottom()
+          },300)
         }
       })
     },
@@ -544,7 +529,7 @@ export default {
 }
 /* more-subcontent */
 .more-subcontent {
-  padding: 40rpx 30rpx;
+  padding: 0 40rpx 30rpx;
   // border:2rpx solid #ccc;
 }
 .more-subcontent .more-subcontent-item {
@@ -590,27 +575,38 @@ export default {
   color: #fff;
 }
 .record-chatting-item-img {
-  width: 80rpx;
-  height: 80rpx;
+  width: 34px;
+  height: 34px;
   border-radius: 100%;
   display: inline-block;
 }
 
 .record-chatting-item-text {
-  max-width: 70%;
-  border-radius: 8rpx;
-  background-color: #3387FF;
-  padding: 16rpx;
+  max-width: 220px;
+  border-radius: 14px;
+  background-color: #FFE8E8;
+  padding: 7px 11px;
   box-sizing:border-box;
   word-wrap:break-word;
   overflow: hidden;
-  font-size: 32rpx;
-  line-height: 48rpx;
+  font-size: 14px;
+  line-height: 20px;
+  color:#333;
 }
 .record-chatting-item-text.nobg {
   background: transparent;
-  margin-left: 20rpx;
-  margin-right: 20rpx;
+  // margin-left: 20rpx;
+  // margin-right: 20rpx;
+}
+.record-chatting-item-text.img-wrap {
+  padding 0;
+}
+.record-chatting-item-text.img-wrap img {
+  display block;
+  width 220px
+}
+.record-chatting-item-text.fffbg{
+    background: #fff;
 }
 /* tip消息富文本 */
 .tip-rich-text {
@@ -650,7 +646,7 @@ export default {
   width:0px;
   border-width:20rpx;
   border-style:solid;
-  border-color:transparent transparent transparent #3387FF;
+  border-color:transparent transparent transparent #FFE8E8;
   margin-top: 20rpx;
 }
 .video-triangle {
