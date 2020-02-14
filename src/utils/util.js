@@ -82,7 +82,7 @@ function sortStringArray (srcArr) {
 /**
  * 输入Unix时间戳，返回指定时间格式
  */
-function calcTimeHeader (time) {
+export const calcTimeHeader= (time)=> {
   // 格式化传入时间
   let date = new Date(parseInt(time)),
     year = date.getUTCFullYear(),
@@ -307,7 +307,7 @@ export const correctData =(obj)=> {
   let temp = {}
   temp['account'] = obj['account']
   temp['nick'] = obj['nick']
-  temp['avatar'] = obj['avatar'] 
+  temp['avatar'] = obj['avatar']
   temp['gender'] = obj['gender'] || '未设置'
   temp['birth'] = obj['birth'] || '未设置'
   temp['tel'] = obj['tel'] || '未设置'

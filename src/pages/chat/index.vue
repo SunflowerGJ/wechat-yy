@@ -1,16 +1,32 @@
 <template>
   <div class='chating-wrapper'>
   <!-- 消息记录 -->
-   <div class='record-wrapper' id="recordWrapper">
-
-   </div>
+      <!-- 消息记录 -->
+  <div class='record-wrapper' id="recordWrapper">
+    <div v-for="(message,index) in messageArr" :key="index">
+      <view class='record-item-time-wrapper' v-if="message.displayTimeHeader != ''">
+        <text class='record-item-time'>{{message.displayTimeHeader}}</text>
+      </view>
+      <div v-if="message.sendOrReceive == 'send'" :class='message.sendOrReceive == "send" ? "record-chatting-item self" : ""' style='justify-content: flex-end' :data-message="message" @longpress='showEditorMenu'>
+        <view v-if="message.type === 'image'" class='record-chatting-item-text ' ><img :src="message.content"/></view>
+        <text v-if="message.type === 'text'" class='record-chatting-item-text'>{{message.content}}</text>
+        <text class='right-triangle'></text>
+        <img :src='loginAccountLogo'  class='record-chatting-item-img'/>
+      </div>
+      <div v-if="message.sendOrReceive == 'receive'" :class='message.sendOrReceive == "receive" ? "record-chatting-item other" : ""' style='justify-content: flex-start' :data-message="message"  @longpress='showEditorMenu'>
+        <img :src='chatheadPhoto' @click='switchToMyTab' class='record-chatting-item-img'/>
+        <text class='left-triangle'></text>
+        <view v-if="message.type === 'image'" class='record-chatting-item-text nobg' ><img :src="message.content"/></view>
+        <text v-if="message.type === 'text'" class='record-chatting-item-text' style='color:#000;background-color:#fff;' >{{message.content}}</text>
+      </div>
+    </div>
+  </div>
   <!--底部输入框  -->
     <div class='chatinput-wrapper' >
       <div class='chatinput-content'>
         <input style='margin-bottom: 20rpx;'  :value='inputValue' :focus='focusFlag' @input='inputChange' @focus='inputFocus' @blur='inputBlur' @confirm='inputSend' class='chatinput-input'  placeholder="输入文字" confirm-type='send'/>
         <img src='/static/images/icon-input-more.png' @click='toggleMore' class='chatinput-img fr'/>
       </div>
-      {{moreFlag}}
       <div v-if="moreFlag" class='more-subcontent'>
         <div style='display:flex;'>
           <div class='more-subcontent-item' @click.stop='chooseImageToSend'>
@@ -28,19 +44,22 @@
 </template>
 
 <script>
+  /* eslint-disable */
 import {initInim} from '../../http/api.js'
-let NIM = require('../../../static/libs/NIM_Web_NIM_weixin_v6.8.0')
-// import {generateFingerGuessImageFile, generateBigEmojiImageFile, generateRichTextNode, generateImageNode, calcTimeHeader} from '../../../src/utils/util.js'
+ let NIM = require('../../../static/libs/NIM_Web_NIM_weixin_v6.8.0')
+  let thisNIM=null
+ import {calcTimeHeader} from '../../../src/utils/util.js'
 export default {
   data () {
     return {
       nim: null,
       nimData: {},
-
+      testList: [{sendOrReceive: 'send', type: 'text', text: '谁的风景刘恺家刘恺风景刘恺'}, {sendOrReceive: 'receive', type: 'text', text: '十分艰苦'}],
       chatWrapperMaxHeight: 0, // 聊天界面最大高度
       chatTo: '', // 聊天对象account
       chatType: '', // 聊天类型 advanced 高级群聊 normal 讨论组群聊 p2p 点对点聊天
       loginAccountLogo: '', // 登录账户对象头像
+      chatheadPhoto:'',
       focusFlag: false, // 控制输入框失去焦点与否
       emojiFlag: false, // emoji键盘标志位
       moreFlag: false, // 更多功能标志
@@ -52,33 +71,46 @@ export default {
       from: ''
     }
   },
+//  onLoad (e) {
+//    Object.assign(this, this.$options.data())
+//  },
   async mounted () {
     console.log(this.$route.query)
     this.chatTo = this.$route.query.id
+    this.chatheadPhoto = this.$route.query.headPhoto
+    this.loginAccountLogo = wx.getStorageSync('userinfo') && wx.getStorageSync('userinfo').headimgurl
     const data = await initInim()
     console.log(data)
-    this.nim = NIM.getInstance({
-      // 初始化SDK
-      // debug: true,
-      appKey: 'bd4ea621af735fd6924c38d44ae76eb0',
-      account: data.yx_account,
-      token: data.yx_token,
-      onconnect: this.onConnect,
-      onerror: this.onError,
-      onwillreconnect: this.onWillReconnect,
-      ondisconnect: this.onDisconnect,
-      // 多端
-      onloginportschange: this.onLoginPortsChange,
-      // 会话
-      onsessions: this.onSessions,
-      onupdatesession: this.onUpdateSession,
-      // 消息
-      onroamingmsgs: this.onRoamingMsgs,
-      onofflinemsgs: this.onOfflineMsgs,
-      onmsg: this.onMsg,
-      // 同步完成
-      onsyncdone: this.onSyncDone
-    })
+    if(thisNIM){
+
+      thisNIM.getHistoryMsgs({
+        scene: 'p2p',
+        to: this.chatTo,
+        done: this.getHistoryMsgsDone
+      });
+    }
+    thisNIM = NIM.getInstance({
+       // 初始化SDK
+       // debug: true,
+       appKey: 'bd4ea621af735fd6924c38d44ae76eb0',
+       account: data.yx_account,
+       token: data.yx_token,
+       onconnect: this.onConnect,
+       onerror: this.onError,
+       onwillreconnect: this.onWillReconnect,
+       ondisconnect: this.onDisconnect,
+       // 多端
+       onloginportschange: this.onLoginPortsChange,
+       // 会话
+       onsessions: this.onSessions,
+       onupdatesession: this.onUpdateSession,
+       // 消息
+       onroamingmsgs: this.onRoamingMsgs,
+       onofflinemsgs: this.onOfflineMsgs,
+       onmsg: this.onMsg,
+       // 同步完成
+       onsyncdone: this.onSyncDone
+     })
   },
   methods: {
     onConnect () {
@@ -112,7 +144,7 @@ export default {
     },
     onLoginPortsChange (loginPorts) {
       console.log('当前登录帐号在其它端的状态发生改变了', loginPorts)
-      this.nim.kick({
+      thisNIM.kick({
         deviceIds: [loginPorts[0].deviceId],
         done: this.onKick
       })
@@ -122,44 +154,142 @@ export default {
     },
     onSessions (sessions) {
       console.log('收到会话列表', sessions)
-      // this.nimData.sessions = this.nim.mergeSessions(this.nimData.sessions, sessions)
+       this.nimData.sessions = thisNIM.mergeSessions(this.nimData.sessions, sessions)
       this.updateSessionsUI()
     },
     onUpdateSession (session) {
       console.log('会话更新了', session)
-      // this.nimData.sessions = this.nim.mergeSessions(this.nimData.sessions, session)
-      this.updateSessionsUI()
+       this.nimData.sessions = thisNIM.mergeSessions(this.nimData.sessions, session)
+       this.updateSessionsUI()
     },
     updateSessionsUI () {
       // 刷新界面
+      console.log('刷新界面')
     },
 
     onRoamingMsgs (obj) {
       console.log('漫游消息', obj)
-      this.pushMsg(obj.msgs)
+
     },
     onOfflineMsgs (obj) {
       console.log('离线消息', obj)
-      this.pushMsg(obj.msgs)
+
     },
     onMsg (msg) {
       console.log('收到消息', msg.scene, msg.type, msg)
-      this.pushMsg(msg)
-    },
-    pushMsg (msgs) {
-      if (!Array.isArray(msgs)) {
-        msgs = [msgs]
-      }
-      var sessionId = msgs[0].sessionId
-      this.nimData.msgs = this.nimData.msgs || {}
-      this.nimData.msgs[sessionId] = this.nim.mergeMsgs(this.nimData.msgs[sessionId], msgs)
-    },
-    onSyncDone () {
-      console.log('同步完成')
     },
 
+    onSyncDone () {
+      console.log('同步完成')
+      thisNIM.getHistoryMsgs({
+        scene: 'p2p',
+        to: this.chatTo,
+        done: this.getHistoryMsgsDone
+      });
+    },
+    getHistoryMsgsDone(error, obj) {
+      console.log('获取云端历史记录' + (!error?'成功':'失败'), error, obj);
+      if (!error) {
+        console.log(obj.msgs);
+       this.messageArr= this.handleMsgs(obj.msgs).reverse()
+        setTimeout(()=>{
+          this.scrollToBottom()
+        },400)
+      }
+    },
+
+    handleMsgs(arr){
+      let messageArr = []
+      arr.map(rawMsg => {
+        let msgType = ''
+        if (rawMsg.type === 'custom' && JSON.parse(rawMsg['content'])['type'] === 1) {
+          msgType = '猜拳'
+        } else if (rawMsg.type === 'custom' && JSON.parse(rawMsg['content'])['type'] === 3) {
+          msgType = '贴图表情'
+        } else {
+          msgType = rawMsg.type
+        }
+        let displayTimeHeader = this.judgeOverTwoMinute(rawMsg.time, messageArr)
+        let sendOrReceive = rawMsg.flow === 'in' ? 'receive' : 'send'
+        let content = ''
+        switch (msgType) {
+          case 'text': {
+            content = rawMsg.text
+            break
+          }
+          case 'image': {
+          	console.log(rawMsg.file.url)
+            content = rawMsg.file.url
+            break
+          }
+          case 'geo': {
+
+            break
+          }
+          case 'audio': {
+
+            break
+          }
+          case 'video': {
+
+            break
+          }
+          case '猜拳': {
+
+            break
+          }
+          case '贴图表情': {
+            break
+          }
+          case 'tip': {
+
+            break
+          }
+          case '白板消息':
+          case '阅后即焚': {
+
+            break
+          }
+          case 'file':
+          case 'robot': {
+            break
+          }
+          case 'notification':
+            break;
+          default: {
+            break
+          }
+        }
+        messageArr.push(Object.assign({}, {
+          type: msgType,
+          text: rawMsg.text || '',
+          from: rawMsg.from,
+          time: rawMsg.time,
+          sendOrReceive,
+          content,
+          displayTimeHeader
+        }))
+      })
+      return messageArr
+    },
+    /**
+     * 距离上一条消息是否超过两分钟
+     */
+    judgeOverTwoMinute(time, messageArr) {
+      let displayTimeHeader = ''
+      let lastMessage = messageArr[messageArr.length - 1]
+      if (lastMessage) {//拥有上一条消息
+        let delta = time - lastMessage.time
+        if (delta > 2 * 60 * 1000) {//两分钟以上
+          displayTimeHeader = calcTimeHeader(time)
+        }
+      } else {//没有上一条消息
+        displayTimeHeader = calcTimeHeader(time)
+      }
+      return displayTimeHeader
+    },
     toggleMore () {
-      this.moreFlag = true
+      this.moreFlag = !this.moreFlag
       console.log(this.moreFlag)
     },
 
@@ -235,7 +365,7 @@ export default {
       let tempFilePaths = res.tempFilePaths
       for (let i = 0; i < tempFilePaths.length; i++) {
       // 上传文件到nos
-        self.nim.sendFile({
+        thisNIM.sendFile({
         // app.globalData.nim.previewFile({
           type: 'image',
           scene: 'p2p',
@@ -248,7 +378,7 @@ export default {
               return
             }
             // 存储数据到store
-            self.saveChatMessageListToStore(msg)
+//            self.saveChatMessageListToStore(msg)
             console.log('发送消息成功')
             console.log(msg)
             // 滚动到底部
@@ -260,12 +390,11 @@ export default {
     // 发送网络请求：发送文本消息(包括emoji)
     sendRequest (text) {
       let self = this
-      this.nim.sendText({
+      thisNIM.sendText({
         scene: 'p2p',
         to: this.chatTo,
         text,
         done: (err, msg) => {
-          console.log(err)
           // 判断错误类型，并做相应处理
           if (self.handleErrorAfterSend(err)) {
             return
@@ -288,7 +417,6 @@ export default {
         if (err.code === 7101) {
           console.log('text', '你已被对方拉黑')
         }
-        console.log(err)
         return true
       }
       return false
@@ -345,7 +473,7 @@ export default {
   position: fixed;
   bottom: 0;
   left: 0;
-  
+
 
 }
 .chatinput-content {
@@ -436,12 +564,12 @@ export default {
   font-weight:400;
   color:rgba(69,69,69,1);
   line-height:20px;
-  
+
 }
 /*聊天记录  */
 .record-wrapper {
   width: 100%;
-  padding-bottom: 100rpx;
+  padding-bottom: 200rpx;
   padding-top:80rpx;
 }
 .record-chatting-item {
