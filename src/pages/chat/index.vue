@@ -82,7 +82,6 @@ export default {
     const data = await initInim()
     console.log(data)
     if(thisNIM){
-
       thisNIM.getHistoryMsgs({
         scene: 'p2p',
         to: this.chatTo,
@@ -95,6 +94,8 @@ export default {
        appKey: 'bd4ea621af735fd6924c38d44ae76eb0',
        account: data.yx_account,
        token: data.yx_token,
+      //   account: '14ff0266a382729dd5d159d92f6945ba',
+      //  token: 'b63a5db0e66a146d340855b3302f6e46',
        onconnect: this.onConnect,
        onerror: this.onError,
        onwillreconnect: this.onWillReconnect,
@@ -154,12 +155,21 @@ export default {
     },
     onSessions (sessions) {
       console.log('收到会话列表', sessions)
-      //  this.nimData.sessions = thisNIM.mergeSessions(this.nimData.sessions, sessions)
+
       this.updateSessionsUI()
     },
     onUpdateSession (session) {
       console.log('会话更新了', session)
       //  this.nimData.sessions = thisNIM.mergeSessions(this.nimData.sessions, session)
+      if(session.lastMsg&&session.lastMsg.status== 'success'){
+          this.nimData.unshift(session.lastMsg)
+          this.messageArr= this.handleMsgs(this.nimData).reverse()
+          // 滚动到底部
+          setTimeout(()=>{
+            this.scrollToBottom()
+          },300)
+      }
+
        this.updateSessionsUI()
     },
     updateSessionsUI () {
@@ -282,7 +292,6 @@ export default {
       let lastMessage = messageArr[messageArr.length - 1]
       if (lastMessage) {//拥有上一条消息
         let delta = time - lastMessage.time
-        console.log(delta > 2 * 60 * 1000)
         if (delta > 2 * 60 * 1000) {//两分钟以上
           displayTimeHeader = calcTimeHeader(time)
         }
@@ -354,13 +363,13 @@ export default {
             }
             console.log('发送消息成功')
             console.log(msg)
-            self.nimData.unshift(msg)
-            self.messageArr= self.handleMsgs(self.nimData).reverse()
+            // self.nimData.unshift(msg)
+            // self.messageArr= self.handleMsgs(self.nimData).reverse()
             self.moreFlag=false
             // 滚动到底部
-            setTimeout(()=>{
-              self.scrollToBottom()
-            },300)
+            // setTimeout(()=>{
+            //   self.scrollToBottom()
+            // },300)
           }
         })
       }
@@ -381,15 +390,15 @@ export default {
           // self.saveChatMessageListToStore(msg)
           console.log('发送消息成功')
           console.log(msg)
-          self.nimData.unshift(msg)
-          self.messageArr= self.handleMsgs(self.nimData).reverse()
+          // self.nimData.unshift(msg)
+          // self.messageArr= self.handleMsgs(self.nimData).reverse()
 
           self.inputValue= ''
           self.focusFlag= false
           // 滚动到底部
-          setTimeout(()=>{
-            self.scrollToBottom()
-          },300)
+          // setTimeout(()=>{
+          //   self.scrollToBottom()
+          // },300)
         }
       })
     },
