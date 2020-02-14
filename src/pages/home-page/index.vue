@@ -283,7 +283,7 @@
             </div>
             <div class="chat_right">
               <img src="/static/images/icon-call.png" @click="onCall(item.mobile)" alt="">
-              <img src="/static/images/icon-chat.png" @click="goChat(item.id,item.headPhoto)" alt="">
+              <img src="/static/images/icon-chat.png" @click="goChat(item)" alt="">
             </div>
           </div>
         </div>
@@ -497,8 +497,8 @@ export default {
         phoneNumber: phoneNumber + ''
       })
     },
-    goChat (id, headPhoto) {
-      this.$router.push({ path: '/pages/chat/main', query: {id, headPhoto} })
+    goChat (item) {
+      this.$router.push({ path: '/pages/chat/main', query: {id: item.id, headPhoto: item.headPhoto} })
     },
     onBanner () {
       // 楼盘详情加了 type 和url字段  type 1链接 4优惠券 5相册  , 跳优惠券和相册的时候 url是空的 用楼盘id

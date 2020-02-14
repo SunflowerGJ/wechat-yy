@@ -70,6 +70,7 @@ export default {
       testList: [{sendOrReceive: 'send', type: 'text', text: '谁的风景刘恺家刘恺风景刘恺'}, {sendOrReceive: 'receive', type: 'text', text: '十分艰苦'}],
       chatWrapperMaxHeight: 0, // 聊天界面最大高度
       chatTo: '', // 聊天对象account
+      account:'',
       chatType: '', // 聊天类型 advanced 高级群聊 normal 讨论组群聊 p2p 点对点聊天
       loginAccountLogo: '', // 登录账户对象头像
       chatheadPhoto:'',
@@ -96,6 +97,7 @@ export default {
     this.chatheadPhoto = this.$route.query.headPhoto
     this.loginAccountLogo = wx.getStorageSync('userinfo') && wx.getStorageSync('userinfo').headimgurl
     const data = await initInim()
+    this.account = data.yx_account
     console.log(data)
     if(thisNIM){
       thisNIM.getHistoryMsgs({
@@ -107,7 +109,8 @@ export default {
     thisNIM = NIM.getInstance({
        // 初始化SDK
        // debug: true,
-       appKey: 'bd4ea621af735fd6924c38d44ae76eb0',
+      //  appKey: 'bd4ea621af735fd6924c38d44ae76eb0', // 开发
+        appKey: '146b62b8b039383f894b04e5aaec3701', // 测试
        account: data.yx_account,
        token: data.yx_token,
       //   account: '14ff0266a382729dd5d159d92f6945ba',
@@ -171,22 +174,20 @@ export default {
     },
     onSessions (sessions) {
       console.log('收到会话列表', sessions)
-
-      this.updateSessionsUI()
+      // this.updateSessionsUI()
     },
     onUpdateSession (session) {
       console.log('会话更新了', session)
-      //  this.nimData.sessions = thisNIM.mergeSessions(this.nimData.sessions, session)
-      if(session.lastMsg&&session.lastMsg.status== 'success'){
+      if(session.lastMsg && session.lastMsg.status== 'success'){
+        if ([this.chatTo,this.account].includes(session.to)){
           this.nimData.unshift(session.lastMsg)
           this.messageArr= this.handleMsgs(this.nimData).reverse()
           // 滚动到底部
           setTimeout(()=>{
             this.scrollToBottom()
           },300)
+        }
       }
-
-       this.updateSessionsUI()
     },
     updateSessionsUI () {
       // 刷新界面
@@ -206,7 +207,6 @@ export default {
     },
 
     onSyncDone () {
-      console.log('同步完成')
       thisNIM.getHistoryMsgs({
         scene: 'p2p',
         to: this.chatTo,
@@ -236,11 +236,6 @@ export default {
    * 播放音频
    */
   playAudio(e) {
-    // wx.showToast('text', '播放中', {
-    //   duration: 120 * 1000,
-    //   mask: true
-    // })
-    console.log(e)
     wx.showToast({
         title: '播放中',
         icon: 'none',
@@ -258,12 +253,11 @@ export default {
     audioContext.play()
     audioContext.onPlay(() => {
     })
-    audioContext.onEnded((e) => {
-      console.log(e)
+    audioContext.onEnded(() => {
+
       wx.hideToast()
     })
     audioContext.onError((res) => {
-      // showToast('text', res.errCode)
         wx.showToast({
         title: res.errCode,
         icon: 'none',
@@ -278,9 +272,6 @@ export default {
   voiceBtnLongTap(e) {
     let self = this
     this.isLongPress= true
-    // self.setData({
-    //   isLongPress: true
-    // })
     wx.getSetting({
       success: (res) => {
         let recordAuth = res.authSetting['scope.record']
@@ -289,14 +280,12 @@ export default {
             success: function (res) {
               let recordAuth = res.authSetting['scope.record']
               if (recordAuth == true) {
-                // showToast('success', '授权成功')
                 wx.showToast({
                   title: '授权成功',
                   icon: 'success',
                   duration: 2000
                 })
               } else {
-                // showToast('text', '请授权录音')
                   wx.showToast({
                     title: '请授权录音',
                     icon: 'none',
@@ -304,9 +293,6 @@ export default {
                   })
               }
               self.isLongPress= false
-              // self.setData({
-              //   isLongPress: false
-              // })
             }
           })
         } else if (recordAuth == true) { // 用户已经同意授权
@@ -315,12 +301,11 @@ export default {
           wx.authorize({
             scope: 'scope.record',
             success: () => {//授权成功
-              // showToast('success', '授权成功')
-          wx.showToast({
-            title: '授权成功',
-            icon: 'success',
-            duration: 2000
-          })
+              wx.showToast({
+                title: '授权成功',
+                icon: 'success',
+                duration: 2000
+              })
             }
           })
         }
@@ -340,9 +325,6 @@ export default {
    */
   longPressStart() {
     let self = this
-    // self.setData({
-    //   recordClicked: true
-    // })
      this.recordClicked =true
     setTimeout(() => {
       if (self.recordClicked == true) {
@@ -355,21 +337,13 @@ export default {
      */
     longPressEnd() {
       this.recordClicked =false
-      // this.setData({
-      //   recordClicked: false
-      // })
       // 第一次授权，
       if (!this.recorderManager) {
         this.isLongPress =false
-        // this.setData({
-        //   isLongPress: false
-        // })
         return
       }
       if (this.isLongPress === true) {
-        // this.setData({
-        //   isLongPress: false
-        // })
+
         this.isLongPress =false
         wx.hideToast()
         this.recorderManager.stop()
@@ -381,9 +355,6 @@ export default {
     executeRecord() {
       let self = this
       this.isLongPress=true
-      // self.setData({
-      //   isLongPress: true
-      // })
       wx.getSetting({
         success: (res) => {
           let recordAuth = res.authSetting['scope.record']
@@ -392,7 +363,6 @@ export default {
               success: function (res) {
                 let recordAuth = res.authSetting['scope.record']
                 if (recordAuth == true) {
-                  // wx.showToast('success', '授权成功')
                   wx.showToast({
                     title: '授权成功',
                     icon: 'success',
@@ -406,9 +376,6 @@ export default {
                   })
                 }
                 self.isLongPress =true
-                // self.setData({
-                //   isLongPress: false
-                // })
               }
             })
           } else if (recordAuth == true) { // 用户已经同意授权
@@ -432,7 +399,6 @@ export default {
           icon: 'error',
           duration: 2000
           })
-          // showToast('error', '鉴权失败，请重试')
         }
       })
     },
@@ -441,12 +407,11 @@ export default {
      */
     startRecord() {
       let self = this
-         wx.showToast({
+        wx.showToast({
           title: '开始录音',
           icon: 'text',
           duration: 120000
-          })
-      // showToast('text', '开始录音', { duration: 120000 })
+        })
       const recorderManager = self.recorderManager || wx.getRecorderManager()
       const options = {
         duration: 120 * 1000,
@@ -477,7 +442,6 @@ export default {
     })
     let tempFilePath = res.tempFilePath
     let self = this
-    // console.log(tempFilePath)
     thisNIM.sendFile({
       scene: 'p2p',
       to: self.chatTo,
@@ -489,14 +453,13 @@ export default {
         if (self.handleErrorAfterSend(err)) {
           return
         }
-        // // 存储数据到store
-        // self.saveChatMessageListToStore(msg)
-
-        // // 滚动到底部
-        // self.scrollToBottom()
       }
     })
   },
+    handleUser(){
+      let users = [this.chatTo,this.account]
+
+    },
     handleMsgs(arr){
       let messageArr = []
       arr.map(rawMsg => {
@@ -609,15 +572,10 @@ export default {
           }
         }) 
         this.messageArr = tempArr
-        // this.setData({
-        //   messageArr: tempArr
-        // })
       },
     toggleMore () {
       this.moreFlag = !this.moreFlag
-      console.log(this.moreFlag)
     },
-
     // 选择相册图片
     chooseImageToSend (e) {
       let self = this
@@ -675,14 +633,7 @@ export default {
               return
             }
             console.log('发送消息成功')
-            console.log(msg)
-            // self.nimData.unshift(msg)
-            // self.messageArr= self.handleMsgs(self.nimData).reverse()
             self.moreFlag=false
-            // 滚动到底部
-            // setTimeout(()=>{
-            //   self.scrollToBottom()
-            // },300)
           }
         })
       }
@@ -699,19 +650,9 @@ export default {
           if (self.handleErrorAfterSend(err)) {
             return
           }
-          // 存储数据到store
-          // self.saveChatMessageListToStore(msg)
           console.log('发送消息成功')
-          console.log(msg)
-          // self.nimData.unshift(msg)
-          // self.messageArr= self.handleMsgs(self.nimData).reverse()
-
           self.inputValue= ''
           self.focusFlag= false
-          // 滚动到底部
-          // setTimeout(()=>{
-          //   self.scrollToBottom()
-          // },300)
         }
       })
     },
