@@ -97,7 +97,7 @@
       </div>
     </div>
     <!--底部输入框  -->
-    <div class="chatinput-wrapper">
+    <div class="chatinput-wrapper"  :style="{'position':focusFlag?'absolute':'fixed'}">
       <div class="chatinput-content">
         <img
           :src="sendType === 0 ? '/static/images/voice.png' : '/static/images/keyboard.png'"
@@ -106,7 +106,10 @@
         />
         <!-- :confirm-hold="true" -->
         <input
+        style='margin-bottom: 20rpx;'
           v-if="sendType === 0"
+          :cursor-spacing="36"
+          :confirm-hold="true"
           :value="inputValue"
           :focus="focusFlag"
           @input="inputChange"
@@ -309,7 +312,7 @@ export default {
           // 滚动到底部
           setTimeout(() => {
             this.scrollToBottom()
-          }, 300)
+          }, 150)
         }
       }
     },
@@ -338,7 +341,7 @@ export default {
         this.reCalcAllMessageTime()
         setTimeout(() => {
           this.scrollToBottom()
-        }, 400)
+        }, 300)
       }
     },
     /**
@@ -813,6 +816,17 @@ export default {
         return true
       }
       return false
+    },
+    /**
+  * 获取聚焦
+  */
+    inputFocus: function (e) {
+      this.focusFlag = true
+    },
+
+    // 失去聚焦(软键盘消失)
+    inputBlur: function (e) {
+      this.focusFlag = false
     }
   }
 }
