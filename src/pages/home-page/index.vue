@@ -1,7 +1,7 @@
 <template>
   <div class="container" v-if="detail">
     <div class="panl_swiper">
-      <img :src="detail.photo"  @click="handleGoPhoto('样板间')"/>
+      <img :src="detail.photo"  @click="onBanner"/>
     </div>
     <div class="sroll_container" id="sroll_container">
       <div class="delta_panl">
@@ -72,7 +72,7 @@
         </div>
         <div class="estate_panl">
           <scroll-view class="scroll-view_H" scroll-x="true" style="white-space: nowrap; display: flex;">
-            <div class="swiper-item scroll_item" @click="goActivityDetail(item.id)" v-for="(item,index) in detail.article" :key="index">
+            <div class="swiper-item scroll_item" @click="goActivityDetail(item)" v-for="(item,index) in detail.article" :key="index">
               <div class="item-main_tag" v-if="item.is_top === '1'">
                 <i></i>
                 <div class="lawyerType-bgImg"></div>
@@ -137,6 +137,10 @@
           <span>楼盘详情</span>
         </div>
         <ul class="floor_details">
+          <li v-if="detail.presale_code">
+            <label>预售证：</label>
+            <span>{{detail.presale_code}}</span>
+          </li>
           <li v-if="detail.office_address">
             <label>售楼地址：</label>
             <span>{{detail.office_address}}</span>
@@ -147,11 +151,15 @@
           </li>
           <li v-if="detail.average_price">
             <label>参考均价：</label>
-            <span>{{detail.average_price}}/m²</span>
+            <span>{{detail.average_price}}元/m²</span>
           </li>
           <li v-if="detail.total_price">
             <label>参考总价：</label>
             <span>{{detail.total_price}}万/套起</span>
+          </li>
+          <li v-if="detail.price_extime">
+            <label>价格有效期：</label>
+            <span>{{detail.price_extime}}</span>
           </li>
           <li v-if="detail.property_type">
             <label>物业类型：</label>
@@ -261,6 +269,27 @@
           </ul>
         </div>
       </div>
+      <div class="chat_panl" id="test">
+        <div class="title_marig">
+          <div class="titles_panl">
+            <span>置业顾问</span>
+          </div>
+        </div>
+        <div class="chat_main">
+          <div class="chat_main_item" v-for="(item,index) in concatList" :key="index">
+            <div class="chat_left">
+            <img :src="item.headPhoto" alt="">
+              <div class="chat_name">{{item.employeeName}}</div>
+            </div>
+            <div class="chat_right">
+              <img src="/static/images/icon-call.png" @click="onCall(item.mobile)" alt="">
+              <img src="/static/images/icon-chat.png" @click="goChat(item)" alt="">
+            </div>
+          </div>
+        </div>
+
+
+      </div>
       <div class="match_panl" id="test">
         <div class="title_marig">
           <div class="titles_panl">
@@ -336,12 +365,25 @@
       </div>
     </div>
       <house-footer :detail='detail' @addCID='addCID' type='1'/>
+      <van-popup  :show="showNoticeModal"  position="center" >
+        <div class="notice-model">
+          <div class="notice-model__main">
+            <img @click="jumpByNoticeModal" class="notice-model__main-img" mode="widthFix" v-if="detail.alert_ad" :src="detail.alert_ad.photo" alt=""/>
+          </div>
+          <div class="notice-model__close" @click="showNoticeModal=false">
+            <img class="notice-model__close-img" src='/static/images/icon-closed.png' />
+          </div>
+        </div>
+      </van-popup>
+      <getUserinfo v-if="showGetUserInfoModel"></getUserinfo>
   </div>
 </template>
 <script>
-import { postHousesDetail, POINTAlbums, POINTHouseClick, POINTHouseType, POINTArticleClick } from '../../http/api.js'
+import { postHousesDetail, POINTAlbums, POINTHouseClick, getContactList } from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
 import tips from '../../components/tips'
+import getUserinfo from '../../components/get-userinfo'
+import { reLogin } from '../../http/request.js'
 var QQMapWX = require('qqmap-wx-jssdk')
 export default {
   /**
@@ -355,10 +397,14 @@ export default {
   },
   components: {
     houseFooter,
-    tips
+    tips,
+    getUserinfo
   },
   data () {
     return {
+      concatList: [],
+      showGetUserInfoModel: false,
+      showNoticeModal: false,
       house_id: '',
       show: false,
       detail: null,
@@ -392,13 +438,26 @@ export default {
       this.house_id = decodeURIComponent(parmas)
     }
   },
+
   async mounted () {
     if (this.$route.query.id) {
       this.house_id = this.$route.query.id
     }
+
     const data = await postHousesDetail({
       house_id: this.house_id
     })
+    wx.setNavigationBarTitle({title: data.name})
+    try {
+      if (data.project_id) {
+        const concatList = await getContactList({projectID: data.project_id})
+        this.concatList = concatList
+      }
+    } catch (error) {
+      console.log(error)
+    }
+
+    this.showGetUserInfoModel = true
     this.detail = data
     this.detail.albums = Object.keys(data.albums).map(key => data.albums[key])
     this.detail.strong_point = JSON.parse(data.strong_point)
@@ -412,20 +471,88 @@ export default {
       'create_time': '0',
       'update_time': '0'
     })
-
-    wx.setNavigationBarTitle({
-      title: data.name
-    })
+    let alertAdCache = wx.getStorageSync(`alert_ad${this.house_id}`)
+    let hasAlertAd = this.detail.alert_ad && this.detail.alert_ad.status === '1'
+    if (hasAlertAd) {
+      if (this.detail.alert_ad.photo === alertAdCache) {
+        this.showNoticeModal = false
+      } else {
+        this.showNoticeModal = true
+      }
+    } else {
+      this.showNoticeModal = false
+    }
     this.handleSearch()
+    POINTHouseClick({
+      cityId: this.detail.city_id,
+      houseId: this.detail.id,
+      type: 1
+    })
+    wx.checkSession({
+      success () {},
+      fail () {
+        reLogin()
+      }
+    })
   },
   methods: {
+    onCall (phoneNumber) {
+      wx.makePhoneCall({
+        phoneNumber: phoneNumber + ''
+      })
+    },
+    goChat (item) {
+      console.log(item)
+      let id = item.id
+      let headPhoto = item.headPhoto ? encodeURIComponent(item.headPhoto) : ''
+      let employeeName = item.employeeName || '客服'
+      this.$router.push({ path: '/pages/chat/main', query: {id, headPhoto, employeeName} })
+    },
+    onBanner () {
+      // 楼盘详情加了 type 和url字段  type 1链接 4优惠券 5相册  , 跳优惠券和相册的时候 url是空的 用楼盘id
+      if (this.detail.type === '4') {
+        this.goCouponList()
+      }
+      if (this.detail.type === '5') {
+        this.handleGoPhoto('样板间')
+      }
+      if (this.detail.type === '1') {
+        this.$router.push({ path: '/pages/web-view/main', query: {src: this.detail.url, title: this.detail.url_title, photo: this.detail.url_photo} })
+      }
+    },
+    // 优惠券弹窗跳转
+    jumpByNoticeModal () {
+      let alertAd = this.detail.alert_ad
+      wx.setStorageSync(`alert_ad${this.house_id}`, alertAd.photo)
+      // type =1是外链=2是楼盘=3是资讯=4是优惠券
+      switch (alertAd.type) {
+        case '1':
+          const src = alertAd.url ? encodeURIComponent(alertAd.url) : ''
+          const title = alertAd.name
+          const photo = alertAd.photo ? encodeURIComponent(alertAd.photo) : ''
+          this.$router.push({ path: '/pages/web-view/main', query: {src, title, photo, id: alertAd.id} })
+          break
+        case '2':
+          this.$router.push({path: '/pages/home-page/main', query: { id: alertAd.url }})
+          break
+        case '3':
+          this.$router.push({ path: '/pages/activity-detail/main', query: { id: alertAd.url } })
+          break
+        case '4':
+          alertAd.city_name = this.detail.city_name
+          this.$router.push({ path: '/pages/coupon-list/main', query: alertAd })
+          break
+        default:
+      }
+      this.showNoticeModal = false
+    },
     goCouponList () {
       let query = {
         city_id: this.detail.city_id,
         house_id: this.detail.id,
         city_name: this.detail.city_name,
-        name: this.detail.name,
-        photo: this.detail.photo
+        house_name: this.detail.name,
+        house_photo: this.detail.photo
       }
       this.$router.push({ path: '/pages/coupon-list/main', query: query })
     },
@@ -505,12 +632,6 @@ export default {
       this.$router.push({path: '/pages/door-list/main', query: {id}})
     },
     goHousesDetail (item) {
-      POINTHouseType({
-        cityId: this.detail.city_id,
-        houseId: item.house_id,
-        housetypeId: item.id,
-        type: 1
-      })
       this.$router.push({path: '/pages/door-details/main', query: {id: item.id}})
     },
     goAroundMap (detail) {
@@ -535,14 +656,20 @@ export default {
       const cityName = this.detail.city_name
       this.$router.push({path: '/pages/estate-photo/main', query: {id, city_name: cityName, tabName: name, current}})
     },
-    goActivityDetail (id) {
-      POINTArticleClick({
-        cityId: this.detail.city_id,
-        houseId: this.detail.id,
-        articleId: id,
-        type: 4
-      })
-      this.$router.push({ path: '/pages/activity-detail/main', query: { id } })
+    goActivityDetail (item) {
+      // POINTArticleClick({
+      //   cityId: this.detail.city_id,
+      //   houseId: this.detail.id,
+      //   articleId: item.id,
+      //   type: 4
+      // })
+      if (item.url) {
+        const src = encodeURIComponent(item.url)
+        const photo = item.photo ? encodeURIComponent(item.photo) : ''
+        this.$router.push({ path: '/pages/web-view/main', query: {src, title: item.title, photo, id: item.id} })
+      } else {
+        this.$router.push({ path: '/pages/activity-detail/main', query: { id: item.id } })
+      }
     },
     goWatchList (id) {
       this.$router.push({ path: '/pages/watch-list/main', query: { id } })
@@ -553,9 +680,16 @@ export default {
   }
 }
 </script>
-
+<style style lang="stylus" rel="stylesheet/stylus">
+.container {
+  .van-popup {
+    background: transparent!important;
+  }
+}
+</style>
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 @import '../../stylus/mixin.styl';
+
 .coupon_photo {
   width: 100%;
   height: 120px;
@@ -1055,7 +1189,54 @@ export default {
     }
   }
 }
+.chat_panl{
+  background-color: #ffffff;
+  margin-top: 10px;
 
+  .title_marig {
+    padding: 20px;
+  }
+  .chat_main_item {
+    display:flex ;
+    justify-content space-between;
+    width 100%;
+    height 80px;
+    box-sizing:border-box;
+    padding 0 14px 0 30px;
+
+    .chat_left {
+      display:flex ;
+      align-items center;
+      justify-content flex-start;
+      img {
+        display block;
+        height 50px;
+        width 50px;
+        border-radius 50%;
+        margin-right 22px;
+      }
+      .chat_name {
+        font-size:14px;
+        font-weight:bold;
+        color:rgba(89,87,87,1);
+      }
+    }
+    .chat_right {
+      display:flex ;
+      align-items center;
+      justify-content center;
+      img {
+        display block;
+        height 28px;
+        width 28px;
+        margin 0 6px;
+        // background #d8d8d8
+      }
+
+    }
+  }
+
+}
 .match_panl {
   background-color: #ffffff;
   margin-top: 10px;
@@ -1170,68 +1351,6 @@ export default {
     }
   }
 }
-
-.footer_fixed {
-  box-sizing: border-box;
-  width: 100%;
-  position: fixed;
-  z-index: 10;
-  left: 0;
-  bottom: 0;
-  background-color: #ffffff;
-  padding: 15px 12px;
-  display: flex;
-  justify-content: space-between;
-
-  .fixed_left {
-    width: 200px;
-    display: flex;
-    justify-content: space-between;
-
-    a {
-      display: flex;
-      flex-direction: column;
-      text-align: center;
-      justify-content: center;
-      align-items: center;
-      width: 33%;
-
-      img {
-        width: 13px;
-        height: 15px;
-      }
-
-      img.collection {
-        width: 17px;
-        height: 15px;
-      }
-
-      span {
-        font-size: 14px;
-        color: #9FA0A0;
-        margin-top: 2px;
-      }
-    }
-  }
-}
-
-.fixed_right {
-  flex: 1;
-  font-size: 14px;
-  line-height: 30px;
-  background: #E60113;
-  border-radius: 6px;
-  text-align: center;
-  color: #ffffff;
-
-  img {
-    width: 15px;
-    height: 15px;
-    margin-right: 10px;
-    margin-bottom: -3px;
-  }
-}
-
 .rich-text {
   font-size: 12px !important;
   line-height 1.5 !important;
@@ -1245,5 +1364,23 @@ export default {
 .space-1 {
   display inline-block
   width 15rpx
+}
+
+.notice-model__close {
+  width 20px
+  height 20px
+  margin 30px auto
+  .notice-model__close-img {
+    display block;
+    width 20px
+    height 20px
+  }
+}
+.notice-model__main {
+  .notice-model__main-img {
+    margin 0 auto;
+    width 320px;
+    display block;
+  }
 }
 </style>

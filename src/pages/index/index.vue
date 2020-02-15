@@ -40,14 +40,25 @@
       </block>
     </div>
     <get-user-info></get-user-info>
+      <van-popup  :show="showNoticeModal" position="center" >
+        <div class="notice-model">
+          <div class="notice-model__main">
+            <img @click="jumpByNoticeModal" class="notice-model__main-img" mode="widthFix" :src="alertAd.photo" alt=""/>
+          </div>
+          <div class="notice-model__close" @click="showNoticeModal=false">
+            <img class="notice-model__close-img" src='/static/images/icon-closed.png' />
+          </div>
+        </div>
+      </van-popup>
   </div>
 </template>
 
 <script>
 import GetUserInfo from '../../components/get-userinfo'
-import {postIndex, POINTCity, POINTAd} from '../../http/api.js'
+import {postIndex, POINTCity, POINTAd, getCityAlertAd} from '../../http/api.js'
 import HouseCard from '../../components/house-card'
 import {_getUserAddress} from '../../lib/getAddr.js'
+// import { getCache, setCache } from '../../utils/cache.js'
 export default {
 
 // 右上角分享功能
@@ -65,6 +76,9 @@ export default {
   },
   data () {
     return {
+      cityInfo: {},
+      showNoticeModal: false,
+      alertAd: {},
       houseClick: {
         type: 1
       },
@@ -89,6 +103,49 @@ export default {
     }
   },
   methods: {
+    fetchCityAlertAd (city) {
+      getCityAlertAd({city}).then(res => {
+        this.alertAd = res
+        let alertAdCache = wx.getStorageSync(`alert_ad${this.cityInfo.id}`)
+        let hasAlertAd = res && res.status === '1'
+        if (hasAlertAd) {
+          if (res.photo === alertAdCache) {
+            this.showNoticeModal = false
+          } else {
+            this.showNoticeModal = true
+          }
+        } else {
+          this.showNoticeModal = false
+        }
+      })
+    },
+    // 优惠券弹窗跳转
+    jumpByNoticeModal () {
+      let alertAd = this.alertAd
+      // type =1是外链=2是楼盘=3是资讯=4是优惠券
+      wx.setStorageSync(`alert_ad${this.cityInfo.id}`, alertAd.photo)
+      switch (alertAd.type) {
+        case '1':
+          const src = alertAd.url ? encodeURIComponent(alertAd.url) : ''
+          const title = alertAd.name
+          const photo = alertAd.photo ? encodeURIComponent(alertAd.photo) : ''
+          this.$router.push({ path: '/pages/web-view/main', query: {src, title, photo, id: alertAd.id} })
+          break
+        case '2':
+          this.$router.push({path: '/pages/home-page/main', query: { id: alertAd.url }})
+          break
+        case '3':
+          this.$router.push({ path: '/pages/activity-detail/main', query: { id: alertAd.url } })
+          break
+        case '4':
+          // this.goCouponList(alertAd)
+          alertAd.city_name = this.cityInfo.name
+          this.$router.push({ path: '/pages/coupon-list/main', query: alertAd })
+          break
+        default:
+      }
+      this.showNoticeModal = false
+    },
     // 广告跳转
     goBanner (item) {
       // 广告类型 1外链公众号 2楼盘 3资讯
@@ -96,13 +153,16 @@ export default {
         const src = item.url ? encodeURIComponent(item.url) : ''
         const title = item.title
         const photo = item.photo ? encodeURIComponent(item.photo) : ''
-        this.$router.push({ path: '/pages/web-view/main', query: {src, title, photo} })
+        this.$router.push({ path: '/pages/web-view/main', query: {src, title, photo, id: item.id} })
       }
       if (item.type === '2') {
         this.$router.push({ path: '/pages/home-page/main', query: {id: item.url} })
       }
       if (item.type === '3') {
         this.$router.push({ path: '/pages/activity-detail/main', query: {id: item.url} })
+      }
+      if (item.type === '4') {
+        this.goCouponList()
       }
       POINTCity({
         cityId: this.address,
@@ -134,7 +194,14 @@ export default {
     async  fetchIndexData (params) {
       try {
         const data = await postIndex(params)
+        // if(data.houses.length)
+        if (data.houses.length === 0) {
+          this.address = '北京'
+          this.globalData.address = '北京'
+          this.fetchIndexData({city: '北京'})
+        }
         this.bannerList = data.ads
+        this.cityInfo = data.cityInfo
         this.houses = data.houses.map(item => {
           if (item.tags) {
             return {...item, tags: item.tags.split('|')}
@@ -143,6 +210,7 @@ export default {
           }
         })
         this.houseClick.cityId = data.cityInfo.shortname
+        this.fetchCityAlertAd(params.city)
       } catch (err) {}
     }
   },
@@ -156,27 +224,7 @@ export default {
       this.fetchIndexData(params)
       return
     }
-    if (!adr) {
-      const city = await _getUserAddress()
-      this.address = city
-      this.globalData.address = city
-      this.fetchIndexData({city: this.address})
-    } else {
-      this.address = adr
-      this.globalData.address = adr
-      this.fetchIndexData({city: this.address})
-    }
-  },
-  async mounted () { // 地址筛选待调整
-    const adr = this.$route.query.addr
-    const obj = this.$route.query.params
-    if (obj) {
-      // 条件筛选后跳转
-      const params = JSON.parse(obj)
-      params.city = this.address
-      this.fetchIndexData(params)
-      return
-    }
+
     if (!adr) {
       const city = await _getUserAddress()
       this.address = city
@@ -192,9 +240,32 @@ export default {
       type: 'index'
     })
   }
+  // async mounted () { // 地址筛选待调整
+  //   const adr = this.$route.query.addr
+  //   if (!adr) {
+  //     const city = await _getUserAddress()
+  //     this.address = city
+  //     this.globalData.address = city
+  //   } else {
+  //     this.address = adr
+  //     this.globalData.address = adr
+  //   }
+  //   console.log(this.address)
+  //   console.log(adr)
+  //   POINTCity({
+  //     cityId: this.address,
+  //     type: 'index'
+  //   })
+  // }
 }
 </script>
-
+<style style lang="stylus" rel="stylesheet/stylus">
+.container {
+  .van-popup {
+    background: transparent!important;
+  }
+}
+</style>
 <style lang="stylus" scoped rel="stylesheet/stylus">
 @import "../../stylus/mixin.styl"
 .container
@@ -263,4 +334,21 @@ export default {
         color: #121111
   .main
     background-color #f2f2f2
+.notice-model__close {
+  width 20px
+  height 20px
+  margin 30px auto
+  .notice-model__close-img {
+    display block;
+    width 20px
+    height 20px
+  }
+}
+.notice-model__main {
+  .notice-model__main-img {
+    margin 0 auto;
+    width 320px;
+    display block;
+  }
+}
 </style>

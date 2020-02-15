@@ -100,6 +100,7 @@
 import {postHouseTypeDetail, POINTHouseType} from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
 import tips from '../../components/tips'
+import { reLogin } from '../../http/request.js'
 export default {
   onShareAppMessage: function (res) {
     return {
@@ -141,6 +142,18 @@ export default {
     this.detail.intro = data.intro
     wx.setNavigationBarTitle({
       title: data.name
+    })
+    POINTHouseType({
+      cityId: this.detail.city_id,
+      houseId: this.detail.house_id,
+      housetypeId: this.detail.id,
+      type: 1
+    })
+    wx.checkSession({
+      success () {},
+      fail () {
+        reLogin()
+      }
     })
   },
   methods: {

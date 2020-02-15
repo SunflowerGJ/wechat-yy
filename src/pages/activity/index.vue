@@ -71,7 +71,7 @@
 
 <script>
 import {_getUserAddress} from '../../lib/getAddr.js'
-import { postArticleList, POINTArticleClick } from '../../http/api.js'
+import { postArticleList } from '../../http/api.js'
 export default {
   // 右上角分享功能
   onShareAppMessage: function (res) {
@@ -186,16 +186,16 @@ export default {
       }
     },
     goActivityDetail (id, houseId, type, url, title, photo) {
-      POINTArticleClick({
-        cityId: this.globalData.address,
-        houseId: houseId,
-        articleId: id,
-        type: type
-      })
+      // POINTArticleClick({
+      //   cityId: this.globalData.address,
+      //   houseId: houseId,
+      //   articleId: id,
+      //   type: type
+      // })
       if (url) {
         const src = encodeURIComponent(url)
         photo = photo ? encodeURIComponent(photo) : ''
-        this.$router.push({ path: '/pages/web-view/main', query: {src, title, photo} })
+        this.$router.push({ path: '/pages/web-view/main', query: {src, title, photo, id} })
       } else {
         this.$router.push({ path: '/pages/activity-detail/main', query: { id } })
       }

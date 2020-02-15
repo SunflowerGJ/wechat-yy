@@ -15,7 +15,7 @@ fly.config = {
 }
 loginFly.config = fly.config
 
-const reLogin = () => {
+export const reLogin = () => {
   return new Promise((resolve, reject) => {
     wx.login({
       success: res => {
@@ -99,7 +99,7 @@ var request = (options, showLoading = true, loadingConfig = {title: '加载中..
       showLoading && wx.hideLoading()
       if (res.status === 200) {
         const data = res.data
-        if (data.code === 10000) {
+        if (Number(data.code) === 10000) {
           resolve(data.data)
         } else {
           // todo 根据状态码统一业务处理

@@ -17,13 +17,16 @@
       </button>
     </div>
     <!-- // 已经有电话 -->
-    <div class="fixed_right" v-if="isPhone">
-      <img src="/static/images/phone.png">
-      <span @click='makePhoneCall'>VIP热线</span>
-    </div>
-    <div class="fixed_right" v-if="!isPhone">
-      <img src="/static/images/phone.png">
-      <button open-type="getPhoneNumber" @getphonenumber="getPhoneNumber">VIP热线</button>
+    <div class="fixed_right">
+      <div class="call">
+        <img src="/static/images/phone.png">
+        <span  v-if="isPhone" @click='makePhoneCall'>VIP热线</span>
+        <button v-else open-type="getPhoneNumber" @getphonenumber="getPhoneNumber">VIP热线</button>
+      </div>
+      <div class="yuyue">
+        <img src="/static/images/icon-date.png">
+        <span @click='onShowDate'>预约</span>
+      </div>
     </div>
     <!-- https://www.jianshu.com/p/a7c4d394f51a -->
       <van-popup  :show="showModal" position="bottom" >
@@ -40,23 +43,23 @@
               </div>
                 <img :src="imagePath" alt="">
             </div>
-            <!-- <div class="main-content">
-            <div class="canvas-box">
-              <canvas canvas-id="shareCanvas" style="width:340px;height:500px;"></canvas>
-            </div>
-              <img v-if='showSharePic' :src="imagePath" alt="">
-            </div> -->
             <div class="main-footer">
               <span @click="modalConfirm">保存到手机</span>
             </div>
           </div>
       </van-popup>
-
+      <van-popup  :show="showDateModal" position="center" >
+        <appointment 
+          :cityId="detail.city_id" 
+          :houseId="type === '1' ? detail.id : detail.house_id" 
+          @submitSuc="submitSuc"
+          @close="onCloseDateModal"></appointment>
+      </van-popup>
   </div>
-
 </template>
 
 <script>
+import appointment from './appointment'
 import {
   postMobileSave,
   postAddCollection,
@@ -68,12 +71,14 @@ import {
 
 export default {
   props: ['detail', 'type'],
+  components: {appointment},
   data () {
     return {
       showModal: false,
       imagePath: '',
       isPhone: '',
-      showSharePic: false
+      showSharePic: false,
+      showDateModal: false
     }
   },
   created () {
@@ -95,6 +100,20 @@ export default {
     }
   },
   methods: {
+    onCloseDateModal () {
+      this.showDateModal = false
+    },
+    submitSuc (e) {
+      this.showDateModal = false
+      wx.showToast({
+        title: '预约成功',
+        icon: 'none',
+        duration: 2000
+      })
+    },
+    onShowDate () {
+      this.showDateModal = true
+    },
     share () {
       if (this.type === '1') {
         POINTHouseClick({
@@ -331,6 +350,13 @@ export default {
   }
 }
 </script>
+<style style lang="stylus" rel="stylesheet/stylus">
+.footer_fixed {
+  .van-popup {
+    background: transparent!important;
+  }
+}
+</style>
 
 <style lang="stylus" scoped rel="stylesheet/stylus">
 @import '../stylus/mixin.styl';
@@ -348,7 +374,7 @@ export default {
   justify-content: space-between;
 
   .fixed_left {
-    width: 200px;
+    width: 160px;
     display: flex;
     justify-content: space-between;
 
@@ -381,7 +407,7 @@ export default {
       }
 
       button {
-        font-size: 14px;
+        font-size: 10px;
         color: #9FA0A0;
         margin-top: 2px;
         padding: 0;
@@ -393,7 +419,7 @@ export default {
       }
 
       span {
-        font-size: 14px;
+        font-size: 10px;
         color: #9FA0A0;
         margin-top: 2px;
       }
@@ -403,28 +429,42 @@ export default {
 
 .fixed_right {
   flex: 1;
-  font-size: 14px;
+  font-size: 12px;
   line-height: 30px;
-  background: #E60113;
-  border-radius: 6px;
   text-align: center;
   color: #ffffff;
+  display flex;
+  justify-content space-between;
+  align-items center;
+  .call {
+    width 90px;
+    background: #E60113;
+    border-radius:6px;
+  }
+  .yuyue {
+    width 90px;
+    background: #E60113;
+    border-radius: 6px;
+  }
 
   img {
     width: 15px;
     height: 15px;
-    margin-right: 10px;
+    margin-right: 6px;
     margin-bottom: -3px;
   }
   span,
   button {
-    font-size: 14px;
+    font-size: 12px;
     line-height: 30px;
     background: #E60113;
     border-radius: 6px;
     text-align: center;
     color: #ffffff;
     display: inline;
+    padding-left: 0;
+    padding-right: 0;
+
 
     &::after {
       border: none;

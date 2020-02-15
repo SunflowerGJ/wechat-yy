@@ -264,3 +264,47 @@ export const POINTBtnClickNum = (params = {}) => {
     params: params
   }, false)
 }
+
+// 7.预约看房接口
+export const sendSeeInfo = (params = {}) => {
+  return fly({
+    method: 'post',
+    url: `/api/MemberSee/sendSeeinfo`,
+    params: params
+  }, false)
+}
+// 获取首页主页弹窗
+export const getCityAlertAd = (params = {}) => {
+  return fly({
+    method: 'post',
+    url: `/api/houses/getCityAlertAd`,
+    params: params
+  }, false)
+}
+// 获取资讯分享海报参数接口
+
+export const getArticleShareData = (params = {}) => {
+  return fly({
+    method: 'post',
+    url: `/api/Article/getArticleShareData`,
+    params: params
+  }, false)
+}
+
+// 初始化云信
+export const initInim = (params = {}) => {
+  return fly({
+    method: 'post',
+    url: `/api/Yunxin/init`,
+    params: params
+  }, false)
+}
+// 楼盘客服列表
+
+export const getContactList = (params = {}) => {
+  return fly({
+    method: 'post',
+    url: `/api/Yuanhui/GetCustomerServiceUserList`,
+    params: params
+  }, false)
+}

@@ -19,7 +19,8 @@
     "pages/estate-photo/main",
     "pages/around-map/main",
     "pages/go-address/main",
-    "pages/coupon-list/main"
+    "pages/coupon-list/main",
+    "pages/chat/main"
   ],
   "window": {
     "backgroundTextStyle": "light",
