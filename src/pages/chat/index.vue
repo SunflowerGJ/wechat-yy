@@ -161,7 +161,7 @@ import { initInim } from '../../http/api.js'
 import { calcTimeHeader } from '../../../src/utils/util.js'
 let NIM = require('../../../static/libs/NIM_Web_NIM_weixin_v6.8.0')
 let thisNIM = null
-
+var YX_APP_KEY = process.env.YX_APP_KEY
 export default {
   data () {
     return {
@@ -213,13 +213,13 @@ export default {
           done: this.getHistoryMsgsDone
         })
       }
-      console.log(this.account, this.token)
+      console.log(this.account, this.token, YX_APP_KEY)
       thisNIM = NIM.getInstance({
       // 初始化SDK
         // debug: true,
         //  appKey: 'bd4ea621af735fd6924c38d44ae76eb0', // 开发
         // appKey: '146b62b8b039383f894b04e5aaec3701', // 测试
-        appKey: 'aca6d3f7d4838d338df259b427c1dd58', // 正式
+        appKey: YX_APP_KEY, // 正式
         account: this.account,
         token: this.token,
         //   account: '14ff0266a382729dd5d159d92f6945ba',
