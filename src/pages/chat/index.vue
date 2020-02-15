@@ -837,7 +837,7 @@ export default {
 
 .chating-wrapper {
   width: 100%;
-  min-height: 100%;
+  min-height: 100vh;
   position: relative;
   /* margin: 70rpx 0 100rpx; */
   box-sizing: border-box;
