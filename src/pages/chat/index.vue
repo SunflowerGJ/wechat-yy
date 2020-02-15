@@ -218,7 +218,8 @@ export default {
       // 初始化SDK
         // debug: true,
         //  appKey: 'bd4ea621af735fd6924c38d44ae76eb0', // 开发
-        appKey: '146b62b8b039383f894b04e5aaec3701', // 测试
+        // appKey: '146b62b8b039383f894b04e5aaec3701', // 测试
+        appKey: 'aca6d3f7d4838d338df259b427c1dd58', // 正式
         account: this.account,
         token: this.token,
         //   account: '14ff0266a382729dd5d159d92f6945ba',
