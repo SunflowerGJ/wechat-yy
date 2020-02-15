@@ -45,7 +45,7 @@
         >
           <view
             class="info-section__item"
-            @click="goHomePage(item.id)"
+            @click="goHomePage(item.id,item.city_id)"
             v-for="(item,index) in houseList"
             :key="index"
           >
@@ -110,7 +110,7 @@
         >
           <view
             class="info-section__item"
-            @click="goHomePage(item.house_id)"
+            @click="goHomePage(item.house_id,item.city_id)"
             v-for="(item,index) in houseHisList"
             :key="index"
           >
@@ -295,9 +295,10 @@ export default {
         this.fetchMemberCouponsList(this.memberCouponsCon)
       }
     },
-    goHomePage (id) {
+    goHomePage (id, cityiId) {
+      console.log(id, cityiId)
       POINTHouseClick({
-        cityId: this.globalData.address,
+        cityId: cityiId,
         houseId: id,
         type: 9
       })
@@ -308,7 +309,7 @@ export default {
     },
     goHousesDetail (item) {
       POINTHouseType({
-        cityId: this.globalData.address,
+        cityId: item.city_id,
         houseId: item.house_id,
         housetypeId: item.id,
         type: 7
