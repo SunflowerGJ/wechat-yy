@@ -27,10 +27,11 @@
           >
             <img mode="widthFix" :src="message.content" />
           </view>
-          <text
-            v-if="message.type === 'text'"
+          <rich-text
+            v-if="message.type === 'text'|| message.type ==='custom'"
+            :nodes="message.nodes"
             class="record-chatting-item-text"
-            >{{ message.content }}</text
+            ></rich-text
           >
           <!-- <text class='right-triangle'></text> -->
           <view
@@ -76,11 +77,12 @@
           >
             <img mode="widthFix" :src="message.content" />
           </view>
-          <text
-            v-if="message.type === 'text'"
+          <rich-text
+            v-if="message.type === 'text'|| message.type ==='custom'"
+            :nodes="message.nodes"
             class="record-chatting-item-text fffbg"
             style="color:#000;background-color:#fff;"
-            >{{ message.content }}</text
+            ></rich-text
           >
           <view
             v-if="message.type === 'audio'"
@@ -133,11 +135,16 @@
         >
           {{ isLongPress ? "松开结束" : "按住说话" }}
         </button>
+        <img src='/static/images/emoji.png' @tap='toggleEmoji' class='chatinput-img fr emoji'/>
+
         <img
           src="/static/images/icon-input-more.png"
           @click="toggleMore"
           class="chatinput-img fr"
         />
+      </div>
+      <div v-if="emojiFlag" class='chatinput-subcontent'>
+        <component-emoji @EmojiClick="emojiCLick" @EmojiSend="emojiSend"></component-emoji>
       </div>
       <div v-if="moreFlag" class="more-subcontent">
         <div style="display:flex;">
@@ -158,7 +165,8 @@
 <script>
 // /* eslint-disable */
 import { initInim } from '../../http/api.js'
-import { calcTimeHeader } from '../../../src/utils/util.js'
+import { calcTimeHeader, generateRichTextNode } from '../../../src/utils/util.js'
+import componentEmoji from '../../components/componentEmoji'
 let NIM = require('../../../static/libs/NIM_Web_NIM_weixin_v6.8.0')
 let thisNIM = null
 var YX_APP_KEY = process.env.YX_APP_KEY
@@ -188,6 +196,9 @@ export default {
       isLongPress: false, // 录音按钮是否正在长按
       audioContext: null
     }
+  },
+  components: {
+    componentEmoji
   },
   async mounted () {
     console.log(this.$route.query)
@@ -346,6 +357,33 @@ export default {
       }
     },
     /**
+   * emoji组件回调
+   */
+    emojiCLick (e) {
+      let val = e
+      // 单击删除按钮，，删除emoji
+      if (val === '[删除]') {
+        let lastIndex = this.inputValue.lastIndexOf('[')
+        if (lastIndex !== -1) {
+          this.inputValue = this.inputValue.slice(0, lastIndex)
+        }
+        return
+      }
+      if (val[0] === '[') { // emoji
+        this.inputValue = this.inputValue + val
+      } else { // 大图
+        // this.sendBigEmoji(val)
+      }
+    },
+    /**
+   * emoji点击发送
+   */
+    emojiSend (e) {
+      let val = this.inputValue
+      this.sendRequest(val)
+      this.emojiFlag = false
+    },
+    /**
      * 切换发送文本类型
      */
     switchSendType () {
@@ -369,13 +407,11 @@ export default {
         wx.hideToast()
         return
       }
-
       wx.showToast({
         title: '播放中',
         icon: 'none',
         duration: 120 * 1000
       })
-
       let audio = e.mp.currentTarget.dataset.audio
       const audioContext = wx.createInnerAudioContext()
       this.audioContext = audioContext
@@ -622,7 +658,10 @@ export default {
         let specifiedObject = {}
         switch (msgType) {
           case 'text': {
-            content = rawMsg.text
+            // content = rawMsg.text
+            specifiedObject = {
+              nodes: generateRichTextNode(rawMsg.text)
+            }
             break
           }
           case 'image': {
@@ -658,6 +697,14 @@ export default {
           case 'robot': {
             break
           }
+          case 'custom':
+            specifiedObject = {
+              nodes: [{
+                type: 'text',
+                text: '自定义消息'
+              }]
+            }
+            break
           case 'notification':
             break
           default: {
@@ -724,6 +771,14 @@ export default {
     },
     toggleMore () {
       this.moreFlag = !this.moreFlag
+    },
+    /**
+   * 切换出emoji键盘
+   */
+    toggleEmoji () {
+      this.sendType = 0
+      this.emojiFlag = !this.emojiFlag
+      this.moreFlag = false
     },
     // 选择相册图片
     chooseImageToSend (e) {
@@ -821,12 +876,13 @@ export default {
     /**
   * 获取聚焦
   */
-    inputFocus: function (e) {
+    inputFocus (e) {
       this.focusFlag = true
+      this.emojiFlag = false
     },
 
     // 失去聚焦(软键盘消失)
-    inputBlur: function (e) {
+    inputBlur (e) {
       this.focusFlag = false
     }
   }
