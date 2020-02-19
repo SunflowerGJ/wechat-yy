@@ -135,13 +135,12 @@
         >
           {{ isLongPress ? "松开结束" : "按住说话" }}
         </button>
-        <img src='/static/images/emoji.png' @tap='toggleEmoji' class='chatinput-img fr emoji'/>
-
         <img
           src="/static/images/icon-input-more.png"
           @click="toggleMore"
           class="chatinput-img fr"
         />
+        <img src='/static/images/emoji.png' @tap='toggleEmoji' class='chatinput-img fr emoji'/>
       </div>
       <div v-if="emojiFlag" class='chatinput-subcontent'>
         <component-emoji @EmojiClick="emojiCLick" @EmojiSend="emojiSend"></component-emoji>
@@ -389,6 +388,7 @@ export default {
     switchSendType () {
       this.sendType = this.sendType === 0 ? 1 : 0
       this.focusFlag = false
+      this.emojiFlag = false
     },
     /**
      * 播放音频
@@ -771,6 +771,8 @@ export default {
     },
     toggleMore () {
       this.moreFlag = !this.moreFlag
+      this.emojiFlag = false
+      // focusFlag: false
     },
     /**
    * 切换出emoji键盘
@@ -948,14 +950,14 @@ export default {
   width: 100%;
   height: 83px;
   box-sizing: border-box;
-  padding: 0 0 0 20rpx;
+  // padding: 0 0 0 20rpx;
 }
 
 .chatinput-img {
   width: 60rpx;
   height: 60rpx;
   border-radius: 100%;
-  margin: 22px 20px 0 0;
+  margin: 22px 20rpx;
   display: inline-block;
 }
 

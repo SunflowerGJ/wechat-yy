@@ -269,7 +269,7 @@
           </ul>
         </div>
       </div>
-      <div class="chat_panl" id="test">
+      <div class="chat_panl" v-if="concatList.length>0">
         <div class="title_marig">
           <div class="titles_panl">
             <span>置业顾问</span>
@@ -287,8 +287,6 @@
             </div>
           </div>
         </div>
-
-
       </div>
       <div class="match_panl" id="test">
         <div class="title_marig">
@@ -451,7 +449,7 @@ export default {
     try {
       if (data.project_id) {
         const concatList = await getContactList({projectID: data.project_id})
-        this.concatList = concatList
+        this.concatList = concatList || []
       }
     } catch (error) {
       console.log(error)
