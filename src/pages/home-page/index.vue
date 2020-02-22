@@ -93,8 +93,9 @@
         <div class="chat_main">
           <div class="chat_main_item" v-for="(item,index) in concatList" :key="index">
             <div class="chat_left">
-            <img :src="item.headPhoto" alt="">
+              <img :src="item.headPhoto" alt="">
               <div class="chat_name">{{item.employeeName}}</div>
+              <div class="chat_tag">{{item.employeeName}}</div>
             </div>
             <div class="chat_right">
               <img src="/static/images/icon-call.png" @click="onCall(item.mobile)" alt="">
@@ -724,7 +725,7 @@ export default {
   margin-top: 200px;
   position: relative;
   z-index: 1;
-  background-color: #fff;
+  background-color: #f0f0f0;
 }
 
 .delta_panl {
@@ -998,7 +999,9 @@ export default {
 }
 .apartment_panl {
   background-color: #ffffff;
-  padding: 15px 20px;
+  // padding: 15px 20px;
+  padding: 14px 20px 0 20px;
+  margin-top 20rpx;
 
   .apar_title {
     display: flex;
@@ -1200,23 +1203,31 @@ export default {
     width 100%;
     height 80px;
     box-sizing:border-box;
-    padding 0 14px 0 30px;
+    padding 0 14px 0 20px;
 
     .chat_left {
       display:flex ;
       align-items center;
       justify-content flex-start;
+      // width 110px;
       img {
         display block;
         height 50px;
         width 50px;
         border-radius 50%;
-        margin-right 22px;
+        margin-right 11px;
       }
       .chat_name {
         font-size:14px;
         font-weight:bold;
         color:rgba(89,87,87,1);
+        margin-right 10px
+      }
+      .chat_tag {
+        font-size:12px;
+        font-weight:bold;
+        color:rgba(159,160,160,1);
+        margin-right 4px;
       }
     }
     .chat_right {

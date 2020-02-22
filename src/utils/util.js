@@ -26,7 +26,7 @@ function formatTime (date) {
   return [hour, minute, second].map(formatNumber).join(':')
 }
 
-function formatNumber (n) {
+export const formatNumber= (n)=> {
   n = n.toString()
   return n[1] ? n : '0' + n
 }
@@ -57,7 +57,7 @@ function firstLetterUpper (str) {
  *       string-number : 仅限字母、数字
  *       string-number-hanzi : 仅限中文、字母、汉字
  */
-function validStringType (str, type) {
+export const  validStringType= (str, type)=> {
   switch (type) {
     case 'string-number':
       return /^[A-Za-z0-9]+$/.test(str)
@@ -74,7 +74,7 @@ function validStringType (str, type) {
 /**
  * 字符串数组排序：包含中文字符
  */
-function sortStringArray (srcArr) {
+export const sortStringArray =(srcArr)=> {
   return srcArr.sort((a, b) => a.localeCompare(b, 'zh-Hans-CN', {
     sensitivity: 'base'
   }))
@@ -141,7 +141,7 @@ function post (params) {
 /**
  * 封装toast
  */
-function showToast (type, text, obj) {
+export const showToast= (type, text, obj)=> {
   let param = {
     duration: (obj && obj.duration) || 1500,
     mask: (obj && obj.isMask) || false

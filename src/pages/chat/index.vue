@@ -155,6 +155,10 @@
             <img src="/static/images/icon-ph.png" class="image" />
             <text class="text">拍照</text>
           </div>
+          <div class="more-subcontent-item" @click.stop="videoCall">
+            <img src="/static/images/icon-ph.png" class="image" />
+            <text class="text">视频通话</text>
+          </div>
         </div>
       </div>
     </div>
@@ -166,15 +170,20 @@
 import { initInim } from '../../http/api.js'
 import { calcTimeHeader, generateRichTextNode } from '../../../src/utils/util.js'
 import componentEmoji from '../../components/componentEmoji'
+import NetcallController from '../../controller/netcall.js'
 let NIM = require('../../../static/libs/NIM_Web_NIM_weixin_v6.8.0')
 let thisNIM = null
 var YX_APP_KEY = process.env.YX_APP_KEY
+let app = getApp()
 export default {
   data () {
     return {
       nim: null,
       nimData: [],
       chatWrapperMaxHeight: 0, // 聊天界面最大高度
+      videoContext: null, // 视频操纵对象
+      isVideoFullScreen: false, // 视频全屏控制标准
+      videoSrc: '', // 视频源
       chatTo: '', // 聊天对象account
       account: '',
       token: '',
@@ -253,6 +262,11 @@ export default {
     },
     onConnect () {
       console.log('连接成功')
+      getApp().globalData.netcallController = new NetcallController({
+      // debug: false,
+        debug: true,
+        nim: thisNIM
+      });
     },
     onWillReconnect (obj) {
       // 此时说明 `SDK` 已经断开连接, 请开发者在界面上提示用户连接已断开, 而且正在重新建立连接
@@ -389,6 +403,30 @@ export default {
       this.sendType = this.sendType === 0 ? 1 : 0
       this.focusFlag = false
       this.emojiFlag = false
+    },
+    /**
+   * 视频通话
+   */
+    videoCall () {
+      if (app.globalData.waitingUseVideoCall) {
+        wx.showToast({ title: '请勿频繁操作', icon: 'none', duration: 2000 })
+        return
+      }
+      if (this.chatType === 'advanced' || this.chatType === 'normal') { // 群组 暂时没有
+        if (this.currentGroup.memberNum.length < 2) {
+          wx.showToast({ title: '无法发起，人数少于2人', icon: 'none', duration: 2000 })
+        } else {
+          wx.navigateTo({
+            url: `../forwardMultiContact/forwardMultiContact?teamId=${this.currentGroup.teamId}`
+          })
+        }
+      } else { // p2p
+        console.log(`正在发起对${this.chatTo}的视频通话`)
+        this.$router.push({path: '/pages/videoCall/main', query: {callee: this.chatTo}})
+        // wx.navigateTo({
+        //   url: `../videoCall/videoCall?callee=${this.chatTo}`
+        // })
+      }
     },
     /**
      * 播放音频

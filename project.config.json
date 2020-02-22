@@ -160,7 +160,7 @@
 				},
 				{
 					"id": 16,
-					"name": "pages/chat/main",
+					"name": "聊天页面",
 					"pathName": "pages/chat/main",
 					"query": "id=e4f61ebbad3bc9947239f479c5e61303 ",
 					"scene": null
