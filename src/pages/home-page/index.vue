@@ -84,6 +84,25 @@
           </scroll-view>
         </div>
       </div>
+      <div class="chat_panl" v-if="concatList.length>0">
+        <div class="title_marig">
+          <div class="titles_panl">
+            <span>置业顾问</span>
+          </div>
+        </div>
+        <div class="chat_main">
+          <div class="chat_main_item" v-for="(item,index) in concatList" :key="index">
+            <div class="chat_left">
+            <img :src="item.headPhoto" alt="">
+              <div class="chat_name">{{item.employeeName}}</div>
+            </div>
+            <div class="chat_right">
+              <img src="/static/images/icon-call.png" @click="onCall(item.mobile)" alt="">
+              <img src="/static/images/icon-chat.png" @click="goChat(item)" alt="">
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="apartment_panl">
         <div class="apar_title">
           <span>户型介绍</span>
@@ -267,25 +286,6 @@
               <p class="about_p">{{item.value}}</p>
             </li>
           </ul>
-        </div>
-      </div>
-      <div class="chat_panl" v-if="concatList.length>0">
-        <div class="title_marig">
-          <div class="titles_panl">
-            <span>置业顾问</span>
-          </div>
-        </div>
-        <div class="chat_main">
-          <div class="chat_main_item" v-for="(item,index) in concatList" :key="index">
-            <div class="chat_left">
-            <img :src="item.headPhoto" alt="">
-              <div class="chat_name">{{item.employeeName}}</div>
-            </div>
-            <div class="chat_right">
-              <img src="/static/images/icon-call.png" @click="onCall(item.mobile)" alt="">
-              <img src="/static/images/icon-chat.png" @click="goChat(item)" alt="">
-            </div>
-          </div>
         </div>
       </div>
       <div class="match_panl" id="test">
