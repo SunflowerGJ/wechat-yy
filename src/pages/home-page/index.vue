@@ -261,7 +261,8 @@
           <div class="imgBox">
             <scroll-view :scroll-x="true" style="white-space: nowrap; display: flex;" >
               <a style="margin-right:13px" v-for="(tItem,tIndex) in item.photos" :key="tIndex" @click="handleGoPhoto(item.name,tIndex)">
-                <img :src="tItem.photo">
+                <img v-if="tItem.video_photo" :src="tItem.video_photo">
+                <img v-else :src="tItem.photo">
               </a>
           </scroll-view>
           </div>
@@ -643,7 +644,8 @@ export default {
         效果图: 3,
         周边配套: 4,
         户型图: 5,
-        规划图: 6
+        规划图: 6,
+        视频: 7
       }
       POINTAlbums({
         cityId: this.detail.city_id,
