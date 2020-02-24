@@ -20,7 +20,7 @@
         <div v-for="(item,index) in imgUrls" :key="index">
           <swiper-item>
             <txv-video
-            v-if="videoVid&& current === index"
+            v-if="videoVid && current === index && active === '视频'"
             :usePoster="true" 
             :poster="videoPhoto" 
             class="slide-image"  
@@ -34,7 +34,7 @@
             :height="'100%'"
             @play="onVideoPlay"
             @ended="onVideoEnd"></txv-video>
-            <image v-if="item.video_photo" :src="item.video_photo" class="slide-image"/>
+            <image v-if="item.video_photo && active == '视频'" :src="item.video_photo" class="slide-image"/>
             <image v-else @click="handlePreviewImage()" :src="item.photo" class="slide-image"/>
           </swiper-item>
         </div>
@@ -88,6 +88,8 @@ export default {
         houseId: this.$route.query.id,
         type: tyepMap[e]
       })
+      console.log(this.active)
+      console.log(this.imgUrls)
     },
     switchItem (e) {
       console.log(e)
@@ -147,7 +149,10 @@ export default {
   watch: {
     'active': {
       handler (value) {
+         console.log('active')
+        console.log(value)
         this.imgUrls = this.imgMap[value]
+        console.log(this.imgUrls)
         this.current = Number(this.$route.query.current) || 0
       },
       deep: true
@@ -161,18 +166,18 @@ export default {
   onShow () {
     this.initData()
     this._postAlbums()
-      let videoContext = TxvContext.getTxvContext('txv1')
-      videoContext.pause()
+      // let videoContext = TxvContext.getTxvContext('txv1')
+     this.videoContext && this.videoContext.pause()
       this.$data.isSwDOtr = true
   },
   onHide: function () {
-     let videoContext = TxvContext.getTxvContext('txv1')
-      videoContext.pause()
+    //  let videoContext = TxvContext.getTxvContext('txv1')
+      this.videoContext && this.videoContext.pause()
       this.$data.isSwDOtr = true
   }, 
   onUnload: function () {
-    let videoContext = TxvContext.getTxvContext('txv1')
-      videoContext.pause()
+    // let videoContext = TxvContext.getTxvContext('txv1')
+      this.videoContext && this.videoContext.pause()
       this.$data.isSwDOtr = true
   },
 }
