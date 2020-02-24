@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import {postHousesList} from '../../http/api.js'
+import {postHousesList} from '../../../http/api.js'
 export default {
 
   data () {

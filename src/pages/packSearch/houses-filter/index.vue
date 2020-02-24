@@ -97,7 +97,7 @@
 </template>
 
 <script>
-import { postIndex } from '../../http/api.js'
+import { postIndex } from '../../../http/api.js'
 export default {
   data () {
     return {
@@ -198,7 +198,7 @@ export default {
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-@import '../../stylus/mixin.styl';
+@import '../../../stylus/mixin.styl';
 
 .container {
   background: #f2f2f2;

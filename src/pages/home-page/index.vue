@@ -604,7 +604,7 @@ export default {
       let id = item.id
       let headPhoto = item.headPhoto ? encodeURIComponent(item.headPhoto) : ''
       let employeeName = item.employeeName || '客服'
-      this.$router.push({ path: '/pages/chat/main', query: {id, headPhoto, employeeName} })
+      this.$router.push({ path: '/pages/pA/chat/main', query: {id, headPhoto, employeeName} })
     },
     onBanner () {
       // 楼盘详情加了 type 和url字段  type 1链接 4优惠券 5相册  , 跳优惠券和相册的时候 url是空的 用楼盘id
@@ -734,7 +734,7 @@ export default {
     },
     goAroundMap (detail) {
       const query = { ...detail, ...this.searchMap }
-      this.$router.push({path: '/pages/around-map/main', query: query})
+      this.$router.push({path: '/pages/packMap/around-map/main', query: query})
     },
     handleGoPhoto (name, current = 0) {
       const tyepMap = {

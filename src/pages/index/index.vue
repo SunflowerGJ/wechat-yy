@@ -89,13 +89,13 @@ export default {
         {
           icon: '/static/images/index-nav-map.png',
           text: '地图找房',
-          path: '/pages/map/main',
+          path: '/pages/packMap/map/main',
           type: 'map'
         },
         {
           icon: '/static/images/index-nav-search.png',
           text: '条件筛选',
-          path: '/pages/houses-filter/main',
+          path: '/pages/packSearch/houses-filter/main',
           type: 'select'
         }
       ],
@@ -185,11 +185,11 @@ export default {
     },
     // 城市列表跳转
     goCityList () {
-      this.$router.push({path: '/pages/city-list/main', query: {city: this.address}})
+      this.$router.push({path: '/pages/packSearch/city-list/main', query: {city: this.address}})
     },
     // 楼盘列表跳转
     goHousesSearch () {
-      this.$router.push({path: '/pages/houses-search/main'})
+      this.$router.push({path: '/pages/packSearch/houses-search/main'})
     },
     async  fetchIndexData (params) {
       try {

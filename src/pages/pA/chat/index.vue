@@ -163,10 +163,10 @@
 
 <script>
 // /* eslint-disable */
-import { initInim } from '../../http/api.js'
-import { calcTimeHeader, generateRichTextNode } from '../../../src/utils/util.js'
-import componentEmoji from '../../components/componentEmoji'
-let NIM = require('../../../static/libs/NIM_Web_NIM_weixin_v6.8.0')
+import { initInim } from '../../../http/api.js'
+import { calcTimeHeader, generateRichTextNode } from '../../../utils/util.js'
+import componentEmoji from '../../../components/componentEmoji'
+let NIM = require('../../../../static/libs/NIM_Web_NIM_weixin_v6.8.0')
 let thisNIM = null
 var YX_APP_KEY = process.env.YX_APP_KEY
 export default {
@@ -892,7 +892,7 @@ export default {
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-@import '../../stylus/mixin.styl';
+@import '../../../stylus/mixin.styl';
 
 .chating-wrapper {
   width: 100%;

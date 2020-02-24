@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { postCities } from '../../http/api.js'
+import { postCities } from '../../../http/api.js'
 export default {
   data () {
     return {
@@ -68,7 +68,7 @@ export default {
   },
   methods: {
     goCitySearch () {
-      this.$router.push({ path: '/pages/city-search/main' })
+      this.$router.push({ path: '/pages/packSearch/citySearch/main' })
     },
     onSelect (item) {
       this.setLocalstorage(item.shortname)
@@ -88,7 +88,7 @@ export default {
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-@import '../../stylus/mixin.styl';
+@import '../../../stylus/mixin.styl';
 
 .container {
   background: #f2f2f2;

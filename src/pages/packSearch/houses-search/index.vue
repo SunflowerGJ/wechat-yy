@@ -20,8 +20,8 @@
 </template>
 
 <script>
-import HouseCard from '../../components/house-card'
-import {postHousesList} from '../../http/api.js'
+import HouseCard from '../../../components/house-card'
+import {postHousesList} from '../../../http/api.js'
 export default {
   components: {
     HouseCard
@@ -54,7 +54,7 @@ export default {
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-@import "../../stylus/mixin.styl"
+@import "../../../stylus/mixin.styl"
   .container
     background #f2f2f2
     .header
