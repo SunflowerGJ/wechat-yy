@@ -3,6 +3,7 @@
   "navigationBarBackgroundColor": "#ffffff",
   "usingComponents": {
     "van-transition": "/static/vant/transition/index",
-    "van-popup": "/static/vant/popup/index"
+    "van-popup": "/static/vant/popup/index",
+    "txv-video":"plugin://tencentvideo/video"
   }
 }

@@ -45,6 +45,7 @@
 </template>
 
 <script>
+/* eslint-disable */
 import { postAlbums, POINTAlbums } from '../../http/api.js'
 const TxvContext = requirePlugin('tencentvideo')
 export default {
@@ -160,7 +161,20 @@ export default {
   onShow () {
     this.initData()
     this._postAlbums()
-  }
+      let videoContext = TxvContext.getTxvContext('txv1')
+      videoContext.pause()
+      this.$data.isSwDOtr = true
+  },
+  onHide: function () {
+     let videoContext = TxvContext.getTxvContext('txv1')
+      videoContext.pause()
+      this.$data.isSwDOtr = true
+  }, 
+  onUnload: function () {
+    let videoContext = TxvContext.getTxvContext('txv1')
+      videoContext.pause()
+      this.$data.isSwDOtr = true
+  },
 }
 </script>
 
