@@ -7,6 +7,7 @@
           <swiper-item style="height:200px">
             <view v-if="item.istype == 'isVideo' && inx == swipers.current">
               <txv-video
+                v-if="item.video_photo"
                 :usePoster="true" 
                 :poster="item.video_photo" 
                 id="video" 
@@ -31,13 +32,12 @@
         </block>
       </swiper>
       <div v-if="isSwDOtr" class="swDots">
-        <ul>
-           <li :class="istype == 'isVideo' ? 'activeSW' : ''" @click="handlSwTpye('isVideo')">视频</li>
+        <ul v-if="showSwitchBtn">
+            <li  :class="istype == 'isVideo' ? 'activeSW' : ''" @click="handlSwTpye('isVideo')">视频</li>
             <li :class="istype == 'isImg' ? 'activeSW' : ''" @click="handlSwTpye('isImg')">图片</li>
         </ul> 
       </div>
       <div v-if="isSwDOtr" class="swCurr"><span>{{swipers.current+1}}/{{bannerlist.length}}</span></div>
-
     </div>
     <div class="sroll_container" id="sroll_container">
       <div class="delta_panl">
@@ -297,7 +297,7 @@
           <div class="imgBox">
             <scroll-view :scroll-x="true" style="white-space: nowrap; display: flex;" >
               <a style="margin-right:13px" v-for="(tItem,tIndex) in item.photos" :key="tIndex" @click="handleGoPhoto(item.name,tIndex)">
-                <img v-if="tItem.video_photo" :src="tItem.video_photo">
+                <img v-if="item.name=='视频'" :src="tItem.video_photo">
                 <img v-else :src="tItem.photo">
               </a>
           </scroll-view>
@@ -422,7 +422,6 @@ import getUserinfo from '../../components/get-userinfo'
 import { reLogin } from '../../http/request.js'
 var QQMapWX = require('qqmap-wx-jssdk')
 const TxvContext = requirePlugin('tencentvideo')
-
 export default {
    config: {
 
@@ -447,6 +446,7 @@ export default {
   },
   data () {
     return {
+      showSwitchBtn:false,
       istype: 'isVideo',
       isSwDOtr: true,
       concatList: [],
@@ -491,32 +491,31 @@ export default {
       // 获取二维码的携带的链接信息
       this.house_id = decodeURIComponent(parmas)
     }
+    this.swipers = {indicatorDots: false, current: 0 }
+    this.detail = null
   },
   onShow: function() {
-    let videoContext = TxvContext.getTxvContext('txv1')
-      videoContext.pause()
+    // let videoContext = TxvContext.getTxvContext('txv1')
+     this.videoContext && this.videoContext.pause()
       this.$data.isSwDOtr = true
   },
   onHide: function () {
-     let videoContext = TxvContext.getTxvContext('txv1')
-      videoContext.pause()
+    //  let videoContext = TxvContext.getTxvContext('txv1')
+      this.videoContext && this.videoContext.pause()
       this.$data.isSwDOtr = true
   }, 
   onUnload: function () {
-    let videoContext = TxvContext.getTxvContext('txv1')
-      videoContext.pause()
+      this.videoContext && this.videoContext.pause()
       this.$data.isSwDOtr = true
   },
   async mounted () {
     if (this.$route.query.id) {
       this.house_id = this.$route.query.id
     }
-
     const data = await postHousesDetail({
       house_id: this.house_id
     })
     wx.setNavigationBarTitle({title: data.name})
-    this.videoContext = wx.createVideoContext('myVideo')
     try {
       if (data.project_id) {
         const concatList = await getContactList({projectID: data.project_id})
@@ -525,7 +524,6 @@ export default {
     } catch (error) {
       console.log(error)
     }
-
     this.showGetUserInfoModel = true
     this.detail = data
     this.detail.albums = Object.keys(data.albums).map(key => data.albums[key])
@@ -542,7 +540,13 @@ export default {
     })
     let alertAdCache = wx.getStorageSync(`alert_ad${this.house_id}`)
     let hasAlertAd = this.detail.alert_ad && this.detail.alert_ad.status === '1'
-    data.banner_video.map((item, index) => { item.istype = 'isVideo' })
+    // 合并头图轮播列表
+    if(data.banner_video){
+     data.banner_video= data.banner_video.map((item, index) => ({ ...item,istype : 'isVideo' }))
+    }else {
+      data.banner_video = []
+      this.istype = 'isImg'
+    }
     this.banner_imges = [{
       'src': data.photo,
       'istype': 'isImg',
@@ -550,6 +554,9 @@ export default {
     }]
     this.bannerlist = [...data.banner_video, ...this.banner_imges]
     console.log(this.bannerlist)
+    // 是否显示头图选项按钮
+    this.showSwitchBtn = (data.banner_video.length>0)&&(this.banner_imges.length>0)
+    this.videoContext = wx.createVideoContext('txv1')
     if (hasAlertAd) {
       if (this.detail.alert_ad.photo === alertAdCache) {
         this.showNoticeModal = false
@@ -590,8 +597,9 @@ export default {
       let index = event.mp.detail.current || 0
       this.$data.swipers.current = index
       this.$data.istype = this.$data.bannerlist[index].istype
-      let videoContext = TxvContext.getTxvContext('txv1')
-      videoContext.pause()
+      // let videoContext = TxvContext.getTxvContext('txv1')
+      console.log(this.videoContext)
+     this.videoContext && this.videoContext.pause()
       this.$data.isSwDOtr = true
     },
     onCall (phoneNumber) {

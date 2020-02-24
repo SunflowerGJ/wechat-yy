@@ -35,7 +35,7 @@
             @play="onVideoPlay"
             @ended="onVideoEnd"></txv-video>
             <image v-if="item.video_photo" :src="item.video_photo" class="slide-image"/>
-            <image  @click="handlePreviewImage()" v-else :src="item.photo" class="slide-image"/>
+            <image v-else @click="handlePreviewImage()" :src="item.photo" class="slide-image"/>
           </swiper-item>
         </div>
       </swiper>
