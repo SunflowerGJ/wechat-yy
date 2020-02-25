@@ -592,6 +592,13 @@ export default {
     },
     switchS (e = true) {
       this.$data.isSwDOtr = e
+      if(e == false) {
+        POINTAlbums({
+          cityId: this.detail.city_id,
+          houseId: this.detail.id,
+          type: 7
+        })
+      }
     },
     changeSwiper (event) {
       let index = event.mp.detail.current || 0

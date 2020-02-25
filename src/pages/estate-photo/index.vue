@@ -74,6 +74,7 @@ export default {
   methods: {
     getIndex (e) {
       this.active = e
+      this.current = 0
       const tyepMap = {
         样板间: 1,
         实景图: 2,
@@ -88,16 +89,12 @@ export default {
         houseId: this.$route.query.id,
         type: tyepMap[e]
       })
-      console.log(this.active)
-      console.log(this.imgUrls)
     },
     switchItem (e) {
-      console.log(e)
       this.current = e.mp.detail.current
       if (this.active === '视频') {
         this.videoVid = this.imgUrls[this.current].video_url
         this.videoPhoto = this.imgUrls[this.current].video_photo
-        console.log(this.videoVid, this.videoPhoto)
       }
       if (this.videoContext) {
         this.videoContext.pause()
@@ -117,11 +114,9 @@ export default {
       this.active = this.$route.query.tabName
       this.imgMap = map
       this.imgUrls = this.imgMap[this.active]
-      console.log(this.active)
       if (this.active === '视频') {
         this.videoVid = this.imgUrls[this.current].video_url
         this.videoPhoto = this.imgUrls[this.current].video_photo
-        console.log(this.videoVid, this.videoPhoto)
         // const TxvContext = requirePlugin('tencentvideo')
         this.videoContext = TxvContext.getTxvContext('txv1') // txv1即播放器组件的playerid值
       }
@@ -149,11 +144,10 @@ export default {
   watch: {
     'active': {
       handler (value) {
-         console.log('active')
-        console.log(value)
         this.imgUrls = this.imgMap[value]
-        console.log(this.imgUrls)
-        this.current = Number(this.$route.query.current) || 0
+      // this.current =  Number(this.$route.query.current) || 0
+        this.current =  0
+        console.log(this.current)
       },
       deep: true
     }
