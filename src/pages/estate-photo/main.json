@@ -1,7 +1,4 @@
 {
   "navigationBarTitleText": "楼盘相册",
-  "navigationBarBackgroundColor": "#ffffff",
-  "usingComponents": {
-    "txv-video":"plugin://tencentvideo/video"
-  }
+  "navigationBarBackgroundColor": "#ffffff"
 }

@@ -11,4 +11,5 @@ export default {
     background-color #f2f2f2
   .container
     background-color #f2f2f2
+    
 </style>

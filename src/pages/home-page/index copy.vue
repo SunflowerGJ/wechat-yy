@@ -5,9 +5,25 @@
       <swiper :indicator-dots="swipers.indicatorDots"  :current="swipers.current" @change="changeSwiper" style="height:200px">
         <block v-for="(item, inx) in bannerlist" :key="inx">
           <swiper-item style="height:200px">
-            <view v-if="item.istype == 'isVideo' && inx == swipers.current" >
+            <view v-if="item.istype == 'isVideo' && inx == swipers.current">
+              <txv-video
+                v-if="item.video_photo"
+                :usePoster="true" 
+                :poster="item.video_photo" 
+                id="video" 
+                playerid="txv1" 
+                :vid="item.video_url" 
+                objectFit="cover" 
+                :show-fullscreen-btn="true" 
+                :autoplay="false" 
+                :width="'100%'" 
+                :height="'100%'"
+                @play="switchS(false)"
+                @ended="switchS(true)"
+                @pause="switchS(true)"
+                ></txv-video>
                <!-- src="http://wxsnsdy.tc.qq.com/105/20210/snsdyvideodownload?filekey=30280201010421301f0201690402534804102ca905ce620b1241b726bc41dcff44e00204012882540400&bizid=1023&hy=SH&fileparam=302c020101042530230204136ffd93020457e3c4ff02024ef202031e8d7f02030f42400204045a320a0201000400" -->
-               <video object-fit="cover" :controls="true" :poster="item.video_photo" id="myVideo" @play="switchS(false)" @pause="switchS(true)" @ended="switchS(true)" :src="item.video_url"></video>
+               <!-- <video :controls="true" :poster="item.video_photo" id="myVideo" @play="switchS(false)" @pause="switchS(true)" @ended="switchS(true)" :src="item.video_url"></video> -->
             </view>
             <view v-if="item.istype == 'isImg'">
                <img style="height:200px;width:100%" :src="item.src" @click="onBanner" />
@@ -409,7 +425,15 @@ import tips from '../../components/tips'
 import getUserinfo from '../../components/get-userinfo'
 import { reLogin } from '../../http/request.js'
 var QQMapWX = require('qqmap-wx-jssdk')
+const TxvContext = requirePlugin('tencentvideo')
 export default {
+   config: {
+
+    usingComponents: {
+
+      'txv-video': 'plugin://tencentvideo/video'
+    }
+  },
   /**
    * 用户点击右上角分享
    */
@@ -476,12 +500,17 @@ export default {
     this.detail = null
   },
   onShow: function() {
+    // let videoContext = TxvContext.getTxvContext('txv1')
+     this.videoContext && this.videoContext.pause()
       this.$data.isSwDOtr = true
   },
   onHide: function () {
+    //  let videoContext = TxvContext.getTxvContext('txv1')
+      this.videoContext && this.videoContext.pause()
       this.$data.isSwDOtr = true
   }, 
   onUnload: function () {
+      this.videoContext && this.videoContext.pause()
       this.$data.isSwDOtr = true
   },
   async mounted () {
