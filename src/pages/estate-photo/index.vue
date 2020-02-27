@@ -17,9 +17,25 @@
         @change="switchItem($event)"
         style="height:240px"
       >
-        <div v-for="(item,index) in imgUrls" :key="index" @click="handlePreviewImage">
+        <div v-for="(item,index) in imgUrls" :key="index">
           <swiper-item>
-            <image :src="item.photo" class="slide-image"/>
+            <txv-video
+            v-if="videoVid && current === index && active === '视频'"
+            :usePoster="true" 
+            :poster="videoPhoto" 
+            class="slide-image"  
+            id="video" 
+            playerid="txv1" 
+            :vid="videoVid" 
+            objectFit="cover" 
+            :show-fullscreen-btn="true" 
+            :autoplay="false" 
+            :width="'100%'" 
+            :height="'100%'"
+            @play="onVideoPlay"
+            @ended="onVideoEnd"></txv-video>
+            <image v-if="item.video_photo && active == '视频'" :src="item.video_photo" class="slide-image"/>
+            <image v-else @click="handlePreviewImage()" :src="item.photo" class="slide-image"/>
           </swiper-item>
         </div>
       </swiper>
@@ -29,9 +45,17 @@
 </template>
 
 <script>
+/* eslint-disable */
 import { postAlbums, POINTAlbums } from '../../http/api.js'
+const TxvContext = requirePlugin('tencentvideo')
 export default {
+  config: {
 
+    usingComponents: {
+
+      'txv-video': 'plugin://tencentvideo/video'
+    }
+  },
   data () {
     return {
       itemTitle: [],
@@ -40,20 +64,25 @@ export default {
       current: 0, // 默认第n个
       active: '',
       imgMap: {},
-      imgUrls: []
+      imgUrls: [],
+      videoVid: '',
+      videoPhoto: ''
+
     }
   },
 
   methods: {
     getIndex (e) {
       this.active = e
+      this.current = 0
       const tyepMap = {
         样板间: 1,
         实景图: 2,
         效果图: 3,
         周边配套: 4,
         户型图: 5,
-        规划图: 6
+        规划图: 6,
+        视频: 7
       }
       POINTAlbums({
         cityId: this.$route.query.city_name,
@@ -63,6 +92,13 @@ export default {
     },
     switchItem (e) {
       this.current = e.mp.detail.current
+      if (this.active === '视频') {
+        this.videoVid = this.imgUrls[this.current].video_url
+        this.videoPhoto = this.imgUrls[this.current].video_photo
+      }
+      if (this.videoContext) {
+        this.videoContext.pause()
+      }
     },
     async _postAlbums () {
       const datas = await postAlbums({
@@ -78,8 +114,14 @@ export default {
       this.active = this.$route.query.tabName
       this.imgMap = map
       this.imgUrls = this.imgMap[this.active]
+      if (this.active === '视频') {
+        this.videoVid = this.imgUrls[this.current].video_url
+        this.videoPhoto = this.imgUrls[this.current].video_photo
+        // const TxvContext = requirePlugin('tencentvideo')
+        this.videoContext = TxvContext.getTxvContext('txv1') // txv1即播放器组件的playerid值
+      }
     },
-    handlePreviewImage () {
+    handlePreviewImage (item) {
       const photos = this.imgUrls.map(item => item.photo)
       wx.previewImage({
         current: photos[0],
@@ -90,6 +132,12 @@ export default {
       this.current = Number(this.$route.query.current)
       this.imgUrls = []
       this.itemTitle = []
+    },
+    onVideoPlay () {
+
+    },
+    onVideoEnd () {
+
     }
   },
 
@@ -97,20 +145,35 @@ export default {
     'active': {
       handler (value) {
         this.imgUrls = this.imgMap[value]
-        this.current = Number(this.$route.query.current) || 0
+      // this.current =  Number(this.$route.query.current) || 0
+        this.current =  0
+        console.log(this.current)
       },
       deep: true
     }
   },
 
-  async mounted () {
+  async onLoad () {
     this.initData()
     this._postAlbums()
   },
   onShow () {
     this.initData()
     this._postAlbums()
-  }
+      // let videoContext = TxvContext.getTxvContext('txv1')
+     this.videoContext && this.videoContext.pause()
+      this.$data.isSwDOtr = true
+  },
+  onHide: function () {
+    //  let videoContext = TxvContext.getTxvContext('txv1')
+      this.videoContext && this.videoContext.pause()
+      this.$data.isSwDOtr = true
+  }, 
+  onUnload: function () {
+    // let videoContext = TxvContext.getTxvContext('txv1')
+      this.videoContext && this.videoContext.pause()
+      this.$data.isSwDOtr = true
+  },
 }
 </script>
 
