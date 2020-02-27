@@ -9,6 +9,7 @@ export default class NetcallController {
   constructor (props) {
     NIM.use(NetcallWeixin);
     NetcallWeixin.destroy();
+    console.log(NetcallWeixin.getInstance(props))
     this.netcall = getApp().globalData.netcall = NetcallWeixin.getInstance(props);
     getApp().globalData.emitter = new Emitter();
     this.bindNetcallEvent();
@@ -116,6 +117,7 @@ export default class NetcallController {
       console.log('有人更新了', data);
     });
     this.netcall.on('error', error => {
+      console.log(error)
       console.error('出错了', error);
     });
     this.netcall.on('open', data => {

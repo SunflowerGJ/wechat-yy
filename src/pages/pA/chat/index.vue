@@ -146,7 +146,7 @@
         <component-emoji @EmojiClick="emojiCLick" @EmojiSend="emojiSend"></component-emoji>
       </div>
       <div v-if="moreFlag" class="more-subcontent">
-        <div style="display:flex;">
+        <div style="display:flex;justify-content: space-between;">
           <div class="more-subcontent-item" @click.stop="chooseImageToSend">
             <img src="/static/images/icon-zhaox.png" class="image" />
             <text class="text">照片</text>
@@ -156,8 +156,12 @@
             <text class="text">拍照</text>
           </div>
           <div class="more-subcontent-item" @click.stop="videoCall">
-            <img src="/static/images/icon-ph.png" class="image" />
+            <img src="/static/images/netcall-camera.png" class="image" />
             <text class="text">视频通话</text>
+          </div>
+          <div class="more-subcontent-item" @click.stop="videoCall">
+            <img src="/static/images/netcall-call-voice.png" class="image" />
+            <text class="text">语音通话</text>
           </div>
         </div>
       </div>
@@ -187,7 +191,7 @@ export default {
       chatTo: '', // 聊天对象account
       account: '',
       token: '',
-      chatType: '', // 聊天类型 advanced 高级群聊 normal 讨论组群聊 p2p 点对点聊天
+      chatType: 'p2p', // 聊天类型 advanced 高级群聊 normal 讨论组群聊 p2p 点对点聊天
       loginAccountLogo: '', // 登录账户对象头像
       chatheadPhoto: '',
       focusFlag: false, // 控制输入框失去焦点与否
@@ -233,7 +237,7 @@ export default {
         })
       }
       console.log(this.account, this.token, YX_APP_KEY)
-      thisNIM = NIM.getInstance({
+      getApp().globalData.nim = thisNIM = NIM.getInstance({
       // 初始化SDK
         // debug: true,
         //  appKey: 'bd4ea621af735fd6924c38d44ae76eb0', // 开发
@@ -259,6 +263,7 @@ export default {
         // 同步完成
         onsyncdone: this.onSyncDone
       })
+      getApp().globalData.nim = thisNIM
     },
     onConnect () {
       console.log('连接成功')
@@ -422,7 +427,7 @@ export default {
         }
       } else { // p2p
         console.log(`正在发起对${this.chatTo}的视频通话`)
-        this.$router.push({path: '/pages/videoCall/main', query: {callee: this.chatTo}})
+        this.$router.push({path: '/pages/videoCall/main', query: {callee: this.chatTo, title: this.title}})
         // wx.navigateTo({
         //   url: `../videoCall/videoCall?callee=${this.chatTo}`
         // })
@@ -1065,15 +1070,18 @@ export default {
 
 .more-subcontent .more-subcontent-item {
   display: flex;
-  justify-content: flex-start;
+  // justify-content: flex-start;
+  justify-content: center;
   flex-direction: column;
+  align-items: center;
+
 }
 
 .more-subcontent .more-subcontent-item .image {
   width: 28px;
   height: 23px;
   margin-bottom: 9px;
-  margin-right: 40px;
+  // margin-right: 40px;
 }
 
 .more-subcontent .more-subcontent-item .text {

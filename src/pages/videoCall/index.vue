@@ -1,5 +1,6 @@
 <template>
   <div class="fullscreen">
+    <!-- 被叫 -->
     <div v-if="beCalling" class="becalling-wrapper">
       <div class="becalling-text">对方邀请你开始视频聊天</div>
       <div class="becalling-button-group">
@@ -7,6 +8,7 @@
         <div class="accept-button button" @click.stop="acceptCallHandler">接听</div>
       </div>
     </div>
+    <!-- 主叫 -->
     <div wx:else class="fullscreen">
       <div v-if="isCalling" class="fullscreen">
         <camera
@@ -17,7 +19,7 @@
           @error="cameraOpenErrorHandler"
           :style="{width:callingPosition.width+'px',height:callingPosition.height+'px'}"
         >
-          <cover-view class="calling-coverdiv">正在呼叫请稍后</cover-view>
+          <cover-view class="calling-coverview">正在呼叫请稍后</cover-view>
         </camera>
       </div>
       <div wx:else class="fullscreen">
@@ -47,31 +49,31 @@
                 <cover-view class="netcall-time-text">{{duration}}</cover-view>
                 <cover-image
                   class="item"
-                  :src="'/images/netcall-call-'+callTypeIconKind == 'video' ? 'voice' : 'video'+'.png'"
+                  :src="'/static/images/netcall-call-'+callTypeIconKind == 'video' ? 'voice' : 'video'+'.png'"
                   catchtap="switchToVoiceCallHandler"
                 >语音通话</cover-image>
                 <cover-image
                   class="item"
-                  src="/images/netcall-revert-camera.png"
+                  src="/static/images/netcall-revert-camera.png"
                   v-if="callTypeIconKind == 'video'"
                   catchtap="switchCameraHandler"
                 >切摄像头</cover-image>
                 <cover-image
                   class="item"
-                  :src="'/images/netcall-camera'+enableCamera ? '' : '-close'+'.png'"
+                  :src="'/static/images/netcall-camera'+enableCamera ? '' : '-close'+'.png'"
                   v-if="callTypeIconKind == 'video'"
                   :data-mode="1"
                   @click.stop="switchMeetingModeHandler"
                 >关闭摄像头</cover-image>
                 <cover-image
                   class="item"
-                  :src="'/images/netcall-micro'+muted ? '-close' : ''+'.png'"
+                  :src="'/static/images/netcall-micro'+muted ? '-close' : ''+'.png'"
                   :data-mode="2"
                   @click.stop="switchMeetingModeHandler"
                 >关闭麦克风</cover-image>
                 <cover-image
                   class="item"
-                  src="/images/netcall-reject.png"
+                  src="/static/images/netcall-reject.png"
                   @click.stop="hangupHandler"
                 >挂断</cover-image>
               </cover-view>
@@ -84,8 +86,8 @@
 </template>
 
 <script>
- /* eslint-disable */
-import { showToast, formatNumber } from '../../utils/util.js';
+/* eslint-disable */
+import { showToast, formatNumber } from "../../utils/util.js";
 const app = getApp();
 let needRePublish = false;
 let needRePlay = false;
@@ -93,7 +95,7 @@ let callingBackToLast = false;
 import yunxinPlayer from "../../components/yunxin-player/yunxin-player";
 import yunxinPusher from "../../components/yunxin-pusher/yunxin-pusher";
 export default {
-  data () {
+  data() {
     return {
       onTheCall: false, // 正在通话中标记
       isCalling: false, // 主叫中
@@ -105,10 +107,10 @@ export default {
       loginUser: {}, // {uid,account,cid}
       infoOfBeCalled: {}, // 被叫时传递过来的：主叫信息 {caller,cid,type}
       netcallTime: 0, // 通话时长
-      duration: '', // 格式化后的时间
+      duration: "", // 格式化后的时间
       selfPosition: {}, // 自己的位置
       otherPosition: {}, // 对端的位置大小
-      callTypeIconKind: 'video', // 当前的通话类型，音频通话为audio，视频通话为video
+      callTypeIconKind: "video", // 当前的通话类型，音频通话为audio，视频通话为video
       // 音视频流重连标记
       streamNeedReconnect: false,
       streamStoped: false
@@ -118,20 +120,21 @@ export default {
     "yunxin-player": yunxinPlayer,
     "yunxin-pusher": yunxinPusher
   },
-  async mounted () {
-    let systemInfo = wx.getSystemInfoSync()
+  async mounted() {
+    let systemInfo = wx.getSystemInfoSync();
     app.globalData.videoContainerSize = {
       width: systemInfo.windowWidth,
       height: systemInfo.windowHeight
-    }
+    };
     app.globalData.isPushBeCallPage = false;
     let options = this.$route.query;
+    wx.setNavigationBarTitle({ title:options.title })
     console.log(options);
     wx.setKeepScreenOn({
       keepScreenOn: true
     });
 
-    let pageTitle = '';
+    let pageTitle = "";
     if (options.beCalling) {
       // 被叫
       pageTitle = options.caller;
@@ -156,6 +159,7 @@ export default {
           height: app.globalData.videoContainerSize.height
         }
       });
+      console.log(app.globalData.netcall)
       app.globalData.netcall
         .call({
           type: 2, // 通话类型：1音频，2视频
@@ -164,7 +168,7 @@ export default {
         })
         .catch(error => {
           const duration = 2000;
-          showToast('text', `呼叫失败，请重试，${duration}ms后返回`, {
+          showToast("text", `呼叫失败，请重试，${duration}ms后返回`, {
             duration
           });
           this.hangupHandlerAfter(duration);
@@ -173,29 +177,30 @@ export default {
       clearTimeout(this.callTimerId);
       this.callTimerId = setTimeout(() => {
         const duration = 2000;
-        showToast('text', `无人接听，${duration}ms后自动返回`, { duration });
+        showToast("text", `无人接听，${duration}ms后自动返回`, { duration });
         this.hangupHandlerAfter(duration);
       }, 30 * 1000);
     }
     wx.setNavigationBarTitle({
-      title: pageTitle
+      // title: pageTitle
+      title: this.$route.query.title
     });
     this._initialPosition();
     this.listenNetcallEvent();
   },
-  onUnload () {
+  onUnload() {
     if (this.onTheCall || this.isCalling) {
       this.hangupHandler(true);
     }
     app.globalData.emitter.eventReset();
   },
   methods: {
-    setData (options) {
+    setData(options) {
       Object.keys(options).forEach(item => {
         this[item] = options[item];
       });
     },
-    _initialPosition () {
+    _initialPosition() {
       let containerSize = app.globalData.videoContainerSize; // 外部容器大小
       let selfPosition = {
         x: containerSize.width - 100 - 30,
@@ -215,13 +220,13 @@ export default {
       });
     },
 
-    _unBindNetcallEvent () {
+    _unBindNetcallEvent() {
       app.globalData.emitter.eventReset();
     },
-    _mergeUserList (oldList, newList) {
-      console.log('老的数据');
+    _mergeUserList(oldList, newList) {
+      console.log("老的数据");
       console.log(oldList);
-      console.log('新的数据');
+      console.log("新的数据");
       console.log(newList);
       let resultList = Object.assign([], oldList);
       resultList.map(user => {
@@ -231,14 +236,14 @@ export default {
           }
         });
       });
-      console.log('处理后的数据');
+      console.log("处理后的数据");
       console.log(resultList);
       return resultList;
     },
-    listenNetcallEvent () {
+    listenNetcallEvent() {
       let self = this;
-      app.globalData.emitter.on('syncDone', data => {
-        console.log('同步完成');
+      app.globalData.emitter.on("syncDone", data => {
+        console.log("同步完成");
         console.log(data);
         // self._mergeUserList(this.userlist, data.userlist)
         let userlist = Object.assign([], data.userlist);
@@ -252,14 +257,14 @@ export default {
             streamNeedReconnect: true,
             userlist: []
           });
-          console.error('再次重连媒体流了');
+          console.error("再次重连媒体流了");
           setTimeout(() => {
             self.setData({
               onTheCall: true, // 正在通话中标记
               userlist: userlist
             });
           }, 70);
-          showToast('text', '媒体流重新建立中，请稍后');
+          showToast("text", "媒体流重新建立中，请稍后");
           self.reconnectStreamAfter(100);
           return;
         }
@@ -283,8 +288,8 @@ export default {
           }, 1000);
         }
       });
-      app.globalData.emitter.on('callAccepted', data => {
-        console.log('对方接听了', data);
+      app.globalData.emitter.on("callAccepted", data => {
+        console.log("对方接听了", data);
         clearTimeout(this.hangupTimer);
         // 开启音视频逻辑
         app.globalData.netcall.startRtc({ mode: 0 }).then(data => {
@@ -298,29 +303,29 @@ export default {
           });
         });
       });
-      app.globalData.emitter.on('callRejected', data => {
-        console.log('对方拒绝了');
+      app.globalData.emitter.on("callRejected", data => {
+        console.log("对方拒绝了");
         console.log(data);
         clearTimeout(this.hangupTimer);
         this.setData({
           onTheCall: false
         });
         const duration = 2000;
-        showToast('text', `对方拒绝，${duration}ms后返回`, { duration });
+        showToast("text", `对方拒绝，${duration}ms后返回`, { duration });
         this.hangupHandlerAfter(duration);
       });
-      app.globalData.emitter.on('clientLeave', data => {
-        console.log('有人离开了：');
+      app.globalData.emitter.on("clientLeave", data => {
+        console.log("有人离开了：");
         console.log(self.userlist);
         console.log(data);
       });
-      app.globalData.emitter.on('clientJoin', data => {
-        console.log('有人加入了');
+      app.globalData.emitter.on("clientJoin", data => {
+        console.log("有人加入了");
         self._personJoin(data);
         console.log(self.userlist);
       });
-      app.globalData.emitter.on('beCalling', data => {
-        console.log('被叫了');
+      app.globalData.emitter.on("beCalling", data => {
+        console.log("被叫了");
         console.log(data);
         if (
           this.onTheCall ||
@@ -340,52 +345,52 @@ export default {
           infoOfBeCalled: data
         });
       });
-      app.globalData.emitter.on('hangup', data => {
-        console.log('对端挂断了');
+      app.globalData.emitter.on("hangup", data => {
+        console.log("对端挂断了");
         console.log(data);
         console.log(this.loginUser);
         // 接通过程
         if (data.cid != this.loginUser.cid && this.onTheCall) {
-          console.warn('接通过程,非本通通话，抛弃');
+          console.warn("接通过程,非本通通话，抛弃");
           return;
         }
         // 被叫过程
         if (this.beCalling && this.infoOfBeCalled.cid != data.cid) {
-          console.warn('被叫过程,非本通通话，抛弃');
+          console.warn("被叫过程,非本通通话，抛弃");
           return;
         }
         // 主叫过程
         if (this.isCalling && data.account != this.pageTitle) {
-          console.warn('主叫过程,非本通通话，抛弃');
+          console.warn("主叫过程,非本通通话，抛弃");
           return;
         }
         this._clearCallTimer();
 
         const duration = 2000;
-        showToast('text', `对方已经挂断`, { duration });
+        showToast("text", `对方已经挂断`, { duration });
         this.hangupHandlerAfter(0);
       });
-      app.globalData.emitter.on('control', data => {
-        console.log('control');
+      app.globalData.emitter.on("control", data => {
+        console.log("control");
         console.log(data);
         this.controlHandler(data);
       });
       // 信令准备重连
-      app.globalData.emitter.on('willreconnect', () => {
+      app.globalData.emitter.on("willreconnect", () => {
         this.stopStream();
       });
     },
     // 校验是否需要返回上一层，
-    _judgeNavigateBack (delayTime = 0) {
+    _judgeNavigateBack(delayTime = 0) {
       let pages = getCurrentPages();
       let currentPage = pages[pages.length - 1];
-      if (currentPage.route.includes('videoCall') === true) {
+      if (currentPage.route.includes("videoCall") === true) {
         setTimeout(() => {
           wx.navigateBack(1);
         }, delayTime);
       }
     },
-    _personJoin (data) {
+    _personJoin(data) {
       let userlist = Object.assign([], this.userlist);
       let uids = userlist.map(user => user.uid) || [];
       if (uids.includes(data.uid) === false) {
@@ -402,30 +407,30 @@ export default {
     /**
      * 返回指定uid组件的拉流操作上下文
      */
-    _getPlayerComponent (uid) {
+    _getPlayerComponent(uid) {
       const yunxinPlayer = this.selectComponent(`#yunxinplayer-${uid}`);
       return yunxinPlayer;
     },
     /**
      * 返回推流组件的操作上下文
      */
-    _getPusherComponent () {
+    _getPusherComponent() {
       const yunxinPusher = this.selectComponent(`#yunxin-pusher`);
       return yunxinPusher;
     },
-    controlHandler (_data) {
+    controlHandler(_data) {
       let self = this;
       switch (_data.command) {
         // 主动请求从音频切换到视频
         case app.globalData.netcall
           .NETCALL_CONTROL_COMMAND_SWITCH_AUDIO_TO_VIDEO:
-          console.log('请求从音频切换到视频');
+          console.log("请求从音频切换到视频");
           wx.showModal({
-            title: '切换通话模式',
-            content: '对方请求从音频切换到音视频',
-            confirmText: '允许',
-            cancelText: '拒绝',
-            success: function (res) {
+            title: "切换通话模式",
+            content: "对方请求从音频切换到音视频",
+            confirmText: "允许",
+            cancelText: "拒绝",
+            success: function(res) {
               let { confirm, cancel } = res;
               if (confirm) {
                 // 单击了允许
@@ -441,27 +446,27 @@ export default {
         // 对方同意从音频切换到视频
         case app.globalData.netcall
           .NETCALL_CONTROL_COMMAND_SWITCH_AUDIO_TO_VIDEO_AGREE:
-          console.log('对方同意从音频切换到视频');
+          console.log("对方同意从音频切换到视频");
           // 切换音频到视频
           this.switchToVideoCall();
           break;
         // 对方拒绝从音频切换到视频
         case app.globalData.netcall
           .NETCALL_CONTROL_COMMAND_SWITCH_AUDIO_TO_VIDEO_REJECT:
-          showToast('text', '对方拒绝音频切换到音视频');
+          showToast("text", "对方拒绝音频切换到音视频");
           break;
         // 从视频切换到音频
         case app.globalData.netcall
           .NETCALL_CONTROL_COMMAND_SWITCH_VIDEO_TO_AUDIO:
-          console.log('从视频切换到音频');
+          console.log("从视频切换到音频");
           // 切换视频到音频
           self.switchToVoiceCall();
           break;
       }
     },
     // 拒绝 音频 -> 视频
-    rejectSwitchAudioToVideo () {
-      showToast('text', '拒绝切换到视频模式');
+    rejectSwitchAudioToVideo() {
+      showToast("text", "拒绝切换到视频模式");
       app.globalData.netcall.control({
         command:
           app.globalData.netcall
@@ -469,8 +474,8 @@ export default {
       });
     },
     // 同意 音频 -> 视频
-    agreeSwitchAudioToVideo () {
-      showToast('text', '切换到视频模式');
+    agreeSwitchAudioToVideo() {
+      showToast("text", "切换到视频模式");
       // 发送指令
       app.globalData.netcall.control({
         command:
@@ -482,8 +487,8 @@ export default {
     /**
      * 切换至音频通话单击事件
      */
-    switchToVoiceCallHandler () {
-      if (this.callTypeIconKind === 'video') {
+    switchToVoiceCallHandler() {
+      if (this.callTypeIconKind === "video") {
         // 当前是视频，准备切换至音频
         app.globalData.netcall.control({
           cid: this.loginUser.cid,
@@ -500,20 +505,20 @@ export default {
         });
       }
     },
-    switchToVoiceCall () {
+    switchToVoiceCall() {
       const self = this;
       // 切换本地状态
       this.setData({
         enableCamera: false,
         mute: this.mute,
         // muted: false, // 主动关闭麦克风的，麦克风还是关闭的
-        callTypeIconKind: 'audio'
+        callTypeIconKind: "audio"
       });
       app.globalData.netcall
         .switchMode(app.globalData.netcall.NETCALL_MODE_ONLY_AUDIO)
         .then(() => {
           console.log(
-            '切换模式至 -> ',
+            "切换模式至 -> ",
             app.globalData.netcall.NETCALL_MODE_ONLY_AUDIO
           );
           self.stopStream(0).then(() => {
@@ -527,21 +532,21 @@ export default {
     /**
      * 切换至视频通话
      */
-    switchToVideoCall () {
+    switchToVideoCall() {
       const self = this;
       // 切换本地状态
       this.setData({
         enableCamera: true,
         mute: this.mute,
         // muted: false, // 主动关闭麦克风的，麦克风还是关闭的
-        callTypeIconKind: 'video'
+        callTypeIconKind: "video"
       });
-      showToast('text', '切换至视频模式');
+      showToast("text", "切换至视频模式");
       app.globalData.netcall
         .switchMode(app.globalData.netcall.NETCALL_MODE_AUDIO_VIDEO)
         .then(() => {
           console.log(
-            '切换模式至 -> ',
+            "切换模式至 -> ",
             app.globalData.netcall.NETCALL_MODE_AUDIO_VIDEO
           );
           self.stopStream(0).then(() => {
@@ -555,14 +560,14 @@ export default {
     /**
      * 切换摄像头回调
      */
-    switchCameraHandler () {
+    switchCameraHandler() {
       this.livePusherContext.switchCamera();
     },
     /**
      * 开关摄像头、麦克风回调
      * 0音视频，1纯音频，2纯视频，3静默
      */
-    switchMeetingModeHandler (e) {
+    switchMeetingModeHandler(e) {
       let mode = e.currentTarget.dataset.mode;
       let enableCamera = this.enableCamera;
       let muted = this.muted;
@@ -586,9 +591,9 @@ export default {
         }
 
         if (enableCamera) {
-          showToast('text', '摄像头已打开');
+          showToast("text", "摄像头已打开");
         } else {
-          showToast('text', '摄像头已关闭');
+          showToast("text", "摄像头已关闭");
         }
       } else if (mode == 2) {
         // 单击了关闭麦克风 => 纯视频
@@ -609,9 +614,9 @@ export default {
           }
         }
         if (muted) {
-          showToast('text', '麦克风已关闭');
+          showToast("text", "麦克风已关闭");
         } else {
-          showToast('text', '麦克风已打开');
+          showToast("text", "麦克风已打开");
         }
       }
       // 切换本地状态
@@ -627,19 +632,19 @@ export default {
       app.globalData.netcall
         .switchMode(mode)
         .then(() => {
-          console.log('切换模式至 -> ', mode);
+          console.log("切换模式至 -> ", mode);
         })
         .catch(err => {
           console.error(err);
         });
     },
-    switchAudioInputHandler () {
+    switchAudioInputHandler() {
       let muted = this.muted;
       this.setData({
         muted: !muted
       });
     },
-    switchVideoInputHandler () {
+    switchVideoInputHandler() {
       let enableCamera = this.enableCamera;
       this.setData({
         enableCamera: !enableCamera
@@ -648,7 +653,7 @@ export default {
     /**
      * 接听通话
      */
-    acceptCallHandler (e) {
+    acceptCallHandler(e) {
       let self = this;
       // 显示通信画面
       // this.setDatas
@@ -661,7 +666,7 @@ export default {
         })
         .then(() => {
           // 开启音视频逻辑
-          console.log('接听。。。');
+          console.log("接听。。。");
           app.globalData.netcall.startRtc({ mode: 0 }).then(data => {
             self._clearCallTimer();
             self.setData({
@@ -676,7 +681,7 @@ export default {
         .catch(error => {
           console.error(error);
           const duration = 2000;
-          showToast('text', `接听失败，请重试，${duration}ms后返回`, {
+          showToast("text", `接听失败，请重试，${duration}ms后返回`, {
             duration
           });
           this.hangupHandlerAfter(0);
@@ -685,7 +690,7 @@ export default {
     /**
      * 拒绝通话
      */
-    rejectCallHandler (e) {
+    rejectCallHandler(e) {
       this._clearCallTimer();
       app.globalData.netcall
         .response({
@@ -705,11 +710,11 @@ export default {
     /**
      * 挂断通话
      */
-    hangupHandler (notBack = false) {
+    hangupHandler(notBack = false) {
       return Promise.resolve()
         .then(() => {
           if (app.globalData.netcall) {
-            console.log('start hangup');
+            console.log("start hangup");
             app.globalData.netcall.hangup();
           }
           return Promise.resolve();
@@ -717,7 +722,7 @@ export default {
         .then(() => {
           // 停止推拉流
           this._resetData();
-          console.log('通话被挂断。。。');
+          console.log("通话被挂断。。。");
           this.stopStream(0);
           if (notBack !== true) {
             this._judgeNavigateBack(0);
@@ -733,7 +738,7 @@ export default {
           app.globalData.waitingUseVideoCall = true;
         });
     },
-    hangupHandlerAfter (duration = 0) {
+    hangupHandlerAfter(duration = 0) {
       clearTimeout(this.hangupTimer);
       this.hangupTimer = setTimeout(() => {
         this.hangupHandler();
@@ -742,7 +747,7 @@ export default {
     /**
      * 清除呼叫定时器
      */
-    _clearCallTimer () {
+    _clearCallTimer() {
       if (this.callTimerId) {
         clearTimeout(this.callTimerId);
         this.callTimerId = null;
@@ -751,19 +756,19 @@ export default {
     /**
      * 清除通话计时定时器
      */
-    _clearNetcallTimeTimer () {
+    _clearNetcallTimeTimer() {
       if (this.netcallTimeTimer) {
         clearTimeout(this.netcallTimeTimer);
         this.netcallTimeTimer = null;
       }
     },
-    onPusherFailed () {
+    onPusherFailed() {
       needRePublish = true;
     },
-    onPullFailed () {
+    onPullFailed() {
       needRePlay = true;
     },
-    _resetData () {
+    _resetData() {
       clearTimeout(this.hangupTimer);
       clearTimeout(this.callTimerId);
       this._resetStreamState();
@@ -774,21 +779,21 @@ export default {
         userlist: []
       });
     },
-    _resetStreamState () {
+    _resetStreamState() {
       clearTimeout(this.stopStreamTimer);
       this.setData({
         streamNeedReconnect: false,
         streamStoped: false
       });
     },
-    stopStream (duration = 1000) {
+    stopStream(duration = 1000) {
       if (this.stopStreamTimer) {
         clearTimeout(this.stopStreamTimer);
       }
       if (this.streamStoped) {
         return Promise.resolve();
       }
-      console.log('停止推流');
+      console.log("停止推流");
       return new Promise((resolve, reject) => {
         this.stopStreamTimer = setTimeout(() => {
           if (!this.livePusherContext) {
@@ -812,7 +817,7 @@ export default {
           });
           this.livePusherContext.stop({
             complete: () => {
-              console.log('推流已停止');
+              console.log("推流已停止");
               this.setData({
                 streamStoped: true
               });
@@ -822,10 +827,10 @@ export default {
         }, duration);
       });
     },
-    reconnectStream () {
+    reconnectStream() {
       if (this.streamNeedReconnect) {
         clearTimeout(this.stopStreamTimer);
-        console.log('开始推流');
+        console.log("开始推流");
         this.livePusherContext.start({
           success: () => {
             this.setData({
@@ -847,7 +852,7 @@ export default {
                   );
                 }
                 console.error(this.livePlayerMap[uid]);
-                showToast('text', '开始重连拉流');
+                showToast("text", "开始重连拉流");
                 this.livePlayerMap[uid].play();
               }
             });
@@ -855,7 +860,7 @@ export default {
         });
       }
     },
-    reconnectStreamAfter (duration = 0) {
+    reconnectStreamAfter(duration = 0) {
       clearTimeout(this.reconnectStreamTimer);
       this.reconnectStreamTimer = setTimeout(() => {
         this.reconnectStream();
@@ -864,7 +869,7 @@ export default {
     /**
      * 格式化需要时间
      */
-    _formateDuration (time) {
+    _formateDuration(time) {
       let hour = parseInt(time / 3600);
       let minute = parseInt((time - hour * 3600) / 60);
       let second = time % 60;
@@ -874,7 +879,7 @@ export default {
         second: formatNumber(second)
       };
     },
-    cameraOpenErrorHandler (err) {
+    cameraOpenErrorHandler(err) {
       console.error(err);
     }
   }
@@ -883,61 +888,69 @@ export default {
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 @import '../../stylus/mixin.styl';
+
 .container {
   width: 100%;
   height: 100%;
 }
+
 /* 被叫 */
 .becalling-wrapper {
   position: relative;
-  width:100%;
-  height:100%;
-  background-color:#777;
-  color:#fff;
-  font-size:40rpx;
+  width: 100%;
+  height: 100%;
+  background-color: #777;
+  color: #fff;
+  font-size: 40rpx;
 }
+
 .becalling-wrapper .becalling-text {
   position: absolute;
-  top:400rpx;
-  left:50%;
-  margin-left:-220rpx;
+  top: 400rpx;
+  left: 50%;
+  margin-left: -220rpx;
 }
+
 .becalling-wrapper .becalling-button-group {
   position: absolute;
-  width:100%;
-  box-sizing:border-box;
+  width: 100%;
+  box-sizing: border-box;
   bottom: 100rpx;
   padding: 0 40rpx;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
 }
+
 .becalling-button-group .button {
-  width:220rpx;
-  height:80rpx;
-  border-radius:10rpx;
-  justify-content:center;
-  display:flex;
-  align-items:center;
-  font-size:33rpx;
-  color:#000;
+  width: 220rpx;
+  height: 80rpx;
+  border-radius: 10rpx;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  font-size: 33rpx;
+  color: #000;
 }
+
 .becalling-button-group .reject-button {
-  background-color:#f00;
+  background-color: #f00;
 }
+
 .becalling-button-group .accept-button {
-  background-color:rgb(26, 155, 252);
+  background-color: rgb(26, 155, 252);
 }
 
 .calling-coverview {
-  width:100%;
-  height:100rpx;
-  background-color:#ccc;
-  color:#fff;
-  font-size:40rpx;
-  text-align:center;
-  line-height:100rpx;
+  width: 100%;
+  height: 100rpx;
+  background-color: #ccc;
+  color: #fff;
+  font-size: 40rpx;
+  text-align: center;
+  line-height: 100rpx;
 }
+
 /* 视频容器 */
 .video-wrapper {
   width: 100%;
@@ -947,46 +960,50 @@ export default {
   position: relative;
   background-color: #000;
 }
+
 .control-wrapper {
   width: 100%;
   box-sizing: border-box;
   position: absolute;
   bottom: 0;
 }
+
 .calling-voerview {
-  background-color:#ccc;
-  color:#fff;
+  background-color: #ccc;
+  color: #fff;
   height: 160rpx;
   font-size: 40rpx;
   text-align: center;
   line-height: 160rpx;
 }
+
 .control-wrapper {
   position: fixed;
   bottom: 18px;
-  left:0;
+  left: 0;
   display: flex;
   width: 100%;
   box-sizing: border-box;
-  flex-direction:row;
+  flex-direction: row;
   justify-content: space-between;
   padding: 0 42rpx;
   height: 200rpx;
 }
-.control-wrapper .item{
+
+.control-wrapper .item {
   width: 92rpx;
   height: 92rpx;
   margin-top: 100rpx;
 }
-.netcall-time-text {
-  position:absolute;
-  bottom:160rpx;
-  width:100%;
-  height: 40rpx;
-  color:#fff;
-  font-size:40rpx;
-  text-align:center;
-  left:0;
-}
 
+.netcall-time-text {
+  position: absolute;
+  bottom: 160rpx;
+  width: 100%;
+  height: 40rpx;
+  color: #fff;
+  font-size: 40rpx;
+  text-align: center;
+  left: 0;
+}
 </style>
