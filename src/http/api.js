@@ -308,3 +308,11 @@ export const getContactList = (params = {}) => {
     params: params
   }, false)
 }
+// 聊天信息传递
+export const getCustomerCall = (params = {}) => {
+  return fly({
+    method: 'post',
+    url: `/api/Yuanhui/CustomerCall`,
+    params: params
+  }, false)
+}

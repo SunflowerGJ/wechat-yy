@@ -119,8 +119,8 @@
             </div>
             <div class="chat_right">
               <div style="position:relative;"> 
-                <button v-if="!userInfo.mobile" class="btn-cover" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber($event,item.mobile)"></button>
-                <img src="/static/images/icon-call.png" @click="onCall(item.mobile)" alt="">
+                <button v-if="!userInfo.mobile" class="btn-cover" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber($event,item)"></button>
+                <img src="/static/images/icon-call.png" @click="onCall(item)" alt="">
               </div>
               <img src="/static/images/icon-chat.png" @click="goChat(item)" alt="">
             </div>
@@ -402,8 +402,8 @@
   </div>
 </template>
 <script>
-/* eslint-disable */
-import { postHousesDetail, POINTAlbums, POINTHouseClick, getContactList } from '../../http/api.js'
+
+import { postHousesDetail, POINTAlbums, POINTHouseClick, getContactList, getCustomerCall } from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
 import tips from '../../components/tips'
 import getUserinfo from '../../components/get-userinfo'
@@ -426,8 +426,8 @@ export default {
   },
   data () {
     return {
-      userInfo:wx.getStorageSync('userinfo'),
-      showSwitchBtn:false,
+      userInfo: wx.getStorageSync('userinfo'),
+      showSwitchBtn: false,
       istype: 'isVideo',
       isSwDOtr: true,
       concatList: [],
@@ -472,17 +472,20 @@ export default {
       // 获取二维码的携带的链接信息
       this.house_id = decodeURIComponent(parmas)
     }
-    this.swipers = {indicatorDots: false, current: 0 }
+    this.swipers = {
+      indicatorDots: false,
+      current: 0
+    }
     this.detail = null
   },
-  onShow: function() {
-      this.$data.isSwDOtr = true
+  onShow: function () {
+    this.$data.isSwDOtr = true
   },
   onHide: function () {
-      this.$data.isSwDOtr = true
-  }, 
+    this.$data.isSwDOtr = true
+  },
   onUnload: function () {
-      this.$data.isSwDOtr = true
+    this.$data.isSwDOtr = true
   },
   async mounted () {
     if (this.$route.query.id) {
@@ -517,9 +520,9 @@ export default {
     let alertAdCache = wx.getStorageSync(`alert_ad${this.house_id}`)
     let hasAlertAd = this.detail.alert_ad && this.detail.alert_ad.status === '1'
     // 合并头图轮播列表
-    if(data.banner_video){
-     data.banner_video= data.banner_video.map((item, index) => ({ ...item,istype : 'isVideo' }))
-    }else {
+    if (data.banner_video) {
+      data.banner_video = data.banner_video.map((item, index) => ({ ...item, istype: 'isVideo' }))
+    } else {
       data.banner_video = []
       this.istype = 'isImg'
     }
@@ -531,7 +534,7 @@ export default {
     this.bannerlist = [...data.banner_video, ...this.banner_imges]
     console.log(this.bannerlist)
     // 是否显示头图选项按钮
-    this.showSwitchBtn = (data.banner_video.length>0)&&(this.banner_imges.length>0)
+    this.showSwitchBtn = (data.banner_video.length > 0) && (this.banner_imges.length > 0)
     this.videoContext = wx.createVideoContext('txv1')
     if (hasAlertAd) {
       if (this.detail.alert_ad.photo === alertAdCache) {
@@ -556,14 +559,20 @@ export default {
     })
   },
   methods: {
-    async getPhoneNumber (e,phoneNumber) {
-      console.log(e)
-          console.log(phoneNumber)
+    async getPhoneNumber (e, item) {
       if (e.mp.detail.errMsg === 'getPhoneNumber:ok') {
-        wx.makePhoneCall({phoneNumber: phoneNumber})
-        // 授权成功
         let { encryptedData, iv } = e.mp.detail
-        await postMobileSave({encryptedData, iv})
+        getCustomerCall({
+          userID: item.id,
+          houseId: this.detail.id,
+          project_id: this.detail.project_id,
+          encryptedData,
+          iv
+        })
+        wx.makePhoneCall({phoneNumber: item.mobile})
+        // 授权成功
+        // let { encryptedData, iv } = e.mp.detail
+        // await postMobileSave({encryptedData, iv})/
       }
     },
     // 切换swiper
@@ -578,7 +587,7 @@ export default {
     },
     switchS (e = true) {
       this.$data.isSwDOtr = e
-      if(e == false) {
+      if (e === false) {
         POINTAlbums({
           cityId: this.detail.city_id,
           houseId: this.detail.id,
@@ -592,13 +601,16 @@ export default {
       this.$data.istype = this.$data.bannerlist[index].istype
       // let videoContext = TxvContext.getTxvContext('txv1')
       console.log(this.videoContext)
-     this.videoContext && this.videoContext.pause()
+      this.videoContext && this.videoContext.pause()
       this.$data.isSwDOtr = true
     },
-    onCall (phoneNumber) {
-      wx.makePhoneCall({
-        phoneNumber: phoneNumber + ''
+    onCall (item) {
+      getCustomerCall({
+        userID: item.id,
+        houseId: this.detail.id,
+        project_id: this.detail.project_id
       })
+      wx.makePhoneCall({phoneNumber: item.mobile})
     },
     goChat (item) {
       console.log(item)
