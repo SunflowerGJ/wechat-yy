@@ -1,7 +1,43 @@
 <template>
   <div class="container" v-if="detail">
     <div class="panl_swiper">
-      <img :src="detail.photo"  @click="onBanner"/>
+      <!-- <img :src="detail.photo"  @click="onBanner"/> -->
+      <swiper :indicator-dots="swipers.indicatorDots"  :current="swipers.current" @change="changeSwiper" style="height:200px">
+        <block v-for="(item, inx) in bannerlist" :key="inx">
+          <swiper-item style="height:200px">
+            <view v-if="item.istype == 'isVideo' && inx == swipers.current">
+              <txv-video
+                v-if="item.video_photo"
+                :usePoster="true" 
+                :poster="item.video_photo" 
+                id="video" 
+                playerid="txv1" 
+                :vid="item.video_url" 
+                objectFit="cover" 
+                :show-fullscreen-btn="true" 
+                :autoplay="false" 
+                :width="'100%'" 
+                :height="'100%'"
+                @play="switchS(false)"
+                @ended="switchS(true)"
+                @pause="switchS(true)"
+                ></txv-video>
+               <!-- src="http://wxsnsdy.tc.qq.com/105/20210/snsdyvideodownload?filekey=30280201010421301f0201690402534804102ca905ce620b1241b726bc41dcff44e00204012882540400&bizid=1023&hy=SH&fileparam=302c020101042530230204136ffd93020457e3c4ff02024ef202031e8d7f02030f42400204045a320a0201000400" -->
+               <!-- <video :controls="true" :poster="item.video_photo" id="myVideo" @play="switchS(false)" @pause="switchS(true)" @ended="switchS(true)" :src="item.video_url"></video> -->
+            </view>
+            <view v-if="item.istype == 'isImg'">
+               <img style="height:200px;width:100%" :src="item.src" @click="onBanner" />
+            </view>
+          </swiper-item>
+        </block>
+      </swiper>
+      <div v-if="isSwDOtr" class="swDots">
+        <ul v-if="showSwitchBtn">
+            <li  :class="istype == 'isVideo' ? 'activeSW' : ''" @click="handlSwTpye('isVideo')">视频</li>
+            <li :class="istype == 'isImg' ? 'activeSW' : ''" @click="handlSwTpye('isImg')">图片</li>
+        </ul> 
+      </div>
+      <div v-if="isSwDOtr" class="swCurr"><span>{{swipers.current+1}}/{{bannerlist.length}}</span></div>
     </div>
     <div class="sroll_container" id="sroll_container">
       <div class="delta_panl">
@@ -262,7 +298,8 @@
           <div class="imgBox">
             <scroll-view :scroll-x="true" style="white-space: nowrap; display: flex;" >
               <a style="margin-right:13px" v-for="(tItem,tIndex) in item.photos" :key="tIndex" @click="handleGoPhoto(item.name,tIndex)">
-                <img :src="tItem.photo">
+                <img v-if="item.name=='视频'" :src="tItem.video_photo">
+                <img v-else :src="tItem.photo">
               </a>
           </scroll-view>
           </div>
@@ -378,13 +415,22 @@
   </div>
 </template>
 <script>
+/* eslint-disable */
 import { postHousesDetail, POINTAlbums, POINTHouseClick, getContactList } from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
 import tips from '../../components/tips'
 import getUserinfo from '../../components/get-userinfo'
 import { reLogin } from '../../http/request.js'
 var QQMapWX = require('qqmap-wx-jssdk')
+const TxvContext = requirePlugin('tencentvideo')
 export default {
+   config: {
+
+    usingComponents: {
+
+      'txv-video': 'plugin://tencentvideo/video'
+    }
+  },
   /**
    * 用户点击右上角分享
    */
@@ -401,6 +447,9 @@ export default {
   },
   data () {
     return {
+      showSwitchBtn:false,
+      istype: 'isVideo',
+      isSwDOtr: true,
       concatList: [],
       showGetUserInfoModel: false,
       showNoticeModal: false,
@@ -427,7 +476,14 @@ export default {
         '餐饮': 0
         // '公交': 0
       },
-      mkitem: []
+      mkitem: [],
+      swipers: {
+        indicatorDots: false,
+        current: 0
+        // swiper
+      },
+      banner_video: [],
+      bannerlist: []
     }
   },
   onLoad: function (options) {
@@ -436,13 +492,27 @@ export default {
       // 获取二维码的携带的链接信息
       this.house_id = decodeURIComponent(parmas)
     }
+    this.swipers = {indicatorDots: false, current: 0 }
+    this.detail = null
   },
-
+  onShow: function() {
+    // let videoContext = TxvContext.getTxvContext('txv1')
+     this.videoContext && this.videoContext.pause()
+      this.$data.isSwDOtr = true
+  },
+  onHide: function () {
+    //  let videoContext = TxvContext.getTxvContext('txv1')
+      this.videoContext && this.videoContext.pause()
+      this.$data.isSwDOtr = true
+  }, 
+  onUnload: function () {
+      this.videoContext && this.videoContext.pause()
+      this.$data.isSwDOtr = true
+  },
   async mounted () {
     if (this.$route.query.id) {
       this.house_id = this.$route.query.id
     }
-
     const data = await postHousesDetail({
       house_id: this.house_id
     })
@@ -455,7 +525,6 @@ export default {
     } catch (error) {
       console.log(error)
     }
-
     this.showGetUserInfoModel = true
     this.detail = data
     this.detail.albums = Object.keys(data.albums).map(key => data.albums[key])
@@ -472,6 +541,23 @@ export default {
     })
     let alertAdCache = wx.getStorageSync(`alert_ad${this.house_id}`)
     let hasAlertAd = this.detail.alert_ad && this.detail.alert_ad.status === '1'
+    // 合并头图轮播列表
+    if(data.banner_video){
+     data.banner_video= data.banner_video.map((item, index) => ({ ...item,istype : 'isVideo' }))
+    }else {
+      data.banner_video = []
+      this.istype = 'isImg'
+    }
+    this.banner_imges = [{
+      'src': data.photo,
+      'istype': 'isImg',
+      'url': '/' // 跳转地址
+    }]
+    this.bannerlist = [...data.banner_video, ...this.banner_imges]
+    console.log(this.bannerlist)
+    // 是否显示头图选项按钮
+    this.showSwitchBtn = (data.banner_video.length>0)&&(this.banner_imges.length>0)
+    this.videoContext = wx.createVideoContext('txv1')
     if (hasAlertAd) {
       if (this.detail.alert_ad.photo === alertAdCache) {
         this.showNoticeModal = false
@@ -495,6 +581,35 @@ export default {
     })
   },
   methods: {
+    // 切换swiper
+    handlSwTpye (e = 'isVideo') {
+      this.$data.istype = e
+      for (let i = 0; i < this.$data.bannerlist.length; i++) {
+        if (this.$data.bannerlist[i].istype === e) {
+          this.$data.swipers.current = i
+          break
+        }
+      }
+    },
+    switchS (e = true) {
+      this.$data.isSwDOtr = e
+      if(e == false) {
+        POINTAlbums({
+          cityId: this.detail.city_id,
+          houseId: this.detail.id,
+          type: 7
+        })
+      }
+    },
+    changeSwiper (event) {
+      let index = event.mp.detail.current || 0
+      this.$data.swipers.current = index
+      this.$data.istype = this.$data.bannerlist[index].istype
+      // let videoContext = TxvContext.getTxvContext('txv1')
+      console.log(this.videoContext)
+     this.videoContext && this.videoContext.pause()
+      this.$data.isSwDOtr = true
+    },
     onCall (phoneNumber) {
       wx.makePhoneCall({
         phoneNumber: phoneNumber + ''
@@ -505,7 +620,7 @@ export default {
       let id = item.id
       let headPhoto = item.headPhoto ? encodeURIComponent(item.headPhoto) : ''
       let employeeName = item.employeeName || '客服'
-      this.$router.push({ path: '/pages/chat/main', query: {id, headPhoto, employeeName} })
+      this.$router.push({ path: '/pages/pA/chat/main', query: {id, headPhoto, employeeName} })
     },
     onBanner () {
       // 楼盘详情加了 type 和url字段  type 1链接 4优惠券 5相册  , 跳优惠券和相册的时候 url是空的 用楼盘id
@@ -635,7 +750,7 @@ export default {
     },
     goAroundMap (detail) {
       const query = { ...detail, ...this.searchMap }
-      this.$router.push({path: '/pages/around-map/main', query: query})
+      this.$router.push({path: '/pages/packMap/around-map/main', query: query})
     },
     handleGoPhoto (name, current = 0) {
       const tyepMap = {
@@ -644,7 +759,8 @@ export default {
         效果图: 3,
         周边配套: 4,
         户型图: 5,
-        规划图: 6
+        规划图: 6,
+        视频: 7
       }
       POINTAlbums({
         cityId: this.detail.city_id,
@@ -679,6 +795,51 @@ export default {
   }
 }
 </script>
+<style>
+  .swDots{
+  position:absolute;
+  right:0;
+  bottom:15px;
+  width:80%;
+  z-index:100;
+}
+.swCurr{
+   position:absolute;
+  bottom:15px;
+  z-index:100;
+  right:10px;
+}
+.swCurr span{
+  font-size: 12px;
+  color: #2E2E2E;
+  display: inline-block;
+  border-radius:10px;
+  padding:5px 10px;
+  background:rgba(255,255,255,0.7);
+}
+.swDots ul{
+    display:inline-block;
+    margin :0 23%;
+    border-radius:10px; 
+    background:rgba(255,255,255,0.7);
+    border-radius:9px;
+    }
+.swDots ul li{
+  display: inline-block;
+  padding:5px 10px;
+  border-radius:10px; 
+  font-size: 12px;
+  color: #2E2E2E;
+}
+.swDots ul li.activeSW{
+  color: #fff;
+  background-color: #E60113;
+}
+#myVideo{
+  width:100% !important;
+  height:200px !important;
+}
+</style>
 <style style lang="stylus" rel="stylesheet/stylus">
 .container {
   .van-popup {
@@ -688,7 +849,18 @@ export default {
 </style>
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 @import '../../stylus/mixin.styl';
-
+// .swDots{
+//   position:absolute;
+//   left:0;
+//   bottom:0;
+//   width :100%;
+//   background-color #d8d8d8;
+//   z-index:100;
+//   ul{
+//     display:flex;
+//     margin :auto 0;
+//   }
+// }
 .coupon_photo {
   width: 100%;
   height: 120px;

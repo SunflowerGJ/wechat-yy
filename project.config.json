@@ -72,20 +72,20 @@
 				{
 					"id": 3,
 					"name": "xcy",
-					"pathName": "pages/map/main",
+					"pathName": "pages/packMap/map/main",
 					"query": ""
 				},
 				{
 					"id": -1,
 					"name": "楼盘搜索",
-					"pathName": "pages/houses-search/main",
+					"pathName": "pages/packSearch/houses-search/main",
 					"query": "",
 					"scene": null
 				},
 				{
-					"id": -1,
-					"name": "尘世列表",
-					"pathName": "pages/city-list/main",
+					"id": 5,
+					"name": "pages/packSearch/city-list/main",
+					"pathName": "pages/packSearch/city-list/main",
 					"query": "",
 					"scene": null
 				},
@@ -99,14 +99,14 @@
 				{
 					"id": -1,
 					"name": "around-map",
-					"pathName": "pages/around-map/main",
+					"pathName": "pages/packMap/around-map/main",
 					"query": ""
 				},
 				{
 					"id": 8,
 					"name": "楼盘主页",
 					"pathName": "pages/home-page/main",
-					"query": "id=10",
+					"query": "id=5",
 					"scene": null
 				},
 				{
@@ -119,7 +119,7 @@
 				{
 					"id": -1,
 					"name": "map",
-					"pathName": "pages/map/main",
+					"pathName": "pages/packMap/map/main",
 					"query": "",
 					"scene": null
 				},
@@ -160,8 +160,8 @@
 				},
 				{
 					"id": 16,
-					"name": "聊天页面",
-					"pathName": "pages/chat/main",
+					"name": "pages/pA/chat/main",
+					"pathName": "pages/pA/chat/main",
 					"query": "id=e4f61ebbad3bc9947239f479c5e61303 ",
 					"scene": null
 				}
