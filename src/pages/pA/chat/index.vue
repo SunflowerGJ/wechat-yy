@@ -171,7 +171,7 @@
 
 <script>
 // /* eslint-disable */
-import NetcallController from '../../../controller/netcall.js'
+import NetcallController from '../../../../static/libs/netcall.js'
 import { initInim } from '../../../http/api.js'
 import { calcTimeHeader, generateRichTextNode } from '../../../utils/util.js'
 import componentEmoji from '../../../components/componentEmoji'
@@ -237,16 +237,12 @@ export default {
         })
       }
       console.log(this.account, this.token, YX_APP_KEY)
-      getApp().globalData.nim = thisNIM = NIM.getInstance({
+      app.globalData.nim = thisNIM = NIM.getInstance({
       // 初始化SDK
-        // debug: true,
-        //  appKey: 'bd4ea621af735fd6924c38d44ae76eb0', // 开发
-        // appKey: '146b62b8b039383f894b04e5aaec3701', // 测试
+        debug: true,
         appKey: YX_APP_KEY, // 正式
         account: this.account,
         token: this.token,
-        //   account: '14ff0266a382729dd5d159d92f6945ba',
-        //  token: 'b63a5db0e66a146d340855b3302f6e46',
         onconnect: this.onConnect,
         onerror: this.onError,
         onwillreconnect: this.onWillReconnect,
@@ -263,14 +259,13 @@ export default {
         // 同步完成
         onsyncdone: this.onSyncDone
       })
-      getApp().globalData.nim = thisNIM
     },
     onConnect () {
       console.log('连接成功')
-      getApp().globalData.netcallController = new NetcallController({
+      app.globalData.netcallController = new NetcallController({
       // debug: false,
         debug: true,
-        nim: thisNIM
+        nim: app.globalData.nim
       });
     },
     onWillReconnect (obj) {

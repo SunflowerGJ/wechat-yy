@@ -1,13 +1,12 @@
-import NetcallWeixin from '../../static/libs/NIM_Web_Netcall_weixin_v6.8.0';
-import NIM from '../../static/libs/NIM_Web_NIM_weixin_v6.8.0';
-import Emitter from '../utils/emitter';
+import NetcallWeixin from './NIM_Web_Netcall_weixin_v6.8.0';
+import NIM from './NIM_Web_NIM_weixin_v6.8.0';
+import Emitter from '../../src/utils/emitter';
 /* eslint-disable */
 let app = getApp();
 let store = app.store;
 
 export default class NetcallController {
   constructor (props) {
-    console.log(props)
     NIM.use(NetcallWeixin);
     NetcallWeixin.destroy()
     this.netcall = app.globalData.netcall = NetcallWeixin.getInstance(props)
@@ -20,7 +19,6 @@ export default class NetcallController {
   }
 
   bindNetcallEvent () {
-    console.log(this.netcall)
     this.netcall.on('syncDone', data => {
       console.log(new Date());
       console.log('登录成功', data);

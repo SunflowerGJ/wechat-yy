@@ -149,6 +149,7 @@ export default {
       });
     } else {
       // 主叫
+      
       this.setData({
         isCalling: true,
         pageTitle: pageTitle,
@@ -159,7 +160,6 @@ export default {
           height: app.globalData.videoContainerSize.height
         }
       });
-      console.log(app.globalData.netcall)
       app.globalData.netcall
         .call({
           type: 2, // 通话类型：1音频，2视频
