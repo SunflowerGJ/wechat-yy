@@ -216,7 +216,7 @@ export default {
   components: {
     componentEmoji
   },
-  async mounted () {
+  async onLoad () {
     console.log(this.$route.query)
     let title = this.$route.query.employeeName
     this.chatTo = this.$route.query.id

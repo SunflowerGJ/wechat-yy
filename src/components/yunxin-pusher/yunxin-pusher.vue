@@ -1,6 +1,6 @@
 <template>
 <!--components/yunxin-pusher/yunxin-pusher.wxml-->
-<view class="pusher-container" id="rtcpusher" :style="'left: ' + config.x + 'px; top: ' + config.y + 'px; width: ' + config.width + 'px; height: ' + config.height + 'px; position: absolute;'">
+<view @click="togglePositon" class="pusher-container" id="rtcpusher" :style="'left: ' + config.x + 'px; top: ' + config.y + 'px; width: ' + config.width + 'px; height: ' + config.height + 'px; position: absolute;'">
   <live-pusher :style="'height:' + config.height + 'px; position: absolute; width: 100%;'" :url="url" v-if="url.length !== 0" mode="RTC" :aspect="aspect" class="camera" @statechange="stateChangeHandler" @netstatus="netChangeHandler" background-mute="true" :enable-camera="enableCamera" :muted="muted" :beauty="beauty" max-bitrate="500" min-bitrate="200" :debug="debug" autopush="true">
     <slot></slot>
     <!-- <cover-view v-if="status !== 'ready'" class="sud flex-center-column" style="display:flexposition: absolute width: 100% height: 100%justify-content:centeralign-items:center">
@@ -114,6 +114,13 @@ export default {
     // });
   },
   methods: {
+    // 我写的切换双方视频窗口
+    togglePositon(){
+      console.log('togglePositon')
+      if(this.config.y==30){ // 小窗口 切换位置
+      this.$emit('togglePositon',true)
+      }
+    },
     /**
      * 播放推流
      * 一般情况下不应手动调用，在推流组件预备好后会自动被调用

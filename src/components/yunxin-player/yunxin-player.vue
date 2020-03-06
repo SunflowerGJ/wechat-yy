@@ -1,6 +1,6 @@
 <template>
 <!--components/yunxin-player/yunxin-player.wxml-->
-<view class="play-container" :style="'left:' + config.x + 'px; top:' + config.y + 'px; width: ' + config.width + 'px; height: ' + config.height + 'px;'">
+<view @click="togglePositon" class="play-container" :style="'left:' + config.x + 'px; top:' + config.y + 'px; width: ' + config.width + 'px; height: ' + config.height + 'px;'">
   <live-player :src="url" mode="RTC" class="player" :orientation="orientation" min-cache="0.2" max-cache="0.8" @statechange="stateChangeHandler" :object-fit="objectFit" autoplay :style="'height: ' + config.height + 'px; position: absolute; width: 100%; top: 0; left: 0;background-color: transparent;'" :debug="debug" :id="'yunxinplayer-' + uid">
     <slot></slot>
     <!-- <cover-view v-if="status !== 'ready'" class="sud flex-center-column" style="display:none">
@@ -84,6 +84,13 @@ export default {
     url: function (newVal, oldVal, changedPath) {}
   },
   methods: {
+    // 我写的切换双方视频窗口
+    togglePositon(){
+      console.log('togglePositon')
+      if(this.config.y==30){ // 小窗口 切换位置
+      this.$emit('togglePositon',true)
+      }
+    },
     /**
      * 组件生命周期：在组件布局完成后执行，此时可以获取节点信息
      */

@@ -12,6 +12,7 @@
     <div wx:else class="fullscreen">
       <div v-if="isCalling" class="fullscreen">
         <camera
+          v-if="callTypeIconKind == 'video'"
           mode="normal"
           device-position="front"
           class="fullscreen"
@@ -19,8 +20,9 @@
           @error="cameraOpenErrorHandler"
           :style="{width:callingPosition.width+'px',height:callingPosition.height+'px'}"
         >
-          <cover-view class="calling-coverview">正在呼叫请稍后</cover-view>
+          <!-- <cover-view class="calling-coverview">正在呼叫请稍后</cover-view> -->
         </camera>
+        <cover-view style="position:absolute;top:0;left:0" class="calling-coverview">正在呼叫请稍后</cover-view>
       </div>
       <div wx:else class="fullscreen">
         <div class="video-wrapper">
@@ -35,6 +37,7 @@
               :beauty="true"
               :config="selfPosition"
               @pushfailed="onPusherFailed"
+              @togglePositon="onTogglePositon"
             ></yunxin-pusher>
             <yunxin-player
               v-if="user.uid&&(user.uid !== loginUser.uid)"
@@ -44,6 +47,7 @@
               :url="user.url"
               :config="otherPosition"
               @pullfailed="onPullFailed"
+              @togglePositon="onTogglePositon"
             >
             </yunxin-player>
               <cover-view class="control-wrapper" v-if="user.uid&&(user.uid !== loginUser.uid)">
@@ -122,7 +126,7 @@ export default {
     "yunxin-player": yunxinPlayer,
     "yunxin-pusher": yunxinPusher
   },
-  async mounted() {
+  async onLoad() {
     let systemInfo = wx.getSystemInfoSync();
     app.globalData.videoContainerSize = {
       width: systemInfo.windowWidth,
@@ -143,6 +147,7 @@ export default {
       this.setData({
         pageTitle: pageTitle,
         callTypeIconKind:options.type==1?'audio':'video',
+        enableCamera:options.type==1?false:true, 
         beCalling: true,
         infoOfBeCalled: {
           caller: options.caller,
@@ -154,6 +159,7 @@ export default {
       // 主叫
       
       this.setData({
+        enableCamera:options.type==1?false:true,
         isCalling: true,
         pageTitle: pageTitle,
         callTypeIconKind:options.type==1?'audio':'video',
@@ -792,6 +798,17 @@ export default {
     },
     onPullFailed() {
       needRePlay = true;
+    },
+    onTogglePositon(){
+      let selfPosition = Object.assign({},this.selfPosition)
+      let otherPosition =Object.assign({},this.otherPosition)
+      console.log('onTogglePositon')
+      console.log(selfPosition)
+      this.setData({
+        selfPosition:selfPosition,
+        otherPosition:selfPosition
+      });
+      console.log(this.selfPosition)
     },
     _resetData() {
       clearTimeout(this.hangupTimer);
