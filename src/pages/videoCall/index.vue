@@ -37,7 +37,7 @@
               @pushfailed="onPusherFailed"
             ></yunxin-pusher>
             <yunxin-player
-              v-if="user.uid !== loginUser.uid"
+              v-if="user.uid&&(user.uid !== loginUser.uid)"
               :key="user.uid"
               :id="'yunxinplayer-'+user.uid"
               :uid="user.uid"
@@ -94,6 +94,7 @@ let needRePlay = false;
 let callingBackToLast = false;
 import yunxinPlayer from "../../components/yunxin-player/yunxin-player";
 import yunxinPusher from "../../components/yunxin-pusher/yunxin-pusher";
+import { setTimeout } from 'timers';
 export default {
   data() {
     return {
@@ -167,6 +168,9 @@ export default {
           forceKeepCalling: true // 持续呼叫
         })
         .catch(error => {
+          console.log('呼叫失败，请重试')
+          console.log(error)
+
           const duration = 2000;
           showToast("text", `呼叫失败，请重试，${duration}ms后返回`, {
             duration
@@ -320,9 +324,16 @@ export default {
         console.log(data);
       });
       app.globalData.emitter.on("clientJoin", data => {
-        console.log("有人加入了");
+        console.log(data)
+        console.log("有人加入了-");
+        //         console.log(self.userlist);
+        // self._personJoin(data);
+
+        setTimeout(()=>{
         self._personJoin(data);
         console.log(self.userlist);
+        },1500)
+    
       });
       app.globalData.emitter.on("beCalling", data => {
         console.log("被叫了");
@@ -392,11 +403,19 @@ export default {
     },
     _personJoin(data) {
       let userlist = Object.assign([], this.userlist);
+      console.log(data)
+      console.log(userlist)
       let uids = userlist.map(user => user.uid) || [];
       if (uids.includes(data.uid) === false) {
         // 非自己
         if (this.loginUser.uid !== data.uid) {
+
           Object.assign(userlist[0], data);
+          // if(userlist[0]){
+          //     Object.assign(userlist[0], data);
+          // }else {
+          //   userlist=[data]
+          // }
         }
         console.error(userlist);
         this.setData({

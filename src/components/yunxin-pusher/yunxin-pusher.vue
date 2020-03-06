@@ -92,10 +92,11 @@ export default {
   destroyed: function () {
     console.log("yunxin-pusher detached"); // auto stop yunxin-pusher when detached
     // this.stop()
+    this.detached = true
 
-    this.setData({
-      detached: true
-    });
+    // this.setData({
+    //   detached: true
+    // });
   },
 
   /**
@@ -104,9 +105,10 @@ export default {
   beforeMount: function () {
     console.log("yunxin-pusher ready");
     this.start();
-    this.setData({
-      detached: false
-    });
+    this.detached = false
+    // this.setData({
+    //   detached: false
+    // });
   },
   methods: {
     /**
@@ -150,28 +152,31 @@ export default {
      * 推流状态变化事件回调
      */
     stateChangeHandler(e) {
-      console.warn(`yunxin-pusher code: ${e.detail.code} - ${e.detail.message}`);
+      console.log(e)
+      console.warn(`yunxin-pusher code: ${e.mp.detail.code} - ${e.mp.detail.message}`);
 
-      if (e.detail.code === -1307) {
+      if (e.mp.detail.code === -1307) {
         // 网络断连，且经多次重连抢救无效，更多重试请自行重启推
-        console.log('yunxin-pusher stopped', `code: ${e.detail.code}`);
-        this.setData({
-          status: "error"
-        });
+        console.log('yunxin-pusher stopped', `code: ${e.mp.detail.code}`);
+        this.status= "error"
+        // this.setData({
+        //   status: "error"
+        // });
         this.livePusherContext.stop({
           complete: () => {
             this.livePusherContext.start();
           }
         });
         this.$emit('pushfailed');
-      } else if (e.detail.code === 1008) {
+      } else if (e.mp.detail.code === 1008) {
         // 编码器启动
-        console.log(`yunxin-pusher started`, `code: ${e.detail.code}`);
+        console.log(`yunxin-pusher started`, `code: ${e.mp.detail.code}`);
 
         if (this.status === "loading") {
-          this.setData({
-            status: "ready"
-          });
+          this.status= "ready"
+          // this.setData({
+          //   status: "ready"
+          // });
         }
       }
     },
@@ -186,9 +191,10 @@ export default {
      * 开启调试
      */
     toggleDebug(isDebug) {
-      this.setData({
-        debug: isDebug
-      });
+      this.debug= isDebug
+      // this.setData({
+      //   debug: isDebug
+      // });
     }
 
   }

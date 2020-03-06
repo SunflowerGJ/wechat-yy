@@ -2,7 +2,7 @@
   <div class="chating-wrapper">
     <!-- 消息记录 -->
     <!-- 消息记录 -->
-    <div class="record-wrapper" id="recordWrapper">
+    <div  class="record-wrapper" :style="{'padding-bottom':showMore+'rpx'}" id="recordWrapper">
       <div v-for="message in messageArr" :key="message.key">
         <view
           class="record-item-time-wrapper"
@@ -42,7 +42,7 @@
           >
             <img src="/static/images/voice-right.png" class="image" />
             <text class="text" style="color:#000;"
-              >{{ message.audio.dur / 1000 }}''</text
+              >{{ (message.audio.dur / 1000 ) << 1 >> 1 }}''</text
             >
           </view>
           <img
@@ -108,6 +108,7 @@
         />
         <!-- :confirm-hold="true" -->
         <input
+          :adjust-position="true"
         style='margin-bottom: 20rpx;'
           v-if="sendType === 0"
           :cursor-spacing="36"
@@ -141,30 +142,32 @@
           class="chatinput-img fr"
         />
         <img src='/static/images/emoji.png' @tap='toggleEmoji' class='chatinput-img fr emoji'/>
-      </div>
+
       <div v-if="emojiFlag" class='chatinput-subcontent'>
         <component-emoji @EmojiClick="emojiCLick" @EmojiSend="emojiSend"></component-emoji>
       </div>
       <div v-if="moreFlag" class="more-subcontent">
         <div style="display:flex;justify-content: space-between;">
           <div class="more-subcontent-item" @click.stop="chooseImageToSend">
-            <img src="/static/images/icon-zhaox.png" class="image" />
+            <img src="/static/images/icon-ph.png" class="image" />
             <text class="text">照片</text>
           </div>
           <div class="more-subcontent-item" @click.stop="chooseImageOrVideo">
-            <img src="/static/images/icon-ph.png" class="image" />
+            <img src="/static/images/icon-zhaox.png" class="image" />
             <text class="text">拍照</text>
           </div>
           <div class="more-subcontent-item" @click.stop="videoCall">
-            <img src="/static/images/netcall-camera.png" class="image" />
+            <img src="/static/images/icon-spth.png" style="width:56rpx;height:38rpx" class="image" />
             <text class="text">视频通话</text>
           </div>
           <div class="more-subcontent-item" @click.stop="videoCall">
-            <img src="/static/images/netcall-call-voice.png" class="image" />
+            <img src="/static/images/icon-yybf.png" style="height:56rpx;width:44rpx" class="image" />
             <text class="text">语音通话</text>
           </div>
         </div>
       </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -206,7 +209,8 @@ export default {
       recorderManager: null, // 微信录音管理对象
       recordClicked: false, // 判断手指是否触摸录音按钮
       isLongPress: false, // 录音按钮是否正在长按
-      audioContext: null
+      audioContext: null,
+      showMore: '200'
     }
   },
   components: {
@@ -331,7 +335,7 @@ export default {
     onUpdateSession (session) {
       console.log('会话更新了', session)
       if (session.lastMsg && session.lastMsg.status === 'success') {
-        if ([this.chatTo, this.account].includes(session.to)) {
+        if ([this.account].includes(session.to)) {
           this.nimData.push(session.lastMsg)
           this.messageArr = this.handleMsgs(this.nimData)
           // 滚动到底部
@@ -666,7 +670,16 @@ export default {
           wx.hideLoading()
           // 判断错误类型，并做相应处理
           if (self.handleErrorAfterSend(err)) {
+            return
           }
+          console.log('发送消息成功')
+          console.log(msg)
+          self.nimData.push(msg)
+          self.messageArr = self.handleMsgs(self.nimData)
+          // 滚动到底部
+          setTimeout(() => {
+            this.scrollToBottom()
+          }, 150)
         }
       })
     },
@@ -811,6 +824,17 @@ export default {
       this.moreFlag = !this.moreFlag
       this.emojiFlag = false
       // focusFlag: false
+      if (this.moreFlag) {
+        this.showMore = '340'
+        setTimeout(() => {
+          this.scrollToBottom()
+        }, 150)
+      } else {
+        this.showMore = '200'
+        setTimeout(() => {
+          this.scrollToBottom()
+        }, 150)
+      }
     },
     /**
    * 切换出emoji键盘
@@ -819,6 +843,17 @@ export default {
       this.sendType = 0
       this.emojiFlag = !this.emojiFlag
       this.moreFlag = false
+      if (this.emojiFlag) {
+        this.showMore = '670'
+        setTimeout(() => {
+          this.scrollToBottom()
+        }, 150)
+      } else {
+        this.showMore = '200'
+        setTimeout(() => {
+          this.scrollToBottom()
+        }, 150)
+      }
     },
     // 选择相册图片
     chooseImageToSend (e) {
@@ -876,8 +911,16 @@ export default {
             if (self.handleErrorAfterSend(err)) {
               return
             }
-            console.log('发送消息成功')
+            self.showMore = '200'
             self.moreFlag = false
+            console.log('发送消息成功')
+            console.log(msg)
+            self.nimData.push(msg)
+            self.messageArr = self.handleMsgs(self.nimData)
+            // 滚动到底部
+            setTimeout(() => {
+              this.scrollToBottom()
+            }, 150)
           }
         })
       }
@@ -894,7 +937,14 @@ export default {
           if (self.handleErrorAfterSend(err)) {
             return
           }
+          console.log(msg)
           console.log('发送消息成功')
+          self.nimData.push(msg)
+          self.messageArr = self.handleMsgs(self.nimData)
+          // 滚动到底部
+          setTimeout(() => {
+            this.scrollToBottom()
+          }, 150)
           self.inputValue = ''
           // self.focusFlag = false
         }
@@ -918,7 +968,12 @@ export default {
   */
     inputFocus (e) {
       this.focusFlag = true
-      this.emojiFlag = false
+      // this.emojiFlag = false
+      // this.moreFlag = false
+      // this.showMore = '200'
+      // setTimeout(() => {
+      //   this.scrollToBottom()
+      // }, 150)
     },
 
     // 失去聚焦(软键盘消失)
@@ -986,7 +1041,7 @@ export default {
 
 .chatinput-content {
   width: 100%;
-  height: 83px;
+  min-height: 83px;
   box-sizing: border-box;
   // padding: 0 0 0 20rpx;
 }

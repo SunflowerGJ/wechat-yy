@@ -55,9 +55,11 @@ export default class NetcallController {
       if (currentPage.route.includes('videoCall') === false && getApp().globalData.isPushBeCallPage == false) {
         // 不在多人通话中，才提示
         if (!currentPage) {
-          wx.navigateTo({
-            url: `/partials/videoCall/videoCall?beCalling=true&caller=${data.caller}&cid=${data.cid}&type=${data.type}`
-          });
+          // wx.navigateTo({
+          //   url: `/partials/videoCall/videoCall?beCalling=true&caller=${data.caller}&cid=${data.cid}&type=${data.type}`
+          // });
+          this.$router.push({path: '/pages/videoCall/main', query: {callee: data.caller,cid:data.cid,type:data.type}})
+
           getApp().globalData.isPushBeCallPage = true;
           return;
         }
