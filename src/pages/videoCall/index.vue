@@ -2,7 +2,7 @@
   <div class="fullscreen">
     <!-- 被叫 -->
     <div v-if="beCalling" class="becalling-wrapper">
-      <div class="becalling-text">对方邀请你开始视频聊天</div>
+      <div class="becalling-text">{{infoOfBeCalled.type==1?'对方邀请你开始语音聊天':'对方邀请你开始视频聊天'}}</div>
       <div class="becalling-button-group">
         <div class="reject-button button" @click.stop="rejectCallHandler">拒绝</div>
         <div class="accept-button button" @click.stop="acceptCallHandler">接听</div>
@@ -49,25 +49,25 @@
                 <cover-view class="netcall-time-text">{{duration}}</cover-view>
                 <cover-image
                   class="item"
-                  :src="'/static/images/netcall-call-'+callTypeIconKind == 'video' ? 'voice' : 'video'+'.png'"
+                  :src="callTypeIconKind?'/static/images/netcall-call-voice.png':'/static/images/netcall-call-video.png'"
                   catchtap="switchToVoiceCallHandler"
                 >语音通话</cover-image>
                 <cover-image
                   class="item"
                   src="/static/images/netcall-revert-camera.png"
                   v-if="callTypeIconKind == 'video'"
-                  catchtap="switchCameraHandler"
+                  @click.stop="switchCameraHandler"
                 >切摄像头</cover-image>
                 <cover-image
                   class="item"
-                  :src="'/static/images/netcall-camera'+enableCamera ? '' : '-close'+'.png'"
+                  :src="enableCamera?'/static/images/netcall-camera.png':'/static/images/netcall-camera-close.png'"
                   v-if="callTypeIconKind == 'video'"
                   :data-mode="1"
                   @click.stop="switchMeetingModeHandler"
                 >关闭摄像头</cover-image>
                 <cover-image
                   class="item"
-                  :src="'/static/images/netcall-micro'+muted ? '-close' : ''+'.png'"
+                  :src="muted?'/static/images/netcall-micro-close.png':'/static/images/netcall-micro.png'"
                   :data-mode="2"
                   @click.stop="switchMeetingModeHandler"
                 >关闭麦克风</cover-image>
@@ -95,6 +95,7 @@ let callingBackToLast = false;
 import yunxinPlayer from "../../components/yunxin-player/yunxin-player";
 import yunxinPusher from "../../components/yunxin-pusher/yunxin-pusher";
 import { setTimeout } from 'timers';
+// import { setTimeout } from 'timers';
 export default {
   data() {
     return {
@@ -129,7 +130,7 @@ export default {
     };
     app.globalData.isPushBeCallPage = false;
     let options = this.$route.query;
-    wx.setNavigationBarTitle({ title:options.title })
+    wx.setNavigationBarTitle({ title:options.title||'客服顾问' })
     console.log(options);
     wx.setKeepScreenOn({
       keepScreenOn: true
@@ -141,6 +142,7 @@ export default {
       pageTitle = options.caller;
       this.setData({
         pageTitle: pageTitle,
+        callTypeIconKind:options.type==1?'audio':'video',
         beCalling: true,
         infoOfBeCalled: {
           caller: options.caller,
@@ -154,6 +156,7 @@ export default {
       this.setData({
         isCalling: true,
         pageTitle: pageTitle,
+        callTypeIconKind:options.type==1?'audio':'video',
         callingPosition: {
           x: 0,
           y: 0,
@@ -163,7 +166,7 @@ export default {
       });
       app.globalData.netcall
         .call({
-          type: 2, // 通话类型：1音频，2视频
+          type: options.type, // 通话类型：1音频，2视频
           callee: options.callee, // 被叫
           forceKeepCalling: true // 持续呼叫
         })
@@ -187,7 +190,7 @@ export default {
     }
     wx.setNavigationBarTitle({
       // title: pageTitle
-      title: this.$route.query.title
+      title: this.$route.query.title ||'客服顾问' 
     });
     this._initialPosition();
     this.listenNetcallEvent();
@@ -326,14 +329,11 @@ export default {
       app.globalData.emitter.on("clientJoin", data => {
         console.log(data)
         console.log("有人加入了-");
-        //         console.log(self.userlist);
-        // self._personJoin(data);
 
+        // 延时加入 因为同步完成 是异步的
         setTimeout(()=>{
         self._personJoin(data);
-        console.log(self.userlist);
         },1500)
-    
       });
       app.globalData.emitter.on("beCalling", data => {
         console.log("被叫了");
@@ -446,7 +446,7 @@ export default {
           console.log("请求从音频切换到视频");
           wx.showModal({
             title: "切换通话模式",
-            content: "对方请求从音频切换到音视频",
+            content: "对方请求从音频切换到视频",
             confirmText: "允许",
             cancelText: "拒绝",
             success: function(res) {
@@ -472,7 +472,7 @@ export default {
         // 对方拒绝从音频切换到视频
         case app.globalData.netcall
           .NETCALL_CONTROL_COMMAND_SWITCH_AUDIO_TO_VIDEO_REJECT:
-          showToast("text", "对方拒绝音频切换到音视频");
+          showToast("text", "对方拒绝音频切换到视频");
           break;
         // 从视频切换到音频
         case app.globalData.netcall
@@ -730,6 +730,7 @@ export default {
      * 挂断通话
      */
     hangupHandler(notBack = false) {
+      console.log('挂断电话=-=-=-=-=-=-=')
       return Promise.resolve()
         .then(() => {
           if (app.globalData.netcall) {
@@ -871,7 +872,7 @@ export default {
                   );
                 }
                 console.error(this.livePlayerMap[uid]);
-                showToast("text", "开始重连拉流");
+                // showToast("text", "开始重连拉流");
                 this.livePlayerMap[uid].play();
               }
             });

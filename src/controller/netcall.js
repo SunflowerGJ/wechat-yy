@@ -4,7 +4,7 @@ import Emitter from '../utils/emitter';
 /* eslint-disable */
 let app = getApp();
 let store = app.store;
-
+let self = this
 export default class NetcallController {
   constructor (props) {
     console.log(props)
@@ -15,8 +15,8 @@ export default class NetcallController {
     this.bindNetcallEvent();
     this.state = {
       onTheCall: false // 正在通话中
-
     };
+    this.self =self
   }
 
   bindNetcallEvent () {
@@ -49,16 +49,22 @@ export default class NetcallController {
     this.netcall.on('beCalling', data => {
       // {caller,cid,type}
       console.log('beCalling', data);
-      let pages = getCurrentPages();
-      let currentPage = pages[pages.length - 1];
 
-      if (currentPage.route.includes('videoCall') === false && getApp().globalData.isPushBeCallPage == false) {
+      console.log(getCurrentPages())
+      let pages = getCurrentPages();
+
+      let currentPage = pages[pages.length - 1];
+      console.log(currentPage)
+      console.log(currentPage.route)
+      console.log(getApp().globalData.isPushBeCallPage)
+
+      if (currentPage.route.includes('videoCall') === false && getApp().globalData.isPushBeCallPage == false||getApp().globalData.isPushBeCallPage == undefined) {
         // 不在多人通话中，才提示
         if (!currentPage) {
-          // wx.navigateTo({
-          //   url: `/partials/videoCall/videoCall?beCalling=true&caller=${data.caller}&cid=${data.cid}&type=${data.type}`
-          // });
-          this.$router.push({path: '/pages/videoCall/main', query: {callee: data.caller,cid:data.cid,type:data.type}})
+          wx.navigateTo({
+            url: `/pages/videoCall/main?beCalling=true&caller=${data.caller}&cid=${data.cid}&type=${data.type}`
+          });
+          // self.$router.push({path: '/pages/videoCall/main', query: {callee: data.caller,cid:data.cid,type:data.type}})
 
           getApp().globalData.isPushBeCallPage = true;
           return;
@@ -70,9 +76,9 @@ export default class NetcallController {
 
         if (Object.keys(netcallGroupCallInfo).length === 0) {
           // p2p视频
-          if (!currentPage.route.includes('videoCall') && getApp().globalData.isPushBeCallPage == false) {
+          if (!currentPage.route.includes('videoCall') && getApp().globalData.isPushBeCallPage == false || getApp().globalData.isPushBeCallPage == undefined) {
             wx.navigateTo({
-              url: `/partials/videoCall/videoCall?beCalling=true&caller=${data.caller}&cid=${data.cid}&type=${data.type}`
+              url: `/pages/videoCall/main?beCalling=true&caller=${data.caller}&cid=${data.cid}&type=${data.type}`
             });
             getApp().globalData.isPushBeCallPage = true;
           }

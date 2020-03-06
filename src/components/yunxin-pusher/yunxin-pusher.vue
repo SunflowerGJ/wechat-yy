@@ -4,7 +4,7 @@
   <live-pusher :style="'height:' + config.height + 'px; position: absolute; width: 100%;'" :url="url" v-if="url.length !== 0" mode="RTC" :aspect="aspect" class="camera" @statechange="stateChangeHandler" @netstatus="netChangeHandler" background-mute="true" :enable-camera="enableCamera" :muted="muted" :beauty="beauty" max-bitrate="500" min-bitrate="200" :debug="debug" autopush="true">
     <slot></slot>
     <cover-view v-if="status !== 'ready'" class="sud flex-center-column" style="display:flexposition: absolute width: 100% height: 100%justify-content:centeralign-items:center">
-      <cover-image style="width: 182rpxheight:240rpx" :src="'../../images/yunxin/' + status + '.png'"></cover-image>
+      <cover-image style="width: 182rpxheight:240rpx" :src="imgStatus"></cover-image>
     </cover-view>
     <cover-view style="position: absolutetop:10pxleft:10pxfont-size: 28rpx right: 10pxcolor:#ccc" v-if="coverText.length != 0">{{coverText}}</cover-view>
   </live-pusher>
@@ -18,8 +18,8 @@ export default {
     return {
       livePusherContext: null,
       // 组件操作上下文
-      detached: false // 组件是否被移除标记
-
+      detached: false, // 组件是否被移除标记
+      imgStatus:'/static/images/yunxin/loading.png'
     };
   },
 
@@ -82,6 +82,9 @@ export default {
   watch: {
     status: function (newVal, oldVal, changedPath) {
       console.log(`yunxin-pusher status changed from ${oldVal} to ${newVal}`);
+      if(newVal){
+        this.imgStatus = `/static/images/yunxin/${newVal}.png`
+      }
     },
     url: function (newVal, oldVal, changedPath) {}
   },
@@ -152,9 +155,7 @@ export default {
      * 推流状态变化事件回调
      */
     stateChangeHandler(e) {
-      console.log(e)
       console.warn(`yunxin-pusher code: ${e.mp.detail.code} - ${e.mp.detail.message}`);
-
       if (e.mp.detail.code === -1307) {
         // 网络断连，且经多次重连抢救无效，更多重试请自行重启推
         console.log('yunxin-pusher stopped', `code: ${e.mp.detail.code}`);

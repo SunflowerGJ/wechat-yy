@@ -54,7 +54,7 @@ export default class NetcallController {
         // 不在多人通话中，才提示
         if (!currentPage) {
           wx.navigateTo({
-            url: `/partials/videoCall/videoCall?beCalling=true&caller=${data.caller}&cid=${data.cid}&type=${data.type}`
+            url: `/pages/videoCall/main?beCalling=true&caller=${data.caller}&cid=${data.cid}&type=${data.type}`
           });
           getApp().globalData.isPushBeCallPage = true;
           return;
@@ -68,7 +68,7 @@ export default class NetcallController {
           // p2p视频
           if (!currentPage.route.includes('videoCall') && getApp().globalData.isPushBeCallPage == false) {
             wx.navigateTo({
-              url: `/partials/videoCall/videoCall?beCalling=true&caller=${data.caller}&cid=${data.cid}&type=${data.type}`
+              url: `/pages/videoCall/main?beCalling=true&caller=${data.caller}&cid=${data.cid}&type=${data.type}`
             });
             getApp().globalData.isPushBeCallPage = true;
           }

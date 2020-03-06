@@ -5,7 +5,7 @@
     <slot></slot>
     <cover-view v-if="status !== 'ready'" class="sud flex-center-column" style="display:none">
       <!-- style="position: absolute; width: 100%; height:100%;display:flex;justify-content:center;align-items:center;"> -->
-      <cover-image style="width: 182rpxheight:240rpx" :src="'../../images/yunxin/' + status + '.png'"></cover-image>
+      <cover-image style="width: 182rpxheight:240rpx" :src="imgStatus"></cover-image>
     </cover-view>
     <cover-view style="position: absolutetop:10pxleft:10pxfont-size: 28rpx right: 10pxcolor:#ccc" v-if="coverText.length != 0">{{coverText}}</cover-view>
   </live-player>  
@@ -18,7 +18,8 @@ export default {
   data () {
     return {
       livePlayerContext: null,
-      detached: false
+      detached: false,
+      imgStatus:'/static/images/yunxin/loading.png'
     };
   },
 
@@ -77,6 +78,9 @@ export default {
   watch: {
     status: function (newVal, oldVal, changedPath) {
       console.log(`player status changed from ${oldVal} to ${newVal}`);
+      if(newVal){
+        this.imgStatus = `/static/images/yunxin/${newVal}.png`
+      }
     },
     url: function (newVal, oldVal, changedPath) {}
   },
@@ -162,7 +166,7 @@ export default {
      * 播放器状态更新回调
      */
     stateChangeHandler(e) {
-      console.log(e)
+
       console.warn(`yunxin-player code: ${e.mp.detail.code} - ${e.mp.detail.message}`);
       let uid = parseInt(e.mp.target.id.split('-')[1]);
 
