@@ -24,7 +24,7 @@
       </div>
       <div wx:else class="fullscreen">
         <div class="video-wrapper">
-          <block v-for="user in userlist" :key="user.uid">
+          <view v-for="user in userlist" :key="user.uid">
             <yunxin-pusher
               v-if="user.uid === loginUser.uid"
               :key="user.uid"
@@ -45,40 +45,40 @@
               :config="otherPosition"
               @pullfailed="onPullFailed"
             >
-              <cover-view class="control-wrapper">
+            </yunxin-player>
+              <cover-view class="control-wrapper" v-if="user.uid&&(user.uid !== loginUser.uid)">
                 <cover-view class="netcall-time-text">{{duration}}</cover-view>
                 <cover-image
                   class="item"
-                  :src="callTypeIconKind?'/static/images/netcall-call-voice.png':'/static/images/netcall-call-video.png'"
-                  catchtap="switchToVoiceCallHandler"
+                  :src="callTypeIconKind == 'video'?'/static/images/netcall-call-voice.png':'/static/images/netcall-call-video.png'"
+                  @tap="switchToVoiceCallHandler"
                 >语音通话</cover-image>
                 <cover-image
                   class="item"
                   src="/static/images/netcall-revert-camera.png"
                   v-if="callTypeIconKind == 'video'"
-                  @click.stop="switchCameraHandler"
+                  @tap="switchCameraHandler"
                 >切摄像头</cover-image>
                 <cover-image
                   class="item"
                   :src="enableCamera?'/static/images/netcall-camera.png':'/static/images/netcall-camera-close.png'"
                   v-if="callTypeIconKind == 'video'"
                   :data-mode="1"
-                  @click.stop="switchMeetingModeHandler"
+                  @tap="switchMeetingModeHandler"
                 >关闭摄像头</cover-image>
                 <cover-image
                   class="item"
                   :src="muted?'/static/images/netcall-micro-close.png':'/static/images/netcall-micro.png'"
                   :data-mode="2"
-                  @click.stop="switchMeetingModeHandler"
+                  @tap="switchMeetingModeHandler"
                 >关闭麦克风</cover-image>
                 <cover-image
                   class="item"
                   src="/static/images/netcall-reject.png"
-                  @click.stop="hangupHandler"
+                  @tap="hangupHandler"
                 >挂断</cover-image>
               </cover-view>
-            </yunxin-player>
-          </block>
+          </view>
         </div>
       </div>
     </div>
@@ -94,7 +94,7 @@ let needRePlay = false;
 let callingBackToLast = false;
 import yunxinPlayer from "../../components/yunxin-player/yunxin-player";
 import yunxinPusher from "../../components/yunxin-pusher/yunxin-pusher";
-import { setTimeout } from 'timers';
+// import { setTimeout } from 'timers';
 // import { setTimeout } from 'timers';
 export default {
   data() {
@@ -329,8 +329,8 @@ export default {
       app.globalData.emitter.on("clientJoin", data => {
         console.log(data)
         console.log("有人加入了-");
-
-        // 延时加入 因为同步完成 是异步的
+        // self._personJoin(data);
+        // // 延时加入 因为同步完成 是异步的
         setTimeout(()=>{
         self._personJoin(data);
         },1500)
@@ -507,6 +507,7 @@ export default {
      * 切换至音频通话单击事件
      */
     switchToVoiceCallHandler() {
+      console.log('切换语音通话')
       if (this.callTypeIconKind === "video") {
         // 当前是视频，准备切换至音频
         app.globalData.netcall.control({
@@ -580,6 +581,7 @@ export default {
      * 切换摄像头回调
      */
     switchCameraHandler() {
+      console.log('切换摄像头')
       this.livePusherContext.switchCamera();
     },
     /**
@@ -587,7 +589,10 @@ export default {
      * 0音视频，1纯音频，2纯视频，3静默
      */
     switchMeetingModeHandler(e) {
-      let mode = e.currentTarget.dataset.mode;
+      console.log('关闭摄像头')
+     
+      let mode = e.mp.currentTarget.dataset.mode;
+       console.log('0音视频，1纯音频，2纯视频，3静默'+mode)
       let enableCamera = this.enableCamera;
       let muted = this.muted;
       if (mode == 1) {

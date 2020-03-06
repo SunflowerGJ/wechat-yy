@@ -3,10 +3,9 @@
 <view class="play-container" :style="'left:' + config.x + 'px; top:' + config.y + 'px; width: ' + config.width + 'px; height: ' + config.height + 'px;'">
   <live-player :src="url" mode="RTC" class="player" :orientation="orientation" min-cache="0.2" max-cache="0.8" @statechange="stateChangeHandler" :object-fit="objectFit" autoplay :style="'height: ' + config.height + 'px; position: absolute; width: 100%; top: 0; left: 0;background-color: transparent;'" :debug="debug" :id="'yunxinplayer-' + uid">
     <slot></slot>
-    <cover-view v-if="status !== 'ready'" class="sud flex-center-column" style="display:none">
-      <!-- style="position: absolute; width: 100%; height:100%;display:flex;justify-content:center;align-items:center;"> -->
+    <!-- <cover-view v-if="status !== 'ready'" class="sud flex-center-column" style="display:none">
       <cover-image style="width: 182rpxheight:240rpx" :src="imgStatus"></cover-image>
-    </cover-view>
+    </cover-view> -->
     <cover-view style="position: absolutetop:10pxleft:10pxfont-size: 28rpx right: 10pxcolor:#ccc" v-if="coverText.length != 0">{{coverText}}</cover-view>
   </live-player>  
 </view>
