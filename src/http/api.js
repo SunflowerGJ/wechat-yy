@@ -316,3 +316,28 @@ export const getCustomerCall = (params = {}) => {
     params: params
   }, false)
 }
+
+// 查询订阅  成功返回10000
+export const selectSubscribe = (params = {}) => {
+  return fly({
+    method: 'post',
+    url: `/api/Member/selectSubscribe`,
+    params: params
+  }, false)
+}
+// 添加订阅  成功返回10000
+export const addSubscribe = (params = {}) => {
+  return fly({
+    method: 'post',
+    url: `/api/Member/addSubscribe`,
+    params: params
+  }, false)
+}
+// 删除订阅  成功返回10000
+export const delSubscribe = (params = {}) => {
+  return fly({
+    method: 'post',
+    url: `/api/Member/delSubscribe`,
+    params: params
+  }, false)
+}

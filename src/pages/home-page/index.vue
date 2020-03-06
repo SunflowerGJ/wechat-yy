@@ -103,6 +103,9 @@
             </div>
           </scroll-view>
         </div>
+        <div class="estate_foot">
+          <button :disabled="isSubscribe" @click="onSubscribe" :class="isSubscribe?'subscribe-btn':'subscribe-btn disable-btn'">有新动态提醒我</button>
+        </div>
       </div>
       <div class="chat_panl" v-if="concatList.length>0">
         <div class="title_marig">
@@ -403,11 +406,12 @@
 </template>
 <script>
 
-import { postHousesDetail, POINTAlbums, POINTHouseClick, getContactList, getCustomerCall } from '../../http/api.js'
+import { selectSubscribe, addSubscribe, postHousesDetail, POINTAlbums, POINTHouseClick, getContactList, getCustomerCall } from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
 import tips from '../../components/tips'
 import getUserinfo from '../../components/get-userinfo'
 import { reLogin } from '../../http/request.js'
+import {_requestSubscribeMessage} from '../../lib/_requestSubscribeMessage.js'
 var QQMapWX = require('qqmap-wx-jssdk')
 export default {
   /**
@@ -426,6 +430,7 @@ export default {
   },
   data () {
     return {
+      isSubscribe: false,
       userInfo: wx.getStorageSync('userinfo'),
       showSwitchBtn: false,
       istype: 'isVideo',
@@ -545,6 +550,7 @@ export default {
     } else {
       this.showNoticeModal = false
     }
+    this.onSelectSubscribe()
     this.handleSearch()
     POINTHouseClick({
       cityId: this.detail.city_id,
@@ -559,6 +565,40 @@ export default {
     })
   },
   methods: {
+    // 查询是否订阅
+    async onSelectSubscribe () {
+      const data = await selectSubscribe({
+        template_id: 'IGgYaSzafCtFM1ounh0lt9B8Myy3nhjS8kuSGhV7RnQ',
+        house_id: this.house_id
+      })
+      this.isSubscribe = true
+      console.log(data)
+    },
+    onSubscribe () {
+      let tmplIds = ['IGgYaSzafCtFM1ounh0lt9B8Myy3nhjS8kuSGhV7RnQ']
+      let self = this
+      _requestSubscribeMessage(tmplIds,
+        async (res, isAllow) => {
+          console.log(res);
+          if (res.errMsg === 'requestSubscribeMessage:ok') {
+            let isSubscribe = Object.values(res).includes('accept') // 是否订阅
+            if (isSubscribe) {
+              await addSubscribe({
+                template_id: tmplIds[0],
+                house_id: self.house_id
+              })
+              self.isSubscribe = true
+              wx.showToast({title: '订阅成功', icon: 'success', duration: 2000})
+            } else {
+
+            }
+          }
+        }, (err) => {
+          console.log(err)
+        }, (com) => {
+          console.log(com)
+        })
+    },
     async getPhoneNumber (e, item) {
       if (e.mp.detail.errMsg === 'getPhoneNumber:ok') {
         let { encryptedData, iv } = e.mp.detail
@@ -1127,6 +1167,37 @@ export default {
           right:7px
         }
       }
+    }
+  }
+
+  .estate_foot{
+    margin-top 13px;
+    text-align left 
+    width: 668rpx;
+    box-sizing border-box
+
+    .subscribe-btn{
+      font-size:14px;
+      font-family:PingFangSC-Regular,PingFang SC;
+      font-weight:400;
+      color:rgba(255,255,255,1);
+      line-height:38px;
+      text-align:center;
+      width:334px;
+      height:38px;
+      background:rgba(230,1,19,1);
+      border-radius:6px;
+      border none;
+      outline none;
+      display block;
+      
+
+      .subscribe-btnbutton::after{
+        border none
+      }
+    }
+    .disable-btn {
+      background-color: #f0f0f0;
     }
   }
 }

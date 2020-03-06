@@ -800,15 +800,15 @@ export default {
       needRePlay = true;
     },
     onTogglePositon(){
-      let selfPosition = Object.assign({},this.selfPosition)
-      let otherPosition =Object.assign({},this.otherPosition)
-      console.log('onTogglePositon')
-      console.log(selfPosition)
-      this.setData({
-        selfPosition:selfPosition,
-        otherPosition:selfPosition
-      });
-      console.log(this.selfPosition)
+      // let selfPosition = Object.assign({},this.selfPosition)
+      // let otherPosition =Object.assign({},this.otherPosition)
+      // console.log('onTogglePositon')
+      // console.log(selfPosition)
+      // this.setData({
+      //   selfPosition:selfPosition,
+      //   otherPosition:selfPosition
+      // });
+      // console.log(this.selfPosition)
     },
     _resetData() {
       clearTimeout(this.hangupTimer);

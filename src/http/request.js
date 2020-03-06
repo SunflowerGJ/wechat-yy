@@ -101,6 +101,8 @@ var request = (options, showLoading = true, loadingConfig = {title: '加载中..
         const data = res.data
         if (Number(data.code) === 10000) {
           resolve(data.data)
+        } else if (Number(data.code) === 10002) { // 订阅-未订阅
+
         } else {
           // todo 根据状态码统一业务处理
           // icon只支持success. loading
@@ -111,6 +113,7 @@ var request = (options, showLoading = true, loadingConfig = {title: '加载中..
           })
         }
       } else {
+        console.log(1)
         wx.showToast({
           title: res.statusText,
           icon: 'success',
@@ -118,6 +121,7 @@ var request = (options, showLoading = true, loadingConfig = {title: '加载中..
         })
       }
     }).catch(e => {
+      console.log(e)
       wx.showToast({
         title: e,
         icon: 'success',
