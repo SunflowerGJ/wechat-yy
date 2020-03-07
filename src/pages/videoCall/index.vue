@@ -37,7 +37,6 @@
               :beauty="true"
               :config="selfPosition"
               @pushfailed="onPusherFailed"
-              @togglePositon="onTogglePositon"
             ></yunxin-pusher>
             <yunxin-player
               v-if="user.uid&&(user.uid !== loginUser.uid)"
@@ -47,9 +46,9 @@
               :url="user.url"
               :config="otherPosition"
               @pullfailed="onPullFailed"
-              @togglePositon="onTogglePositon"
             >
             </yunxin-player>
+
               <cover-view class="control-wrapper" v-if="user.uid&&(user.uid !== loginUser.uid)">
                 <cover-view class="netcall-time-text">{{duration}}</cover-view>
                 <cover-image
@@ -98,8 +97,7 @@ let needRePlay = false;
 let callingBackToLast = false;
 import yunxinPlayer from "../../components/yunxin-player/yunxin-player";
 import yunxinPusher from "../../components/yunxin-pusher/yunxin-pusher";
-// import { setTimeout } from 'timers';
-// import { setTimeout } from 'timers';
+
 export default {
   data() {
     return {
@@ -119,7 +117,9 @@ export default {
       callTypeIconKind: "video", // 当前的通话类型，音频通话为audio，视频通话为video
       // 音视频流重连标记
       streamNeedReconnect: false,
-      streamStoped: false
+      streamStoped: false,
+      bgMusic:'/static/raw/avchat_ring.mp3',
+      bgplayer: "",
     };
   },
   components: {
@@ -155,9 +155,9 @@ export default {
           type: options.type
         }
       });
+      this.playBgMusic()
     } else {
       // 主叫
-      
       this.setData({
         enableCamera:options.type==1?false:true,
         isCalling: true,
@@ -179,7 +179,7 @@ export default {
         .catch(error => {
           console.log('呼叫失败，请重试')
           console.log(error)
-
+          
           const duration = 2000;
           showToast("text", `呼叫失败，请重试，${duration}ms后返回`, {
             duration
@@ -200,14 +200,46 @@ export default {
     });
     this._initialPosition();
     this.listenNetcallEvent();
+    
   },
   onUnload() {
     if (this.onTheCall || this.isCalling) {
       this.hangupHandler(true);
     }
     app.globalData.emitter.eventReset();
+    this.stopBgMusic()
   },
   methods: {
+    pauseBgMusic: function () {
+      this.bgplayer && this.bgplayer.pause();
+    },
+    stopBgMusic: function () {
+      if(this.bgplayer){
+        this.bgplayer.stop()
+        this.bgplayer=''
+      }
+    },
+    playBgMusic: function () {
+      if (void 0 == this.bgplayer || "" == this.bgplayer) {
+        console.log("App--加载主背景音乐");
+        this.bgplayer = this.playAudio(this.bgMusic, !0, !0, .3)
+      } else this.bgplayer.paused ? (console.log("App--_____bg-music_____"), this.bgplayer.play()) : (console.log("App--正在播放"), this.bgplayer.play());
+    },
+    playAudio: function () {
+      var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "",
+          t = arguments.length > 1 && void 0 !== arguments[1] && arguments[1],
+          a = arguments.length > 2 && void 0 !== arguments[2] && arguments[2],
+          i = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : 1;
+
+      if (0 != e.length) {
+        var o = wx.createInnerAudioContext();
+        return o.mixWithOther = !1, o.volume = i, o.autoplay = a, o.loop = t, o.src = e, o.onPlay(function () {
+          console.log("开始播放");
+        }), o.onError(function (e) {
+          console.log(e.errMsg), console.log(e.errCode);
+        }), o;
+      }
+    },
     setData(options) {
       Object.keys(options).forEach(item => {
         this[item] = options[item];
@@ -684,6 +716,7 @@ export default {
      * 接听通话
      */
     acceptCallHandler(e) {
+      this.stopBgMusic()
       let self = this;
       // 显示通信画面
       // this.setDatas
@@ -721,6 +754,7 @@ export default {
      * 拒绝通话
      */
     rejectCallHandler(e) {
+      this.stopBgMusic()
       this._clearCallTimer();
       app.globalData.netcall
         .response({
@@ -754,6 +788,7 @@ export default {
           // 停止推拉流
           this._resetData();
           console.log("通话被挂断。。。");
+          this.stopBgMusic()
           this.stopStream(0);
           if (notBack !== true) {
             this._judgeNavigateBack(0);
@@ -799,17 +834,18 @@ export default {
     onPullFailed() {
       needRePlay = true;
     },
-    onTogglePositon(){
-      // let selfPosition = Object.assign({},this.selfPosition)
-      // let otherPosition =Object.assign({},this.otherPosition)
-      // console.log('onTogglePositon')
-      // console.log(selfPosition)
-      // this.setData({
-      //   selfPosition:selfPosition,
-      //   otherPosition:selfPosition
-      // });
-      // console.log(this.selfPosition)
-    },
+
+    // onTogglePositon(){
+    //   let selfPosition = Object.assign({},this.selfPosition)
+    //   let otherPosition =Object.assign({},this.otherPosition)
+    //   console.log('onTogglePositon')
+    //   console.log(selfPosition)
+    //   this.setData({
+    //     selfPosition:otherPosition,
+    //     otherPosition:selfPosition,
+    //   });
+    //   console.log(this.selfPosition)
+    // },
     _resetData() {
       clearTimeout(this.hangupTimer);
       clearTimeout(this.callTimerId);

@@ -31,8 +31,10 @@
             v-if="message.type === 'text'|| message.type ==='custom'"
             :nodes="message.nodes"
             class="record-chatting-item-text"
-            ></rich-text
-          >
+            ></rich-text>
+          <view style="display:flex;justify-content: center;flex:1"  v-if="message.type === 'notification'">
+              <rich-text class='tip-rich-text' :nodes="message.nodes"></rich-text>
+          </view> 
           <!-- <text class='right-triangle'></text> -->
           <view
             v-if="message.type === 'audio'"
@@ -46,6 +48,7 @@
             >
           </view>
           <img
+            v-if="message.type !== 'tip' && message.type !== 'notification'"
             :src="loginAccountLogo"
             class="record-chatting-item-img"
             style="margin-left:8px;"
@@ -63,6 +66,7 @@
           @longpress="showEditorMenu"
         >
           <img
+          v-if="message.type !== 'tip' && message.type !== 'notification'"
             :src="chatheadPhoto"
             @click="switchToMyTab"
             class="record-chatting-item-img"
@@ -84,6 +88,9 @@
             style="color:#000;background-color:#fff;"
             ></rich-text
           >
+          <view style="display:flex;justify-content: center;flex:1"  v-if="message.type === 'notification'">
+              <rich-text class='tip-rich-text' :nodes="message.nodes"></rich-text>
+          </view>
           <view
             v-if="message.type === 'audio'"
             :data-audio="message.audio"
@@ -92,7 +99,7 @@
           >
             <img src="/static/images/voice-right.png" class="image" />
             <text class="text" style="color:#000;"
-              >{{ message.audio.dur / 1000 }}''</text
+              >{{ (message.audio.dur / 1000 ) << 1 >> 1 }}''</text
             >
           </view>
         </div>
@@ -157,11 +164,11 @@
             <text class="text">拍照</text>
           </div>
           <div class="more-subcontent-item" @click.stop="videoCall">
-            <img src="/static/images/icon-spth.png" style="width:56rpx;height:38rpx" class="image" />
+            <img src="/static/images/icon-spth.png" style="width:56rpx;height:38rpx;margin-top:8rpx;" class="image" />
             <text class="text">视频通话</text>
           </div>
           <div class="more-subcontent-item" @click.stop="audioCall">
-            <img src="/static/images/icon-yybf.png" style="height:56rpx;width:44rpx" class="image" />
+            <img src="/static/images/icon-yybf.png" style="height:56rpx;width:44rpx;margin-bottom:8rpx" class="image" />
             <text class="text">语音通话</text>
           </div>
         </div>
@@ -335,13 +342,13 @@ export default {
     onUpdateSession (session) {
       console.log('会话更新了', session)
       if (session.lastMsg && session.lastMsg.status === 'success') {
-        if ([this.account].includes(session.to)) {
-          this.nimData.push(session.lastMsg)
-          this.messageArr = this.handleMsgs(this.nimData)
-          // 滚动到底部
-          setTimeout(() => {
-            this.scrollToBottom()
-          }, 150)
+        if ([this.chatTo].includes(session.lastMsg.from)) {
+          // this.nimData.push(session.lastMsg)
+          // this.messageArr = this.handleMsgs(this.nimData)
+          // // 滚动到底部
+          // setTimeout(() => {
+          //   this.scrollToBottom()
+          // }, 150)
         }
       }
     },
@@ -353,6 +360,14 @@ export default {
     },
     onMsg (msg) {
       console.log('收到消息', msg.scene, msg.type, msg)
+      if ([this.chatTo].includes(msg.from)) {
+        this.nimData.push(msg)
+        this.messageArr = this.handleMsgs(this.nimData)
+        // 滚动到底部
+        setTimeout(() => {
+          this.scrollToBottom()
+        }, 150)
+      }
     },
 
     onSyncDone () {
@@ -756,10 +771,23 @@ export default {
             break
           }
           case 'tip': {
+            specifiedObject = {
+              text: rawMsg.tip,
+              nodes: [{
+                type: 'text',
+                text: rawMsg.tip
+              }]
+            }
             break
           }
           case '白板消息':
           case '阅后即焚': {
+            specifiedObject = {
+              nodes: [{
+                type: 'text',
+                text: `[${msgType}],请到手机或电脑客户端查看`
+              }]
+            }
             break
           }
           case 'file':
@@ -775,6 +803,14 @@ export default {
             }
             break
           case 'notification':
+            specifiedObject = {
+            // netbill的text为空
+              text: rawMsg.groupNotification || (rawMsg.text.length === 0 ? '通知' : rawMsg.text),
+              nodes: [{
+                type: 'text',
+                text: rawMsg.groupNotification || (rawMsg.text.length === 0 ? '通知' : rawMsg.text)
+              }]
+            }
             break
           default: {
             break
@@ -1231,10 +1267,11 @@ export default {
   background-color: #ccc;
   text-align: center;
   align-self: center;
-  min-height: 40rpx;
+  // min-height: 40rpx;
   word-break: break-word;
   font-size: 26rpx;
   padding: 0 20rpx;
+  padding: 10rpx 20rpx;
   color: #000;
   border-radius: 10rpx;
 }

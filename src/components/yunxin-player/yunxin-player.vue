@@ -6,7 +6,7 @@
     <!-- <cover-view v-if="status !== 'ready'" class="sud flex-center-column" style="display:none">
       <cover-image style="width: 182rpxheight:240rpx" :src="imgStatus"></cover-image>
     </cover-view> -->
-    <cover-view style="position: absolutetop:10pxleft:10pxfont-size: 28rpx right: 10pxcolor:#ccc" v-if="coverText.length != 0">{{coverText}}</cover-view>
+    <cover-view style="position: absolute;top:10px;left:10px;font-size: 28rpx; right: 10px;color:#ccc" v-if="coverText.length != 0">{{coverText}}</cover-view>
   </live-player>  
 </view>
 </template>
@@ -16,6 +16,7 @@
 export default {
   data () {
     return {
+      // togglesuc:true,
       livePlayerContext: null,
       detached: false,
       imgStatus:'/static/images/yunxin/loading.png'
@@ -45,7 +46,6 @@ export default {
       type: String,
       default: 'loading'
     },
-
     /**
      * 画面方向，可选值有 vertical，horizontal
      */
@@ -81,16 +81,32 @@ export default {
         this.imgStatus = `/static/images/yunxin/${newVal}.png`
       }
     },
-    url: function (newVal, oldVal, changedPath) {}
+    // config: function (newVal, oldVal, changedPath) {
+    //   console.log('config配置进入=-=-=-=-=-=-=-')
+    //   if(newVal){
+    //     if(newVal.y==30){
+    //      setTimeout(()=>{
+    //        console.log('big窗口显示')
+    //         this.togglesuc=true
+    //       },2000)
+    //     }else {
+    //      setTimeout(()=>{
+    //        console.log('xiao窗口显示')
+    //         this.togglesuc=true
+    //       },200)
+    //     }
+    //   }
+    // }
   },
   methods: {
     // 我写的切换双方视频窗口
-    togglePositon(){
-      console.log('togglePositon')
-      if(this.config.y==30){ // 小窗口 切换位置
-      this.$emit('togglePositon',true)
-      }
-    },
+    // togglePositon(){
+    //   console.log('togglePositon')
+    //   // if(this.config.y==30){ // 小窗口 切换位置
+    //     this.$emit('togglePositon',true)
+    //     this.togglesuc=false
+    //   // }
+    // },
     /**
      * 组件生命周期：在组件布局完成后执行，此时可以获取节点信息
      */

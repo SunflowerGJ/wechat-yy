@@ -567,8 +567,9 @@ export default {
   methods: {
     // 查询是否订阅
     async onSelectSubscribe () {
+      let tmplIds = ['IGgYaSzafCtFM1ounh0lt9B8Myy3nhjS8kuSGhV7RnQ']
       const data = await selectSubscribe({
-        template_id: 'IGgYaSzafCtFM1ounh0lt9B8Myy3nhjS8kuSGhV7RnQ',
+        template_id: tmplIds,
         house_id: this.house_id
       })
       this.isSubscribe = true
