@@ -223,6 +223,7 @@ export default {
     componentEmoji
   },
   async onLoad () {
+    this.initReset()
     console.log(this.$route.query)
     let title = this.$route.query.employeeName
     this.chatTo = this.$route.query.id
@@ -238,6 +239,13 @@ export default {
   },
 
   methods: {
+    initReset () {
+      this.focusFlag = false; // 控制输入框失去焦点与否
+      this.emojiFlag = false; // emoji键盘标志位
+      this.moreFlag = false; // 更多功能标志
+      this.tipFlag = false; // tip消息标志
+      this.showMore = '200';
+    },
     initINM () {
       if (thisNIM) {
         thisNIM.getHistoryMsgs({
