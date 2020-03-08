@@ -103,7 +103,7 @@
             </div>
           </scroll-view>
         </div>
-        <div class="estate_foot">
+        <div class="estate_foot" v-if="subscribeMsg">
           <button :disabled="isSubscribe" @click="onSubscribe" :class="!isSubscribe?'subscribe-btn':'subscribe-btn disable-btn'">{{isSubscribe?"已订阅消息": subscribeMsg.btnText}}</button>
         </div>
       </div>
@@ -430,7 +430,7 @@ export default {
   },
   data () {
     return {
-      subscribeMsg: {},
+      subscribeMsg: null,
       isSubscribe: false,
       userInfo: wx.getStorageSync('userinfo'),
       showSwitchBtn: false,
