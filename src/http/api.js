@@ -341,3 +341,12 @@ export const delSubscribe = (params = {}) => {
     params: params
   }, false)
 }
+
+// 查询模板id 和按钮文案
+export const getSubscribeTemplateId = (params = {}) => {
+  return fly({
+    method: 'post',
+    url: `/api/Member/getSubscribeTemplateId`,
+    params: params
+  }, false)
+}

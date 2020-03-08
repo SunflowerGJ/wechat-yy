@@ -104,7 +104,7 @@
           </scroll-view>
         </div>
         <div class="estate_foot">
-          <button :disabled="isSubscribe" @click="onSubscribe" :class="!isSubscribe?'subscribe-btn':'subscribe-btn disable-btn'">{{isSubscribe?"已订阅新动态通知":'有新动态提醒我'}}</button>
+          <button :disabled="isSubscribe" @click="onSubscribe" :class="!isSubscribe?'subscribe-btn':'subscribe-btn disable-btn'">{{isSubscribe?"已订阅消息": subscribeMsg.btnText}}</button>
         </div>
       </div>
       <div class="chat_panl" v-if="concatList.length>0">
@@ -406,7 +406,7 @@
 </template>
 <script>
 
-import { selectSubscribe, addSubscribe, postHousesDetail, POINTAlbums, POINTHouseClick, getContactList, getCustomerCall } from '../../http/api.js'
+import { selectSubscribe, addSubscribe, postHousesDetail, POINTAlbums, POINTHouseClick, getContactList, getCustomerCall, getSubscribeTemplateId } from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
 import tips from '../../components/tips'
 import getUserinfo from '../../components/get-userinfo'
@@ -430,6 +430,7 @@ export default {
   },
   data () {
     return {
+      subscribeMsg: {},
       isSubscribe: false,
       userInfo: wx.getStorageSync('userinfo'),
       showSwitchBtn: false,
@@ -567,7 +568,10 @@ export default {
   methods: {
     // 查询是否订阅
     async onSelectSubscribe () {
-      let tmplIds = ['IGgYaSzafCtFM1ounh0lt9B8Myy3nhjS8kuSGhV7RnQ']
+      const res = await getSubscribeTemplateId({house_id: this.house_id})
+      console.log(res)
+      this.subscribeMsg = res
+      let tmplIds = this.subscribeMsg && this.subscribeMsg.template
       const data = await selectSubscribe({
         template_id: tmplIds,
         house_id: this.house_id
@@ -576,7 +580,7 @@ export default {
       console.log(data)
     },
     onSubscribe () {
-      let tmplIds = ['IGgYaSzafCtFM1ounh0lt9B8Myy3nhjS8kuSGhV7RnQ']
+      let tmplIds = this.subscribeMsg && this.subscribeMsg.template
       let self = this
       _requestSubscribeMessage(tmplIds,
         async (res, isAllow) => {
