@@ -32,10 +32,9 @@
             :nodes="message.nodes"
             class="record-chatting-item-text"
             ></rich-text>
-          <view style="display:flex;justify-content: center;flex:1"  v-if="message.type === 'notification'">
+          <!-- <view style="display:flex;justify-content: center;flex:1"  v-if="message.type === 'notification'">
               <rich-text class='tip-rich-text' :nodes="message.nodes"></rich-text>
-          </view> 
-          <!-- <text class='right-triangle'></text> -->
+          </view>  -->
           <view
             v-if="message.type === 'audio'"
             :data-audio="message.audio"
@@ -88,9 +87,9 @@
             style="color:#000;background-color:#fff;"
             ></rich-text
           >
-          <view style="display:flex;justify-content: center;flex:1"  v-if="message.type === 'notification'">
+          <!-- <view style="display:flex;justify-content: center;flex:1"  v-if="message.type === 'notification'">
               <rich-text class='tip-rich-text' :nodes="message.nodes"></rich-text>
-          </view>
+          </view> -->
           <view
             v-if="message.type === 'audio'"
             :data-audio="message.audio"
@@ -267,6 +266,7 @@ export default {
         onroamingmsgs: this.onRoamingMsgs,
         onofflinemsgs: this.onOfflineMsgs,
         onmsg: this.onMsg,
+        oncustomsysmsg: this.onCustomSysMsg,
         // 同步完成
         onsyncdone: this.onSyncDone
       })
@@ -368,6 +368,9 @@ export default {
           this.scrollToBottom()
         }, 150)
       }
+    },
+    oncustomsysmsg (sysMsg) {
+      console.log('收到自定义系统通知', sysMsg);
     },
 
     onSyncDone () {
@@ -803,14 +806,14 @@ export default {
             }
             break
           case 'notification':
-            specifiedObject = {
-            // netbill的text为空
-              text: rawMsg.groupNotification || (rawMsg.text.length === 0 ? '通知' : rawMsg.text),
-              nodes: [{
-                type: 'text',
-                text: rawMsg.groupNotification || (rawMsg.text.length === 0 ? '通知' : rawMsg.text)
-              }]
-            }
+            // specifiedObject = {
+            // // netbill的text为空
+            //   text: rawMsg.groupNotification || (rawMsg.text.length === 0 ? '通知' : rawMsg.text),
+            //   nodes: [{
+            //     type: 'text',
+            //     text: rawMsg.groupNotification || (rawMsg.text.length === 0 ? '通知' : rawMsg.text)
+            //   }]
+            // }
             break
           default: {
             break

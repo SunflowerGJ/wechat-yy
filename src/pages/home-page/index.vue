@@ -104,7 +104,7 @@
           </scroll-view>
         </div>
         <div class="estate_foot">
-          <button :disabled="isSubscribe" @click="onSubscribe" :class="!isSubscribe?'subscribe-btn':'subscribe-btn disable-btn'">{{isSubscribe?"已经订阅":'有新动态提醒我'}}</button>
+          <button :disabled="isSubscribe" @click="onSubscribe" :class="!isSubscribe?'subscribe-btn':'subscribe-btn disable-btn'">{{isSubscribe?"已订阅新动态通知":'有新动态提醒我'}}</button>
         </div>
       </div>
       <div class="chat_panl" v-if="concatList.length>0">
@@ -893,6 +893,10 @@ export default {
 //     margin :auto 0;
 //   }
 // }
+button::after {
+  border none ;
+
+}
 .btn-cover {
   position absolute;
   top 0;
@@ -1193,12 +1197,13 @@ export default {
       display block;
       
 
-      .subscribe-btnbutton::after{
+      .subscribe-btn button::after{
         border none
       }
     }
     .disable-btn {
       background-color: #f0f0f0;
+      color :#333
     }
   }
 }
