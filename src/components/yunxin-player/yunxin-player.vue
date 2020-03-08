@@ -1,4 +1,5 @@
 <template>
+<!-- import { setTimeout } from 'timers'; -->
 <!--components/yunxin-player/yunxin-player.wxml-->
 <view @click="togglePositon" class="play-container" :style="'left:' + config.x + 'px; top:' + config.y + 'px; width: ' + config.width + 'px; height: ' + config.height + 'px;'">
   <live-player :src="url" mode="RTC" class="player" :orientation="orientation" min-cache="0.2" max-cache="0.8" @statechange="stateChangeHandler" :object-fit="objectFit" autoplay :style="'height: ' + config.height + 'px; position: absolute; width: 100%; top: 0; left: 0;background-color: transparent;'" :debug="debug" :id="'yunxinplayer-' + uid">
@@ -16,7 +17,7 @@
 export default {
   data () {
     return {
-      // togglesuc:true,
+      togglesuc:true,
       livePlayerContext: null,
       detached: false,
       imgStatus:'/static/images/yunxin/loading.png'
@@ -38,7 +39,6 @@ export default {
       type: Boolean,
       default: false
     },
-
     /**
      * 加载状态：loading、ready、error
      */
@@ -81,43 +81,42 @@ export default {
         this.imgStatus = `/static/images/yunxin/${newVal}.png`
       }
     },
-    // config: function (newVal, oldVal, changedPath) {
-    //   console.log('config配置进入=-=-=-=-=-=-=-')
-    //   if(newVal){
-    //     if(newVal.y==30){
-    //      setTimeout(()=>{
-    //        console.log('big窗口显示')
-    //         this.togglesuc=true
-    //       },2000)
-    //     }else {
-    //      setTimeout(()=>{
-    //        console.log('xiao窗口显示')
-    //         this.togglesuc=true
-    //       },200)
-    //     }
-    //   }
-    // }
+    config: function (newVal, oldVal, changedPath) {
+      console.log('config配置进入=-=-=-=-=-=-=-')
+      // if(newVal){
+      //   this.togglesuc=false
+      //   if(newVal.y==30){
+      //    setTimeout(()=>{
+      //      console.log('yunxinplayer小窗口显示')
+      //       this.togglesuc=true
+      //     },1100)
+      //   }else {
+      //    setTimeout(()=>{
+      //      console.log('yunxinplayer大窗口显示')
+      //       this.togglesuc=true
+      //     },2000)
+      //   }
+      // }
+    }
   },
   methods: {
     // 我写的切换双方视频窗口
-    // togglePositon(){
-    //   console.log('togglePositon')
-    //   // if(this.config.y==30){ // 小窗口 切换位置
-    //     this.$emit('togglePositon',true)
-    //     this.togglesuc=false
-    //   // }
-    // },
+    togglePositon(){
+      console.log('togglePositon')
+      if(this.config.y==30){ // 小窗口 切换位置
+        // this.$emit('toggle',false)
+        this.$emit('togglePositon',true)
+      }
+    },
     /**
      * 组件生命周期：在组件布局完成后执行，此时可以获取节点信息
      */
     ready() {
       console.log(this.uid)
       console.log(`yunxinplayer-${this.uid} ready`);
-
       if (this.livePlayerContext) {
         this.livePlayerContext = wx.createLivePlayerContext(`yunxinplayer-${this.uid}`, this);
       }
-
       if (this.url) {
         this.start();
       }

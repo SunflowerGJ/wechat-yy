@@ -36,6 +36,7 @@
               :muted="muted"
               :beauty="true"
               :config="selfPosition"
+              @togglePositon="onTogglePositon"
               @pushfailed="onPusherFailed"
             ></yunxin-pusher>
             <yunxin-player
@@ -45,6 +46,7 @@
               :uid="user.uid"
               :url="user.url"
               :config="otherPosition"
+              @togglePositon="onTogglePositon"
               @pullfailed="onPullFailed"
             >
             </yunxin-player>
@@ -101,6 +103,8 @@ import yunxinPusher from "../../components/yunxin-pusher/yunxin-pusher";
 export default {
   data() {
     return {
+      selfTogglesuc:true,
+      otherTogglesuc:true,
       onTheCall: false, // 正在通话中标记
       isCalling: false, // 主叫中
       beCalling: false, // 被叫中
@@ -835,17 +839,43 @@ export default {
       needRePlay = true;
     },
 
-    // onTogglePositon(){
-    //   let selfPosition = Object.assign({},this.selfPosition)
-    //   let otherPosition =Object.assign({},this.otherPosition)
-    //   console.log('onTogglePositon')
-    //   console.log(selfPosition)
-    //   this.setData({
-    //     selfPosition:otherPosition,
-    //     otherPosition:selfPosition,
-    //   });
-    //   console.log(this.selfPosition)
-    // },
+    onTogglePositon(){
+      // this.selfTogglesuc=false
+      // this.otherTogglesuc=false
+
+      // let selfPosition = Object.assign({},this.selfPosition)
+      // let otherPosition =Object.assign({},this.otherPosition)
+      // console.log('onTogglePositon')
+      // console.log(selfPosition.y)
+      // this.setData({
+      //   selfPosition:otherPosition,
+      //   otherPosition:selfPosition,
+      // });
+      // console.log(this.selfPosition.y)
+      
+      // if(this.selfPosition.y==30){
+      //    setTimeout(()=>{
+      //      console.log('selfPosition小窗口显示')
+      //       this.selfTogglesuc=true
+      //     },3000)
+      // }else {
+      //     setTimeout(()=>{
+      //      console.log('selfPosition大窗口显示')
+      //       this.selfTogglesuc=true
+      //     },500)
+      // }
+      // if(this.otherPosition.y==30){
+      //    setTimeout(()=>{
+      //      console.log('otherPosition小窗口显示')
+      //       this.otherTogglesuc=true
+      //     },3000)
+      // }else {
+      //     setTimeout(()=>{
+      //      console.log('otherPosition大窗口显示')
+      //       this.otherTogglesuc=true
+      //     },500)
+      // }
+    },
     _resetData() {
       clearTimeout(this.hangupTimer);
       clearTimeout(this.callTimerId);

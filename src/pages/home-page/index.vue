@@ -104,7 +104,7 @@
           </scroll-view>
         </div>
         <div class="estate_foot">
-          <button :disabled="isSubscribe" @click="onSubscribe" :class="isSubscribe?'subscribe-btn':'subscribe-btn disable-btn'">有新动态提醒我</button>
+          <button :disabled="isSubscribe" @click="onSubscribe" :class="!isSubscribe?'subscribe-btn':'subscribe-btn disable-btn'">{{isSubscribe?"已经订阅":'有新动态提醒我'}}</button>
         </div>
       </div>
       <div class="chat_panl" v-if="concatList.length>0">
@@ -585,7 +585,7 @@ export default {
             let isSubscribe = Object.values(res).includes('accept') // 是否订阅
             if (isSubscribe) {
               await addSubscribe({
-                template_id: tmplIds[0],
+                template_id: tmplIds,
                 house_id: self.house_id
               })
               self.isSubscribe = true

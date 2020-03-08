@@ -90,22 +90,23 @@ export default {
         this.imgStatus = `/static/images/yunxin/${newVal}.png`
       }
     },
-    // config: function (newVal, oldVal, changedPath) {
-    //  console.log('config配置进入=-=-=-=-=-=-=-')
-    //   if(newVal){
-    //     if(newVal.y==30){
-    //      setTimeout(()=>{
-    //        console.log('big窗口显示')
-    //         this.togglesuc=true
-    //       },2000)
-    //     }else {
-    //      setTimeout(()=>{
-    //        console.log('xiao窗口显示')
-    //         this.togglesuc=true
-    //       },200)
-    //     }
-    //   }
-    // }
+    config: function (newVal, oldVal, changedPath) {
+     console.log('config配置进入=-=-=-=-=-=-=-')
+      // if(newVal){
+      //   this.togglesuc=false
+      //   if(newVal.y==30){
+      //    setTimeout(()=>{
+      //      console.log('yunxin-pusher小窗口显示')
+      //       this.togglesuc=true
+      //     },500)
+      //   }else {
+      //    setTimeout(()=>{
+      //      console.log('yunxin-pusher大窗口显示')
+      //       this.togglesuc=true
+      //     },3000)
+      //   }
+      // }
+    }
   },
 
   /**
@@ -130,14 +131,13 @@ export default {
   },
   methods: {
     // 我写的切换双方视频窗口
-    // togglePositon(){
-    //   console.log('togglePositon')
-    //   // if(this.config.y==30){ // 小窗口 切换位置
-    //     this.$emit('togglePositon',true)
-    //     this.togglesuc=false
-      
-    //   // }
-    // },
+    togglePositon(){
+      console.log('togglePositon')
+      if(this.config.y==30){ // 小窗口 切换位置
+        this.$emit('togglePositon',true)
+        // this.togglesuc=false
+      }
+    },
     /**
      * 播放推流
      * 一般情况下不应手动调用，在推流组件预备好后会自动被调用
