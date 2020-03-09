@@ -283,7 +283,7 @@ export default {
       console.log('连接成功')
       app.globalData.netcallController = new NetcallController({
       // debug: false,
-        debug: true,
+        debug: false,
         nim: app.globalData.nim
       });
     },

@@ -89,7 +89,7 @@ export default class IMController {
     console.log(orderCounter++, ' onConnect: ');
     getApp().globalData.netcallController = new NetcallController({
       // debug: false,
-      debug: true,
+      debug: false,
       nim: getApp().globalData.nim
     });
   }
