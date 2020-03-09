@@ -2,7 +2,7 @@
   <div class="chating-wrapper">
     <!-- 消息记录 -->
     <!-- 消息记录 -->
-    <div class="record-wrapper" id="recordWrapper">
+    <div  class="record-wrapper" :style="{'padding-bottom':showMore+'rpx'}" id="recordWrapper">
       <div v-for="message in messageArr" :key="message.key">
         <view
           class="record-item-time-wrapper"
@@ -31,9 +31,10 @@
             v-if="message.type === 'text'|| message.type ==='custom'"
             :nodes="message.nodes"
             class="record-chatting-item-text"
-            ></rich-text
-          >
-          <!-- <text class='right-triangle'></text> -->
+            ></rich-text>
+          <!-- <view style="display:flex;justify-content: center;flex:1"  v-if="message.type === 'notification'">
+              <rich-text class='tip-rich-text' :nodes="message.nodes"></rich-text>
+          </view>  -->
           <view
             v-if="message.type === 'audio'"
             :data-audio="message.audio"
@@ -42,10 +43,11 @@
           >
             <img src="/static/images/voice-right.png" class="image" />
             <text class="text" style="color:#000;"
-              >{{ message.audio.dur / 1000 }}''</text
+              >{{ (message.audio.dur / 1000 ) << 1 >> 1 }}''</text
             >
           </view>
           <img
+            v-if="message.type !== 'tip' && message.type !== 'notification'"
             :src="loginAccountLogo"
             class="record-chatting-item-img"
             style="margin-left:8px;"
@@ -63,6 +65,7 @@
           @longpress="showEditorMenu"
         >
           <img
+          v-if="message.type !== 'tip' && message.type !== 'notification'"
             :src="chatheadPhoto"
             @click="switchToMyTab"
             class="record-chatting-item-img"
@@ -84,6 +87,9 @@
             style="color:#000;background-color:#fff;"
             ></rich-text
           >
+          <!-- <view style="display:flex;justify-content: center;flex:1"  v-if="message.type === 'notification'">
+              <rich-text class='tip-rich-text' :nodes="message.nodes"></rich-text>
+          </view> -->
           <view
             v-if="message.type === 'audio'"
             :data-audio="message.audio"
@@ -92,7 +98,7 @@
           >
             <img src="/static/images/voice-right.png" class="image" />
             <text class="text" style="color:#000;"
-              >{{ message.audio.dur / 1000 }}''</text
+              >{{ (message.audio.dur / 1000 ) << 1 >> 1 }}''</text
             >
           </view>
         </div>
@@ -108,6 +114,7 @@
         />
         <!-- :confirm-hold="true" -->
         <input
+          :adjust-position="true"
         style='margin-bottom: 20rpx;'
           v-if="sendType === 0"
           :cursor-spacing="36"
@@ -141,44 +148,59 @@
           class="chatinput-img fr"
         />
         <img src='/static/images/emoji.png' @tap='toggleEmoji' class='chatinput-img fr emoji'/>
-      </div>
+
       <div v-if="emojiFlag" class='chatinput-subcontent'>
         <component-emoji @EmojiClick="emojiCLick" @EmojiSend="emojiSend"></component-emoji>
       </div>
       <div v-if="moreFlag" class="more-subcontent">
-        <div style="display:flex;">
+        <div style="display:flex;justify-content: space-between;">
           <div class="more-subcontent-item" @click.stop="chooseImageToSend">
-            <img src="/static/images/icon-zhaox.png" class="image" />
+            <img src="/static/images/icon-ph.png" class="image" />
             <text class="text">照片</text>
           </div>
           <div class="more-subcontent-item" @click.stop="chooseImageOrVideo">
-            <img src="/static/images/icon-ph.png" class="image" />
+            <img src="/static/images/icon-zhaox.png" class="image" />
             <text class="text">拍照</text>
+          </div>
+          <div class="more-subcontent-item" @click.stop="videoCall">
+            <img src="/static/images/icon-spth.png" style="width:56rpx;height:38rpx;margin-top:8rpx;" class="image" />
+            <text class="text">视频通话</text>
+          </div>
+          <div class="more-subcontent-item" @click.stop="audioCall">
+            <img src="/static/images/icon-yybf.png" style="height:56rpx;width:44rpx;margin-bottom:8rpx" class="image" />
+            <text class="text">语音通话</text>
           </div>
         </div>
       </div>
+      </div>
+
     </div>
   </div>
 </template>
 
 <script>
 // /* eslint-disable */
+import NetcallController from '../../../controller/netcall.js'
 import { initInim } from '../../../http/api.js'
 import { calcTimeHeader, generateRichTextNode } from '../../../utils/util.js'
 import componentEmoji from '../../../components/componentEmoji'
 let NIM = require('../../../../static/libs/NIM_Web_NIM_weixin_v6.8.0')
 let thisNIM = null
 var YX_APP_KEY = process.env.YX_APP_KEY
+let app = getApp()
 export default {
   data () {
     return {
       nim: null,
       nimData: [],
       chatWrapperMaxHeight: 0, // 聊天界面最大高度
+      videoContext: null, // 视频操纵对象
+      isVideoFullScreen: false, // 视频全屏控制标准
+      videoSrc: '', // 视频源
       chatTo: '', // 聊天对象account
       account: '',
       token: '',
-      chatType: '', // 聊天类型 advanced 高级群聊 normal 讨论组群聊 p2p 点对点聊天
+      chatType: 'p2p', // 聊天类型 advanced 高级群聊 normal 讨论组群聊 p2p 点对点聊天
       loginAccountLogo: '', // 登录账户对象头像
       chatheadPhoto: '',
       focusFlag: false, // 控制输入框失去焦点与否
@@ -193,13 +215,15 @@ export default {
       recorderManager: null, // 微信录音管理对象
       recordClicked: false, // 判断手指是否触摸录音按钮
       isLongPress: false, // 录音按钮是否正在长按
-      audioContext: null
+      audioContext: null,
+      showMore: '200'
     }
   },
   components: {
     componentEmoji
   },
-  async mounted () {
+  async onLoad () {
+    this.initReset()
     console.log(this.$route.query)
     let title = this.$route.query.employeeName
     this.chatTo = this.$route.query.id
@@ -215,6 +239,13 @@ export default {
   },
 
   methods: {
+    initReset () {
+      this.focusFlag = false; // 控制输入框失去焦点与否
+      this.emojiFlag = false; // emoji键盘标志位
+      this.moreFlag = false; // 更多功能标志
+      this.tipFlag = false; // tip消息标志
+      this.showMore = '200';
+    },
     initINM () {
       if (thisNIM) {
         thisNIM.getHistoryMsgs({
@@ -224,16 +255,12 @@ export default {
         })
       }
       console.log(this.account, this.token, YX_APP_KEY)
-      thisNIM = NIM.getInstance({
+      app.globalData.nim = thisNIM = NIM.getInstance({
       // 初始化SDK
-        // debug: true,
-        //  appKey: 'bd4ea621af735fd6924c38d44ae76eb0', // 开发
-        // appKey: '146b62b8b039383f894b04e5aaec3701', // 测试
+        debug: false,
         appKey: YX_APP_KEY, // 正式
         account: this.account,
         token: this.token,
-        //   account: '14ff0266a382729dd5d159d92f6945ba',
-        //  token: 'b63a5db0e66a146d340855b3302f6e46',
         onconnect: this.onConnect,
         onerror: this.onError,
         onwillreconnect: this.onWillReconnect,
@@ -247,12 +274,18 @@ export default {
         onroamingmsgs: this.onRoamingMsgs,
         onofflinemsgs: this.onOfflineMsgs,
         onmsg: this.onMsg,
+        oncustomsysmsg: this.onCustomSysMsg,
         // 同步完成
         onsyncdone: this.onSyncDone
       })
     },
     onConnect () {
       console.log('连接成功')
+      app.globalData.netcallController = new NetcallController({
+      // debug: false,
+        debug: false,
+        nim: app.globalData.nim
+      });
     },
     onWillReconnect (obj) {
       // 此时说明 `SDK` 已经断开连接, 请开发者在界面上提示用户连接已断开, 而且正在重新建立连接
@@ -317,13 +350,13 @@ export default {
     onUpdateSession (session) {
       console.log('会话更新了', session)
       if (session.lastMsg && session.lastMsg.status === 'success') {
-        if ([this.chatTo, this.account].includes(session.to)) {
-          this.nimData.push(session.lastMsg)
-          this.messageArr = this.handleMsgs(this.nimData)
-          // 滚动到底部
-          setTimeout(() => {
-            this.scrollToBottom()
-          }, 150)
+        if ([this.chatTo].includes(session.lastMsg.from)) {
+          // this.nimData.push(session.lastMsg)
+          // this.messageArr = this.handleMsgs(this.nimData)
+          // // 滚动到底部
+          // setTimeout(() => {
+          //   this.scrollToBottom()
+          // }, 150)
         }
       }
     },
@@ -335,6 +368,17 @@ export default {
     },
     onMsg (msg) {
       console.log('收到消息', msg.scene, msg.type, msg)
+      if ([this.chatTo].includes(msg.from)) {
+        this.nimData.push(msg)
+        this.messageArr = this.handleMsgs(this.nimData)
+        // 滚动到底部
+        setTimeout(() => {
+          this.scrollToBottom()
+        }, 150)
+      }
+    },
+    oncustomsysmsg (sysMsg) {
+      console.log('收到自定义系统通知', sysMsg);
     },
 
     onSyncDone () {
@@ -389,6 +433,48 @@ export default {
       this.sendType = this.sendType === 0 ? 1 : 0
       this.focusFlag = false
       this.emojiFlag = false
+    },
+    /**
+   * 视频通话
+   */
+    videoCall () {
+      if (app.globalData.waitingUseVideoCall) {
+        wx.showToast({ title: '请勿频繁操作', icon: 'none', duration: 2000 })
+        return
+      }
+      if (this.chatType === 'advanced' || this.chatType === 'normal') { // 群组 暂时没有
+        if (this.currentGroup.memberNum.length < 2) {
+          wx.showToast({ title: '无法发起，人数少于2人', icon: 'none', duration: 2000 })
+        } else {
+          wx.navigateTo({
+            url: `../forwardMultiContact/forwardMultiContact?teamId=${this.currentGroup.teamId}`
+          })
+        }
+      } else { // p2p
+        console.log(`正在发起对${this.chatTo}的视频通话`)
+        this.$router.push({path: '/pages/videoCall/main', query: {callee: this.chatTo, title: this.title, type: 2}})
+      }
+    },
+    /**
+   * 语音通话
+   */
+    audioCall () {
+      if (app.globalData.waitingUseVideoCall) {
+        wx.showToast({ title: '请勿频繁操作', icon: 'none', duration: 2000 })
+        return
+      }
+      if (this.chatType === 'advanced' || this.chatType === 'normal') { // 群组 暂时没有
+        if (this.currentGroup.memberNum.length < 2) {
+          wx.showToast({ title: '无法发起，人数少于2人', icon: 'none', duration: 2000 })
+        } else {
+          wx.navigateTo({
+            url: `../forwardMultiContact/forwardMultiContact?teamId=${this.currentGroup.teamId}`
+          })
+        }
+      } else { // p2p
+        console.log(`正在发起对${this.chatTo}的语音通话`)
+        this.$router.push({path: '/pages/videoCall/main', query: {callee: this.chatTo, title: this.title, type: 1}})
+      }
     },
     /**
      * 播放音频
@@ -628,7 +714,16 @@ export default {
           wx.hideLoading()
           // 判断错误类型，并做相应处理
           if (self.handleErrorAfterSend(err)) {
+            return
           }
+          console.log('发送消息成功')
+          console.log(msg)
+          self.nimData.push(msg)
+          self.messageArr = self.handleMsgs(self.nimData)
+          // 滚动到底部
+          setTimeout(() => {
+            this.scrollToBottom()
+          }, 150)
         }
       })
     },
@@ -687,10 +782,23 @@ export default {
             break
           }
           case 'tip': {
+            specifiedObject = {
+              text: rawMsg.tip,
+              nodes: [{
+                type: 'text',
+                text: rawMsg.tip
+              }]
+            }
             break
           }
           case '白板消息':
           case '阅后即焚': {
+            specifiedObject = {
+              nodes: [{
+                type: 'text',
+                text: `[${msgType}],请到手机或电脑客户端查看`
+              }]
+            }
             break
           }
           case 'file':
@@ -706,6 +814,14 @@ export default {
             }
             break
           case 'notification':
+            // specifiedObject = {
+            // // netbill的text为空
+            //   text: rawMsg.groupNotification || (rawMsg.text.length === 0 ? '通知' : rawMsg.text),
+            //   nodes: [{
+            //     type: 'text',
+            //     text: rawMsg.groupNotification || (rawMsg.text.length === 0 ? '通知' : rawMsg.text)
+            //   }]
+            // }
             break
           default: {
             break
@@ -773,6 +889,17 @@ export default {
       this.moreFlag = !this.moreFlag
       this.emojiFlag = false
       // focusFlag: false
+      if (this.moreFlag) {
+        this.showMore = '340'
+        setTimeout(() => {
+          this.scrollToBottom()
+        }, 150)
+      } else {
+        this.showMore = '200'
+        setTimeout(() => {
+          this.scrollToBottom()
+        }, 150)
+      }
     },
     /**
    * 切换出emoji键盘
@@ -781,6 +908,17 @@ export default {
       this.sendType = 0
       this.emojiFlag = !this.emojiFlag
       this.moreFlag = false
+      if (this.emojiFlag) {
+        this.showMore = '670'
+        setTimeout(() => {
+          this.scrollToBottom()
+        }, 150)
+      } else {
+        this.showMore = '200'
+        setTimeout(() => {
+          this.scrollToBottom()
+        }, 150)
+      }
     },
     // 选择相册图片
     chooseImageToSend (e) {
@@ -838,8 +976,16 @@ export default {
             if (self.handleErrorAfterSend(err)) {
               return
             }
-            console.log('发送消息成功')
+            self.showMore = '200'
             self.moreFlag = false
+            console.log('发送消息成功')
+            console.log(msg)
+            self.nimData.push(msg)
+            self.messageArr = self.handleMsgs(self.nimData)
+            // 滚动到底部
+            setTimeout(() => {
+              this.scrollToBottom()
+            }, 150)
           }
         })
       }
@@ -856,7 +1002,14 @@ export default {
           if (self.handleErrorAfterSend(err)) {
             return
           }
+          console.log(msg)
           console.log('发送消息成功')
+          self.nimData.push(msg)
+          self.messageArr = self.handleMsgs(self.nimData)
+          // 滚动到底部
+          setTimeout(() => {
+            this.scrollToBottom()
+          }, 150)
           self.inputValue = ''
           // self.focusFlag = false
         }
@@ -880,7 +1033,12 @@ export default {
   */
     inputFocus (e) {
       this.focusFlag = true
-      this.emojiFlag = false
+      // this.emojiFlag = false
+      // this.moreFlag = false
+      // this.showMore = '200'
+      // setTimeout(() => {
+      //   this.scrollToBottom()
+      // }, 150)
     },
 
     // 失去聚焦(软键盘消失)
@@ -948,7 +1106,7 @@ export default {
 
 .chatinput-content {
   width: 100%;
-  height: 83px;
+  min-height: 83px;
   box-sizing: border-box;
   // padding: 0 0 0 20rpx;
 }
@@ -1027,15 +1185,18 @@ export default {
 
 .more-subcontent .more-subcontent-item {
   display: flex;
-  justify-content: flex-start;
+  // justify-content: flex-start;
+  justify-content: center;
   flex-direction: column;
+  align-items: center;
+
 }
 
 .more-subcontent .more-subcontent-item .image {
   width: 28px;
   height: 23px;
   margin-bottom: 9px;
-  margin-right: 40px;
+  // margin-right: 40px;
 }
 
 .more-subcontent .more-subcontent-item .text {
@@ -1117,10 +1278,11 @@ export default {
   background-color: #ccc;
   text-align: center;
   align-self: center;
-  min-height: 40rpx;
+  // min-height: 40rpx;
   word-break: break-word;
   font-size: 26rpx;
   padding: 0 20rpx;
+  padding: 10rpx 20rpx;
   color: #000;
   border-radius: 10rpx;
 }

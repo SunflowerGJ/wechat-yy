@@ -5,9 +5,25 @@
       <swiper :indicator-dots="swipers.indicatorDots"  :current="swipers.current" @change="changeSwiper" style="height:200px">
         <block v-for="(item, inx) in bannerlist" :key="inx">
           <swiper-item style="height:200px">
-            <view v-if="item.istype == 'isVideo' && inx == swipers.current" >
+            <view v-if="item.istype == 'isVideo' && inx == swipers.current">
+              <txv-video
+                v-if="item.video_photo"
+                :usePoster="true" 
+                :poster="item.video_photo" 
+                id="video" 
+                playerid="txv1" 
+                :vid="item.video_url" 
+                objectFit="cover" 
+                :show-fullscreen-btn="true" 
+                :autoplay="false" 
+                :width="'100%'" 
+                :height="'100%'"
+                @play="switchS(false)"
+                @ended="switchS(true)"
+                @pause="switchS(true)"
+                ></txv-video>
                <!-- src="http://wxsnsdy.tc.qq.com/105/20210/snsdyvideodownload?filekey=30280201010421301f0201690402534804102ca905ce620b1241b726bc41dcff44e00204012882540400&bizid=1023&hy=SH&fileparam=302c020101042530230204136ffd93020457e3c4ff02024ef202031e8d7f02030f42400204045a320a0201000400" -->
-               <video object-fit="cover" :controls="true" :poster="item.video_photo" id="myVideo" @play="switchS(false)" @pause="switchS(true)" @ended="switchS(true)" :src="item.video_url"></video>
+               <!-- <video :controls="true" :poster="item.video_photo" id="myVideo" @play="switchS(false)" @pause="switchS(true)" @ended="switchS(true)" :src="item.video_url"></video> -->
             </view>
             <view v-if="item.istype == 'isImg'">
                <img style="height:200px;width:100%" :src="item.src" @click="onBanner" />
@@ -103,9 +119,6 @@
             </div>
           </scroll-view>
         </div>
-        <div class="estate_foot" v-if="subscribeMsg">
-          <button :disabled="isSubscribe" @click="onSubscribe" :class="!isSubscribe?'subscribe-btn':'subscribe-btn disable-btn'">{{isSubscribe?"已订阅消息": subscribeMsg.btnText}}</button>
-        </div>
       </div>
       <div class="chat_panl" v-if="concatList.length>0">
         <div class="title_marig">
@@ -122,8 +135,8 @@
             </div>
             <div class="chat_right">
               <div style="position:relative;"> 
-                <button v-if="!userInfo.mobile" class="btn-cover" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber($event,item)"></button>
-                <img src="/static/images/icon-call.png" @click="onCall(item)" alt="">
+                <button v-if="!userInfo.mobile" class="btn-cover" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber($event,item.mobile)"></button>
+                <img src="/static/images/icon-call.png" @click="onCall(item.mobile)" alt="">
               </div>
               <img src="/static/images/icon-chat.png" @click="goChat(item)" alt="">
             </div>
@@ -405,15 +418,22 @@
   </div>
 </template>
 <script>
-
-import { selectSubscribe, addSubscribe, postHousesDetail, POINTAlbums, POINTHouseClick, getContactList, getCustomerCall, getSubscribeTemplateId } from '../../http/api.js'
+/* eslint-disable */
+import { postHousesDetail, POINTAlbums, POINTHouseClick, getContactList } from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
 import tips from '../../components/tips'
 import getUserinfo from '../../components/get-userinfo'
 import { reLogin } from '../../http/request.js'
-import {_requestSubscribeMessage} from '../../lib/_requestSubscribeMessage.js'
 var QQMapWX = require('qqmap-wx-jssdk')
+const TxvContext = requirePlugin('tencentvideo')
 export default {
+   config: {
+
+    usingComponents: {
+
+      'txv-video': 'plugin://tencentvideo/video'
+    }
+  },
   /**
    * 用户点击右上角分享
    */
@@ -430,10 +450,8 @@ export default {
   },
   data () {
     return {
-      subscribeMsg: null,
-      isSubscribe: false,
-      userInfo: wx.getStorageSync('userinfo'),
-      showSwitchBtn: false,
+      userInfo:wx.getStorageSync('userinfo'),
+      showSwitchBtn:false,
       istype: 'isVideo',
       isSwDOtr: true,
       concatList: [],
@@ -478,20 +496,22 @@ export default {
       // 获取二维码的携带的链接信息
       this.house_id = decodeURIComponent(parmas)
     }
-    this.swipers = {
-      indicatorDots: false,
-      current: 0
-    }
+    this.swipers = {indicatorDots: false, current: 0 }
     this.detail = null
   },
-  onShow: function () {
-    this.$data.isSwDOtr = true
+  onShow: function() {
+    // let videoContext = TxvContext.getTxvContext('txv1')
+     this.videoContext && this.videoContext.pause()
+      this.$data.isSwDOtr = true
   },
   onHide: function () {
-    this.$data.isSwDOtr = true
-  },
+    //  let videoContext = TxvContext.getTxvContext('txv1')
+      this.videoContext && this.videoContext.pause()
+      this.$data.isSwDOtr = true
+  }, 
   onUnload: function () {
-    this.$data.isSwDOtr = true
+      this.videoContext && this.videoContext.pause()
+      this.$data.isSwDOtr = true
   },
   async mounted () {
     if (this.$route.query.id) {
@@ -526,9 +546,9 @@ export default {
     let alertAdCache = wx.getStorageSync(`alert_ad${this.house_id}`)
     let hasAlertAd = this.detail.alert_ad && this.detail.alert_ad.status === '1'
     // 合并头图轮播列表
-    if (data.banner_video) {
-      data.banner_video = data.banner_video.map((item, index) => ({ ...item, istype: 'isVideo' }))
-    } else {
+    if(data.banner_video){
+     data.banner_video= data.banner_video.map((item, index) => ({ ...item,istype : 'isVideo' }))
+    }else {
       data.banner_video = []
       this.istype = 'isImg'
     }
@@ -540,7 +560,7 @@ export default {
     this.bannerlist = [...data.banner_video, ...this.banner_imges]
     console.log(this.bannerlist)
     // 是否显示头图选项按钮
-    this.showSwitchBtn = (data.banner_video.length > 0) && (this.banner_imges.length > 0)
+    this.showSwitchBtn = (data.banner_video.length>0)&&(this.banner_imges.length>0)
     this.videoContext = wx.createVideoContext('txv1')
     if (hasAlertAd) {
       if (this.detail.alert_ad.photo === alertAdCache) {
@@ -551,7 +571,6 @@ export default {
     } else {
       this.showNoticeModal = false
     }
-    this.onSelectSubscribe()
     this.handleSearch()
     POINTHouseClick({
       cityId: this.detail.city_id,
@@ -566,58 +585,14 @@ export default {
     })
   },
   methods: {
-    // 查询是否订阅
-    async onSelectSubscribe () {
-      const res = await getSubscribeTemplateId({house_id: this.house_id})
-      console.log(res)
-      this.subscribeMsg = res
-      let tmplIds = this.subscribeMsg && this.subscribeMsg.template
-      const data = await selectSubscribe({
-        template_id: tmplIds,
-        house_id: this.house_id
-      })
-      this.isSubscribe = true
-      console.log(data)
-    },
-    onSubscribe () {
-      let tmplIds = this.subscribeMsg && this.subscribeMsg.template
-      let self = this
-      _requestSubscribeMessage(tmplIds,
-        async (res, isAllow) => {
-          console.log(res);
-          if (res.errMsg === 'requestSubscribeMessage:ok') {
-            let isSubscribe = Object.values(res).includes('accept') // 是否订阅
-            if (isSubscribe) {
-              await addSubscribe({
-                template_id: tmplIds,
-                house_id: self.house_id
-              })
-              self.isSubscribe = true
-              wx.showToast({title: '订阅成功', icon: 'success', duration: 2000})
-            } else {
-
-            }
-          }
-        }, (err) => {
-          console.log(err)
-        }, (com) => {
-          console.log(com)
-        })
-    },
-    async getPhoneNumber (e, item) {
+    async getPhoneNumber (e,phoneNumber) {
+      console.log(e)
+          console.log(phoneNumber)
       if (e.mp.detail.errMsg === 'getPhoneNumber:ok') {
-        let { encryptedData, iv } = e.mp.detail
-        getCustomerCall({
-          userID: item.id,
-          houseId: this.detail.id,
-          project_id: this.detail.project_id,
-          encryptedData,
-          iv
-        })
-        wx.makePhoneCall({phoneNumber: item.mobile})
+        wx.makePhoneCall({phoneNumber: phoneNumber})
         // 授权成功
-        // let { encryptedData, iv } = e.mp.detail
-        // await postMobileSave({encryptedData, iv})/
+        let { encryptedData, iv } = e.mp.detail
+        await postMobileSave({encryptedData, iv})
       }
     },
     // 切换swiper
@@ -632,7 +607,7 @@ export default {
     },
     switchS (e = true) {
       this.$data.isSwDOtr = e
-      if (e === false) {
+      if(e == false) {
         POINTAlbums({
           cityId: this.detail.city_id,
           houseId: this.detail.id,
@@ -646,16 +621,13 @@ export default {
       this.$data.istype = this.$data.bannerlist[index].istype
       // let videoContext = TxvContext.getTxvContext('txv1')
       console.log(this.videoContext)
-      this.videoContext && this.videoContext.pause()
+     this.videoContext && this.videoContext.pause()
       this.$data.isSwDOtr = true
     },
-    onCall (item) {
-      getCustomerCall({
-        userID: item.id,
-        houseId: this.detail.id,
-        project_id: this.detail.project_id
+    onCall (phoneNumber) {
+      wx.makePhoneCall({
+        phoneNumber: phoneNumber + ''
       })
-      wx.makePhoneCall({phoneNumber: item.mobile})
     },
     goChat (item) {
       console.log(item)
@@ -897,10 +869,6 @@ export default {
 //     margin :auto 0;
 //   }
 // }
-button::after {
-  border none ;
-
-}
 .btn-cover {
   position absolute;
   top 0;
@@ -1176,38 +1144,6 @@ button::after {
           right:7px
         }
       }
-    }
-  }
-
-  .estate_foot{
-    margin-top 13px;
-    text-align left 
-    width: 668rpx;
-    box-sizing border-box
-
-    .subscribe-btn{
-      font-size:14px;
-      font-family:PingFangSC-Regular,PingFang SC;
-      font-weight:400;
-      color:rgba(255,255,255,1);
-      line-height:38px;
-      text-align:center;
-      width:334px;
-      height:38px;
-      background:rgba(230,1,19,1);
-      border-radius:6px;
-      border none;
-      outline none;
-      display block;
-      
-
-      .subscribe-btn button::after{
-        border none
-      }
-    }
-    .disable-btn {
-      background-color: #f0f0f0;
-      color :#333
     }
   }
 }

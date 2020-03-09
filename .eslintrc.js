@@ -24,7 +24,9 @@ module.exports = {
     // allow async-await
     'generator-star-spacing': 0,
     // allow debugger during development
-    'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0
+    'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
+    'semi': 0,
+    'invalid-first-character-of-tag-name': false
   },
   globals: {
     App: true,
@@ -37,6 +39,7 @@ module.exports = {
     getPage: true,
     requirePlugin: true,
     mpvue: true,
-    mpvuePlatform: true
+    mpvuePlatform: true,
+    getCurrentPages:true
   }
 }

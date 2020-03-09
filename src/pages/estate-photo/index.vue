@@ -19,7 +19,7 @@
       >
         <div v-for="(item,index) in imgUrls" :key="index">
           <swiper-item>
-            <txv-video
+            <!-- <txv-video
             v-if="videoVid && current === index && active === '视频'"
             :usePoster="true" 
             :poster="videoPhoto" 
@@ -33,8 +33,10 @@
             :width="'100%'" 
             :height="'100%'"
             @play="onVideoPlay"
-            @ended="onVideoEnd"></txv-video>
-            <image v-if="item.video_photo && active == '视频'" :src="item.video_photo" class="slide-image"/>
+            @ended="onVideoEnd"></txv-video> -->
+                           <!-- src="http://wxsnsdy.tc.qq.com/105/20210/snsdyvideodownload?filekey=30280201010421301f0201690402534804102ca905ce620b1241b726bc41dcff44e00204012882540400&bizid=1023&hy=SH&fileparam=302c020101042530230204136ffd93020457e3c4ff02024ef202031e8d7f02030f42400204045a320a0201000400" -->
+            <video object-fit="cover" class="slide-image" v-if="current === index  && active == '视频'" :controls="true" :poster="item.video_photo" @play="switchS(false)" @pause="switchS(true)" @ended="switchS(true)" :src="item.video_url"></video>
+            <!-- <image v-if="item.video_photo && active == '视频'" :src="item.video_photo" class="slide-image"/> -->
             <image v-else @click="handlePreviewImage()" :src="item.photo" class="slide-image"/>
           </swiper-item>
         </div>
@@ -47,15 +49,9 @@
 <script>
 /* eslint-disable */
 import { postAlbums, POINTAlbums } from '../../http/api.js'
-const TxvContext = requirePlugin('tencentvideo')
+
 export default {
-  config: {
 
-    usingComponents: {
-
-      'txv-video': 'plugin://tencentvideo/video'
-    }
-  },
   data () {
     return {
       itemTitle: [],
@@ -72,6 +68,16 @@ export default {
   },
 
   methods: {
+    switchS (e = true) {
+      this.$data.isSwDOtr = e
+      if(e == false) {
+        POINTAlbums({
+          cityId: this.$route.query.city_name,
+          houseId: this.$route.query.id,
+          type: 7
+        })
+      }
+    },
     getIndex (e) {
       this.active = e
       this.current = 0
@@ -117,8 +123,6 @@ export default {
       if (this.active === '视频') {
         this.videoVid = this.imgUrls[this.current].video_url
         this.videoPhoto = this.imgUrls[this.current].video_photo
-        // const TxvContext = requirePlugin('tencentvideo')
-        this.videoContext = TxvContext.getTxvContext('txv1') // txv1即播放器组件的playerid值
       }
     },
     handlePreviewImage (item) {
@@ -133,12 +137,6 @@ export default {
       this.imgUrls = []
       this.itemTitle = []
     },
-    onVideoPlay () {
-
-    },
-    onVideoEnd () {
-
-    }
   },
 
   watch: {
@@ -160,25 +158,68 @@ export default {
   onShow () {
     this.initData()
     this._postAlbums()
-      // let videoContext = TxvContext.getTxvContext('txv1')
-     this.videoContext && this.videoContext.pause()
+
       this.$data.isSwDOtr = true
   },
   onHide: function () {
-    //  let videoContext = TxvContext.getTxvContext('txv1')
-      this.videoContext && this.videoContext.pause()
+
       this.$data.isSwDOtr = true
   }, 
   onUnload: function () {
-    // let videoContext = TxvContext.getTxvContext('txv1')
-      this.videoContext && this.videoContext.pause()
       this.$data.isSwDOtr = true
   },
 }
 </script>
-
+<style>
+  .swDots{
+  position:absolute;
+  right:0;
+  bottom:15px;
+  width:80%;
+  z-index:100;
+}
+.swCurr{
+   position:absolute;
+  bottom:15px;
+  z-index:100;
+  right:10px;
+}
+.swCurr span{
+  font-size: 12px;
+  color: #2E2E2E;
+  display: inline-block;
+  border-radius:10px;
+  padding:5px 10px;
+  background:rgba(255,255,255,0.7);
+}
+.swDots ul{
+    display:inline-block;
+    margin :0 23%;
+    border-radius:10px; 
+    background:rgba(255,255,255,0.7);
+    border-radius:9px;
+    }
+.swDots ul li{
+  display: inline-block;
+  padding:5px 10px;
+  border-radius:10px; 
+  font-size: 12px;
+  color: #2E2E2E;
+}
+.swDots ul li.activeSW{
+  color: #fff;
+  background-color: #E60113;
+}
+#myVideo{
+  width:100% !important;
+  height:200px !important;
+}
+</style>
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 @import "../../stylus/mixin.styl"
+  .slide-image {
+    width 100%;
+  }
   .container
     background rgba(0,0,0,0.5)
     position absolute
