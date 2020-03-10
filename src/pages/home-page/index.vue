@@ -483,6 +483,7 @@ export default {
       current: 0
     }
     this.detail = null
+    this.isSubscribe = false
   },
   onShow: function () {
     this.$data.isSwDOtr = true
