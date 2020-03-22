@@ -125,7 +125,10 @@
                 <button v-if="!userInfo.mobile" class="btn-cover" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber($event,item)"></button>
                 <img src="/static/images/icon-call.png" @click="onCall(item)" alt="">
               </div>
-              <img src="/static/images/icon-chat.png" @click="goChat(item)" alt="">
+              <div style="position:relative;"> 
+                <button v-if="!userInfo.mobile" class="btn-cover" open-type="getPhoneNumber" @getphonenumber="getPhoneNumberToChat($event,item)"></button>
+                <img src="/static/images/icon-chat.png" @click="goChat(item)" alt="">
+              </div>
             </div>
           </div>
         </div>
@@ -621,6 +624,22 @@ export default {
         // await postMobileSave({encryptedData, iv})/
       }
     },
+    async getPhoneNumberToChat (e, item) {
+      if (e.mp.detail.errMsg === 'getPhoneNumber:ok') {
+        let { encryptedData, iv } = e.mp.detail
+        getCustomerCall({
+          userID: item.id,
+          houseId: this.detail.id,
+          project_id: this.detail.project_id,
+          encryptedData,
+          iv
+        })
+        let id = item.id
+        let headPhoto = item.headPhoto ? encodeURIComponent(item.headPhoto) : ''
+        let employeeName = item.employeeName || '客服'
+        this.$router.push({ path: '/pages/pA/chat/main', query: {id, headPhoto, employeeName} })
+      }
+    },
     // 切换swiper
     handlSwTpye (e = 'isVideo') {
       this.$data.istype = e
@@ -660,6 +679,11 @@ export default {
     },
     goChat (item) {
       console.log(item)
+      getCustomerCall({
+        userID: item.id,
+        houseId: this.detail.id,
+        project_id: this.detail.project_id
+      })
       let id = item.id
       let headPhoto = item.headPhoto ? encodeURIComponent(item.headPhoto) : ''
       let employeeName = item.employeeName || '客服'
