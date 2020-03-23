@@ -409,7 +409,7 @@
 </template>
 <script>
 
-import { selectSubscribe, addSubscribe, postHousesDetail, POINTAlbums, POINTHouseClick, getContactList, getCustomerCall, getSubscribeTemplateId } from '../../http/api.js'
+import { selectSubscribe, addSubscribe, postMobileSave, postHousesDetail, POINTAlbums, POINTHouseClick, getContactList, getCustomerCall, getSubscribeTemplateId } from '../../http/api.js'
 import houseFooter from '../../components/house-footer'
 import tips from '../../components/tips'
 import getUserinfo from '../../components/get-userinfo'
@@ -498,6 +498,7 @@ export default {
     this.$data.isSwDOtr = true
   },
   async mounted () {
+    this.userInfo = wx.getStorageSync('userinfo')
     if (this.$route.query.id) {
       this.house_id = this.$route.query.id
     }
@@ -627,13 +628,7 @@ export default {
     async getPhoneNumberToChat (e, item) {
       if (e.mp.detail.errMsg === 'getPhoneNumber:ok') {
         let { encryptedData, iv } = e.mp.detail
-        getCustomerCall({
-          userID: item.id,
-          houseId: this.detail.id,
-          project_id: this.detail.project_id,
-          encryptedData,
-          iv
-        })
+        await postMobileSave({encryptedData, iv})
         let id = item.id
         let headPhoto = item.headPhoto ? encodeURIComponent(item.headPhoto) : ''
         let employeeName = item.employeeName || '客服'
@@ -679,11 +674,6 @@ export default {
     },
     goChat (item) {
       console.log(item)
-      getCustomerCall({
-        userID: item.id,
-        houseId: this.detail.id,
-        project_id: this.detail.project_id
-      })
       let id = item.id
       let headPhoto = item.headPhoto ? encodeURIComponent(item.headPhoto) : ''
       let employeeName = item.employeeName || '客服'
