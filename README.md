@@ -75,11 +75,10 @@ mpvue 文档
 项目地址
 - https://github.com/wechatyy/wechat-yy
 
-
-参考文档：
+```
+## 参考文档
 - https://www.jianshu.com/p/635714eabcbc
 - https://www.cnblogs.com/weichen913/p/9439203.html
-
 
 请求
 -  npm install flyio --save
