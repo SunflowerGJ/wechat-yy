@@ -2,36 +2,64 @@
 
 > 置业远洋小程序
 
+###### 前端：
+* Mpvue框架
+* Vant-webapp UI框架
+* Flyio 请求api封装
+
+###### 工具和语言
+* Webpack
+* ES6
+* Stylus
+
+## Directory
+
+```
+.
+├── config/                         // 环境配置 dev 开发环境 prod 生产环境
+├── dist/                          // 构建产生的内容
+├── node_modules/                  // 三方包
+└── src/                           // 源码目录
+    ├── components/                // 公共组件目录
+    ├── controller/                // 网易云信音视频通话目录 （官网copy）      
+        ├── im.js                  // 网易云信SDK NIM.封装             
+        ├── netcall.js             // 网易云信音视频通话接口封装  
+    ├── lib/                       // 全局工具函数目录
+        ├── _requestSubscribeMessage.js  //  订阅消息公共方法封装
+        ├── base64src.js           // base64转Url工具函数
+        ├── getAddr.js             // 地理定位通用方法 （高德地图）
+        ├── wxcharts.js            // 小程序图表工具
+    ├── http/                      // 接口请求目录
+        ├── request.js             // 请求封装
+        └── api.js                 // 接口列表
+    ├── pages/                     // 页面目录 
+        ├── *                      // 页面级文件夹
+    ├── store/                     // 网易云信音视频通话目录 （官网copy） 
+    ├── stylus/                    // 公共css 样式目录
+    ├── utils/                     // 全局工具函数目录
+    ├── app.json                   // 小程序app.json配置文件
+    ├── App.vue                    // 页面程序入口vue
+    ├── main.js                    // 页面程序入口js
+    ├── static/                        // 静态资源目录
+├── .editorconfig                  // 编辑器缩进配置
+├── .gitignore                     // git 文件排除
+├── README.md
+└── package.json
+```
+
 ## Build Setup
 
 ``` bash
 # 初始化项目
-vue init mpvue/mpvue-quickstart myproject
-cd myproject
+git clone https://github.com/wechatyy/wechat-yy.git
+cd wechat-yy
 
 # 安装依赖
-yarn
+npm install
 
 # 开发时构建
-npm dev
+npm run dev
 
 # 打包构建
-npm build
+npm run build
 
-# 指定平台的开发时构建(微信、百度、头条、支付宝)
-npm dev:wx
-npm dev:swan
-npm dev:tt
-npm dev:my
-
-# 指定平台的打包构建
-npm build:wx
-npm build:swan
-npm build:tt
-npm build:my
-
-# 生成 bundle 分析报告
-npm run build --report
-```
-
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
