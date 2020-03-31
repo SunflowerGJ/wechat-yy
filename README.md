@@ -63,20 +63,20 @@ npm run dev
 # 打包构建
 npm run build
 
+```
+
+
 ## 参考文档
 小程序文档
 - https://developers.weixin.qq.com/miniprogram/dev/api/?q=minified
 
-
 mpvue 文档
 - http://mpvue.com/mpvue/#_2
-
 
 项目地址
 - https://github.com/wechatyy/wechat-yy
 
-```
-## 参考文档
+参考文档：
 - https://www.jianshu.com/p/635714eabcbc
 - https://www.cnblogs.com/weichen913/p/9439203.html
 
