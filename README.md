@@ -33,7 +33,7 @@
         ├── request.js              // 请求封装
         └── api.js                  // 接口列表
     ├── pages/                      // 页面目录 
-        ├── pA                      // 分包-顾问咨询
+        ├── pA                      // 分包-置业顾问咨询
         ├── packSearch              // 分包-条件筛选
         ├── packMap                 // 分包-地图找房
         ├── index                   // 首页
