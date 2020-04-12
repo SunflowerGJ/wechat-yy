@@ -28,13 +28,30 @@
         ├── _requestSubscribeMessage.js  //  订阅消息公共方法封装
         ├── base64src.js           // base64转Url工具函数
         ├── getAddr.js             // 地理定位通用方法 （高德地图）
-        ├── wxcharts.js            // 小程序图表工具
-    ├── http/                      // 接口请求目录
-        ├── request.js             // 请求封装
-        └── api.js                 // 接口列表
-    ├── pages/                     // 页面目录 
-        ├── *                      // 页面级文件夹
-    ├── store/                     // 网易云信音视频通话目录 （官网copy） 
+        ├── wxcharts.js             // 小程序图表工具
+    ├── http/                       // 接口请求目录
+        ├── request.js              // 请求封装
+        └── api.js                  // 接口列表
+    ├── pages/                      // 页面目录 
+        ├── pA                      // 分包-顾问咨询
+        ├── packSearch              // 分包-条件筛选
+        ├── packMap                 // 分包-地图找房
+        ├── index                   // 首页
+        ├── activity                // 资讯
+        ├── personal                // 我的
+        ├── activity-detail         // 资讯详情-富文本
+        ├── calculator              // 房贷计算器
+        ├── calculator-result       // 房贷计算器结果       
+        ├── web-view                // 资讯详情-webview
+        ├── home-page               // 楼盘主页 
+        ├── door-details            // 户型详情 
+        ├── watch-list              // 围观人列表
+        ├── door-list               // 户型图列表
+        ├── estate-photo            // 楼盘相册
+        ├── go-address              // 位置定位 
+        ├── coupon-list             // 优惠券列表
+        └── videoCall               // 视频通话               
+    ├── store/                      // 网易云信音视频通话目录 （官网copy） 
     ├── stylus/                    // 公共css 样式目录
     ├── utils/                     // 全局工具函数目录
     ├── app.json                   // 小程序app.json配置文件

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "mpvueTemplateProjectVersion": "0.1.0",
   "description": "置业远洋",
-  "author": "王亚男 <wangyanan03@renrenche.com>",
+  "author": "",
   "private": true,
   "scripts": {
     "dev:wx": "node build/dev-server.js wx",

@@ -164,6 +164,27 @@
 					"pathName": "pages/pA/chat/main",
 					"query": "id=e4f61ebbad3bc9947239f479c5e61303 ",
 					"scene": null
+				},
+				{
+					"id": 17,
+					"name": "房贷计算器",
+					"pathName": "pages/calculator/main",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/watch-list/main",
+					"pathName": "pages/watch-list/main",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 19,
+					"name": "pages/go-address/main",
+					"pathName": "pages/go-address/main",
+					"query": "",
+					"scene": null
 				}
 			]
 		}
