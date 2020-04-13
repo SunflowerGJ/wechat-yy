@@ -82,7 +82,6 @@ npm run build
 
 ```
 
-
 ## 参考文档
 小程序文档
 - https://developers.weixin.qq.com/miniprogram/dev/api/?q=minified
