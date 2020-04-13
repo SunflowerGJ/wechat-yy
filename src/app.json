@@ -73,7 +73,7 @@
     }, 
     {
       "text": "我的",
-      "pagePath": "pages/personal/main",
+      "pagePath": "pages/tab_mine/mine/main",
       "iconPath": "static/tabs/tabbar-my.png",
       "selectedIconPath": "static/tabs/tabbar-my-active.png"
     }
